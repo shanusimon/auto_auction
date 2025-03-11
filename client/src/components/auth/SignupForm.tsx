@@ -208,7 +208,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
               disabled={isSubmitting}
               className="w-full bg-green-400 hover:bg-green-500 text-black"
             >
-              {isSubmitting ? "Creating..." : "Create account"}
+              {isSubmitting ? "Generating OTP.." : "Create account"}
             </Button>
           </Form>
         )}
