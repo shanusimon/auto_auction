@@ -3,6 +3,7 @@ import * as Yup from "yup";
 interface SignupFormValues {
   fullName: string;
   email: string;
+  phoneNumber:string;
   password: string;
   confirmPassword: string;
 }
@@ -15,7 +16,10 @@ export const signupSchema: Yup.ObjectSchema<SignupFormValues> = Yup.object().sha
   email: Yup.string()
     .email("Invalid email format")
     .required("Email is required"),
-  
+  phoneNumber: Yup.string()
+    .matches(/^\d{10}$/, "Phone number must be 10 digits")
+    .required("Phone number is required"),
+    
   password: Yup.string()
     .required("Password is required")
     .min(6, "Password must be at least 6 characters long")

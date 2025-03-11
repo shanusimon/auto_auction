@@ -27,19 +27,19 @@ export class ClientRegisterStrategy implements IRegisterStrategy{
             )
         }
 
-        const {name,email,phoneNumber,password} = user as UserDTO
+        const {name,email,phone,password} = user as UserDTO
 
         let hashedPassword = null;
         if(password){
             hashedPassword = await this.passwordBcrypt.hash(password);
         }
         const clientId = generateUniqueUid("user")
-
+        console.log(name,email,phone,password)
         return await this.clientRepository.save({
             name,
             email,
             password:hashedPassword ?? "",
-            phone:phoneNumber,
+            phone,
             clientId,
             role:"user"
         })

@@ -15,7 +15,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase{
         private clientRegister:IRegisterStrategy
     ){
         this.strategies = {
-            client:this.clientRegister,
+            user:this.clientRegister,
         }
     }
     async execute(user: UserDTO): Promise<void> {

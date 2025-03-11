@@ -71,3 +71,48 @@ export interface IWalletTransaction {
     amount: number;
     timestamp: Date;
 }
+export const VERIFICATION_MAIL_CONTENT = (
+	otp: string
+) => `<div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+   <!-- Logo & Header Section -->
+   <div style="text-align: center; margin-bottom: 30px;">
+      <h1 style="font-size: 42px; font-weight: bold; margin: 0; color: #ff6600;">
+         🚗 Auto Auction
+      </h1>
+   </div>
+
+   <h2 style="color: #ff6600; text-align: center; margin-bottom: 30px;">
+      Secure Your Auto Auction Account! 🔑
+   </h2>
+   
+   <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px; text-align: center;">
+      Welcome to Auto Auction, the leading platform for buying and selling cars! <br> Please use the code below to verify your account.
+   </p>
+   
+   <div style="background-color: #f9f9f9; border-radius: 8px; padding: 20px; margin: 25px 0; text-align: center;">
+      <p style="margin-bottom: 10px; font-size: 16px; font-weight: bold;">Your verification code:</p>
+      <h1 style="background-color: #f2f2f2; color: #ff6600; font-size: 36px; margin: 10px 0; padding: 20px; border-radius: 8px; letter-spacing: 5px;">
+         ${otp}
+      </h1>
+      <p style="color: #666; font-size: 14px;">
+         ⏳ This code will expire in 5 minutes.
+      </p>
+   </div>
+   
+   <p style="font-size: 14px; color: #666; margin-top: 20px; text-align: center;">
+      🔒 For security reasons, please do not share this code with anyone.
+   </p>
+
+   <!-- Support Section -->
+   <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: center;">
+      <p style="font-size: 14px; color: #888;">
+         Need help? Contact our support team! 🚀<br>
+         📧 Email: <a href="mailto:support@autoauction.com" style="color: #ff6600; text-decoration: none;">support@autoauction.com</a>
+      </p>
+   </div>
+
+   <!-- Footer -->
+   <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #888;">
+      © ${new Date().getFullYear()} Auto Auction. All rights reserved.
+   </div>
+</div>`;

@@ -25,7 +25,9 @@ export class RegisterUserController{
                 });
                 return;
             }
+            console.log("before validate",req.body)
             const vaildateData = schema.parse(req.body);
+            console.log("validate",vaildateData)
             await this.registerUserUseCase.execute(vaildateData);
             res.status(HTTP_STATUS.CREATED).json({
                 success:true,
@@ -34,9 +36,10 @@ export class RegisterUserController{
         } catch (error) {
             
              // 🟢 1️⃣ If the error is a validation error from Zod
-            if(error instanceof ZodError){
+            if(error instanceof ZodError){    
                 const errors = error.errors.map((err)=>{
-                    message:err.message
+                    return{
+                        path: err.path.join('.'),message:err.message}
                 })
 
                 res.status(HTTP_STATUS.BAD_REQUEST).json({
