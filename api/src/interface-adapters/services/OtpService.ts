@@ -14,9 +14,7 @@ export class OtpService implements IOtpService {
     }
 
     async storeOtp(email: string, hashedOtp: string): Promise<void> {
-        console.log("Service",email,hashedOtp)
-        const result = await this.redisClient.setex(`otp:${email}`, 300, hashedOtp); // Store OTP for 5 minutes
-        console.log("Redis SETEX result:", result); 
+        const result = await this.redisClient.setex(`otp:${email}`, 60, hashedOtp); // Store OTP for 5 minutes
     }
 
     async verifyOtp(email: string, otp: string): Promise<boolean> {
@@ -32,7 +30,6 @@ export class OtpService implements IOtpService {
     async getOtp(email: string): Promise<string | null> {
         const key = `otp:${email}`
         const otp = await this.redisClient.get(key);
-        console.log("Retriving OTP From Redis:",otp);
         return otp
     }
 }
