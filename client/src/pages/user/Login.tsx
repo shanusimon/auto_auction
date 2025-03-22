@@ -2,10 +2,12 @@ import { Car } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import FormikLoginForm from "@/components/auth/LoginForm";
 import { LoginData as FormValues } from "@/types/auth";
-import { useLogin } from "@/hooks/auth/useAuth";
+import { useGoogleAuth, useLogin } from "@/hooks/auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import { userLogin } from "@/store/slices/user.slice";
 import {useDispatch} from "react-redux"
+import { CredentialResponse } from "@react-oauth/google";
+
 
 const Login: React.FC = () => {
   const { toast } = useToast();
@@ -14,6 +16,8 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   const loginUser = useLogin();
+
+  const googleLogin = useGoogleAuth()
 
   const handleSubmit = async (values: FormValues) => {
     try {
@@ -42,13 +46,36 @@ const Login: React.FC = () => {
 
   };
 
-  const handleGoogleLogin = () => {
-    toast({
-      title: "Google Authentication",
-      description: "Redirecting to Google login...",
-      duration: 3000,
-    });
-    // Google authentication logic would go here
+  const handleGoogleLogin = (credentialResponse:CredentialResponse) => {
+    console.log("hello",credentialResponse);
+    googleLogin.mutate(
+      {
+        credential:credentialResponse.credential,
+        client_id:import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        role:"user"
+      },{
+          onSuccess:(data:any)=>{
+            toast({
+              title:"success",
+              description:data.message || "You have successfully logged in",
+            });
+            dispatch(userLogin(data.user));
+            navigate("/dashboard");
+            toast({
+              title: "Success!",
+              description: "Login successful!",
+              duration: 3000,
+            });
+          },
+          onError:(error:any)=>{
+            toast({
+              title: "error!",
+              description: error.message || "Error in Login",
+              duration: 3000,
+            });
+          }
+      }
+    )
   };
 
   return (

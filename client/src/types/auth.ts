@@ -37,3 +37,14 @@ export interface IClient {
   isBlocked:boolean,
   joinedAt:Date
 }
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: "client" | "admin" | "vendor";
+  };
+}

@@ -4,10 +4,12 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { loginSchema as LoginSchema } from "@/utils/validations/loginvalidator";
 import { LoginData as FormValues } from "@/types/auth";
+import { GoogleAuthButton } from "./GoogleSignup";
+import { CredentialResponse } from "@react-oauth/google";
 
 export interface FormikLoginFormProps {
   onSubmit: (values: FormValues) => void;
-  onGoogleLogin?: () => void;
+  onGoogleLogin?: (credentialResponse:CredentialResponse) => void;
   isAdmin?: boolean;
 }
 
@@ -127,13 +129,7 @@ const FormikLoginForm: React.FC<FormikLoginFormProps> = ({ onSubmit, onGoogleLog
           </div>
           
           <div>
-            <button 
-              type="button" 
-              className="w-full flex justify-center items-center rounded py-2.5 px-4 bg-[#2A2A2A] text-white hover:opacity-90 transition-opacity"
-              onClick={onGoogleLogin}
-            >
-              Google
-            </button>
+            <GoogleAuthButton handleGoogleSuccess={onGoogleLogin ?? (()=>{})}/>
           </div>
         </>
       )}
