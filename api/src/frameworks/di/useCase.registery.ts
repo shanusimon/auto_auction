@@ -27,9 +27,11 @@ import { RevokeRefreshTokenUseCase } from "../../useCases/auth/RevokeRefreshToke
 import { IRefreshTokenUseCase } from "../../entities/useCaseInterfaces/auth/IRefreshTokenUseCase";
 import { RefreshTokenUseCase } from "../../useCases/auth/RefreshTokenUseCase";
 import { IGetAllCustomersUseCase } from "../../entities/useCaseInterfaces/customers/IGetallCustomersUseCase";
-import { getAllCustomers } from "../../useCases/users/GetAllUserUseCase";
+import { getAllCustomers } from "../../useCases/admin/GetAllUserUseCase";
 import { IUpdateCustomerStatusUseCase } from "../../entities/useCaseInterfaces/customers/IUpdateCustomerStatusUseCase";
-import { UpdateCustomerStatusUseCase } from "../../useCases/users/UpdateUserStatusUseCase";
+import { UpdateCustomerStatusUseCase } from "../../useCases/admin/UpdateUserStatusUseCase";
+import { IGoogleAuthUseCase } from "../../entities/useCaseInterfaces/auth/IGoogleAuthUseCase";
+import { GoogleAuthUseCase } from "../../useCases/auth/GoogleAuthUseCase";
 
 export class UseCaseRegistery {
   static registerUseCases(): void {
@@ -41,9 +43,9 @@ export class UseCaseRegistery {
     container.register<IRegisterUserUseCase>("IRegisterUserUseCase", {
       useClass: RegisterUserUseCase,
     });
-    container.register<IGetAllCustomersUseCase>("IGetAllCustomersUseCase",{
-      useClass:getAllCustomers
-    })
+    container.register<IGetAllCustomersUseCase>("IGetAllCustomersUseCase", {
+      useClass: getAllCustomers,
+    });
     container.register<IGenerateOtpUseCase>("IGenerateOtpUseCase", {
       useClass: GenerateOtpUseCase,
     });
@@ -68,9 +70,15 @@ export class UseCaseRegistery {
     container.register<IRefreshTokenUseCase>("IRefreshTokenUseCase", {
       useClass: RefreshTokenUseCase,
     });
-    container.register<IUpdateCustomerStatusUseCase>("IUpdateCustomerStatusUseCase",{
-      useClass:UpdateCustomerStatusUseCase
-    })
+    container.register<IUpdateCustomerStatusUseCase>(
+      "IUpdateCustomerStatusUseCase",
+      {
+        useClass: UpdateCustomerStatusUseCase,
+      }
+    );
+    container.register<IGoogleAuthUseCase>("IGoogleAuthUseCase", {
+      useClass: GoogleAuthUseCase,
+    });
     //* ====== Register Strategy ====== *//
     container.register("ClientRegisterStrategy", {
       useClass: ClientRegisterStrategy,

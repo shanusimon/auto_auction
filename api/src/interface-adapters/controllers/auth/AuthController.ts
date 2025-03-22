@@ -37,6 +37,7 @@ import { IUserExistenceService } from "../../../entities/services/Iuser-existenc
 import { IGenerateOtpUseCase } from "../../../entities/useCaseInterfaces/auth/IGenerateOtpUseCase";
 import { IVerifyOtpUseCase } from "../../../entities/useCaseInterfaces/auth/IVerifyOtpUseCase";
 import { IRefreshTokenUseCase } from "../../../entities/useCaseInterfaces/auth/IRefreshTokenUseCase";
+import { IGoogleAuthUseCase } from "../../../entities/useCaseInterfaces/auth/IGoogleAuthUseCase";
 
 @injectable()
 export class AuthController implements IAuthController {
@@ -58,7 +59,9 @@ export class AuthController implements IAuthController {
     @inject("IVerifyOtpUseCase") 
     private verifyOtpUseCase: IVerifyOtpUseCase,
     @inject("IRefreshTokenUseCase")
-    private refreshTokenUseCase: IRefreshTokenUseCase
+    private refreshTokenUseCase: IRefreshTokenUseCase,
+    @inject("IGoogleAuthUseCase")
+    private googleAuthUseCase:IGoogleAuthUseCase
   ) {}
 
   //*                  🛠️ User Login
@@ -203,6 +206,7 @@ export class AuthController implements IAuthController {
     }
   }
 
+   //*                  🛠️ Regenerate Refresh Token
   
   refreshToken(req: Request, res: Response): void {
     try {
@@ -224,4 +228,43 @@ export class AuthController implements IAuthController {
         .json({ message: ERROR_MESSAGES.INVALID_TOKEN });
     }
   }
+
+   //*                  🛠️ Google Auth 
+
+   async googleAuth(req: Request, res: Response): Promise<void> {
+       try {
+        const {credential,client_id,role} = req.body;
+        const user = await this.googleAuthUseCase.execute(credential,client_id,role);
+
+        if(!user.id || !user.email || !user.role){
+          throw new Error("User ID,email,or role is missing");
+        }
+
+        const tokens = await this.generateTokenUseCase.execute(
+          user.id,
+          user.email,
+          user.role
+        );
+
+        const access_token_name = `${user.role}_access_token`;
+        const refresh_token_name = `${user.role}_refresh_token`;
+
+        setAuthCookies(
+          res,
+          tokens.accessToken,
+          tokens.refreshToken,
+          access_token_name,
+          refresh_token_name
+        )
+        console.log(user);
+        res.status(HTTP_STATUS.OK).json({
+          success:true,
+          message:SUCCESS_MESSAGES.LOGIN_SUCCESS,
+          user:user
+        })
+
+       } catch (error) {
+        handleErrorResponse(res,error)
+       }
+   }
 }

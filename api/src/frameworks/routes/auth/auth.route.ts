@@ -19,5 +19,8 @@ export class AuthRoutes extends BaseRoute {
     this.router.post("/verify-login", (req, res) => {
       authController.login(req, res);
     });
+    this.router.post("/google-auth",(req:Request,res:Response)=>{
+      authController.googleAuth(req,res)
+    })
   }
 }

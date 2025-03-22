@@ -8,6 +8,7 @@ export interface IUserEntity{
     password:string;
     phone?:string;
     profileImage?:string;
+    googleId:string
     walletBalance?:number;
     joinedAt?:Date;
     role:TRole;

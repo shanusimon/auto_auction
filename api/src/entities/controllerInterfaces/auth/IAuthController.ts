@@ -7,4 +7,5 @@ export interface IAuthController{
     sendOtpEmail(req:Request,res:Response):Promise<void>
     verifyOtp(req:Request,res:Response):Promise<void>
     refreshToken(req:Request,res:Response):void  
+    googleAuth(req:Request,res:Response):Promise<void>;
 }
