@@ -26,12 +26,12 @@ const OTPModal: React.FC<OTPModalProps> = ({
   const [otp, setOtp] = useState<string[]>(Array(otpLength).fill(""));
   const [activeInput, setActiveInput] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [timeLeft, setTimeLeft] = useState<number>(60); // 60 seconds = 1 minute
+  const [timeLeft, setTimeLeft] = useState<number>(60);
   const [canResend, setCanResend] = useState<boolean>(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const { toast } = useToast();
 
-  // Reset OTP, errors, and timer when modal opens
+
   useEffect(() => {
     if (isOpen) {
       setOtp(Array(otpLength).fill(""));
@@ -39,14 +39,13 @@ const OTPModal: React.FC<OTPModalProps> = ({
       setActiveInput(0);
       setTimeLeft(60);
       setCanResend(false);
-      // Focus the first input when modal opens
       setTimeout(() => {
         inputRefs.current[0]?.focus();
       }, 100);
     }
   }, [isOpen, otpLength]);
 
-  // Timer effect
+
   useEffect(() => {
     if (!isOpen || timeLeft <= 0) return;
 
@@ -64,7 +63,7 @@ const OTPModal: React.FC<OTPModalProps> = ({
     return () => clearInterval(timer);
   }, [isOpen, timeLeft]);
 
-  // Format time as MM:SS
+
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -73,37 +72,35 @@ const OTPModal: React.FC<OTPModalProps> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const value = e.target.value;
-    // Only allow numbers
+
     if (!/^\d*$/.test(value)) return;
     
-    // Update the OTP array
+
     const newOtp = [...otp];
-    // Get only the last character if multiple characters are pasted
+
     newOtp[index] = value.slice(-1);
     setOtp(newOtp);
     
-    // Clear any error message
     setErrorMessage("");
 
-    // If input is filled, move to the next input
+
     if (value && index < otpLength - 1) {
       setActiveInput(index + 1);
       inputRefs.current[index + 1]?.focus();
     }
 
-    // If all inputs are filled, validate the OTP
     if (index === otpLength - 1 && value && !newOtp.includes("")) {
       handleVerify(newOtp.join(""));
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-    // Handle backspace
+
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       setActiveInput(index - 1);
       inputRefs.current[index - 1]?.focus();
     }
-    // Handle arrow keys
+
     else if (e.key === "ArrowLeft" && index > 0) {
       setActiveInput(index - 1);
       inputRefs.current[index - 1]?.focus();
@@ -118,13 +115,12 @@ const OTPModal: React.FC<OTPModalProps> = ({
     e.preventDefault();
     const pastedData = e.clipboardData.getData("text/plain").trim();
     
-    // Check if pasted content is a number and has the right length
+
     if (!/^\d+$/.test(pastedData)) {
       setErrorMessage("Please paste numbers only");
       return;
     }
-    
-    // Fill the OTP fields with the pasted digits
+
     const newOtp = [...otp];
     for (let i = 0; i < Math.min(pastedData.length, otpLength); i++) {
       newOtp[i] = pastedData[i];
@@ -132,12 +128,12 @@ const OTPModal: React.FC<OTPModalProps> = ({
     
     setOtp(newOtp);
     
-    // Focus the next empty input or the last input
+
     const nextIndex = Math.min(pastedData.length, otpLength - 1);
     setActiveInput(nextIndex);
     inputRefs.current[nextIndex]?.focus();
     
-    // Verify if all digits are filled
+
     if (!newOtp.includes("") && newOtp.length === otpLength) {
       handleVerify(newOtp.join(""));
     }
@@ -147,7 +143,7 @@ const OTPModal: React.FC<OTPModalProps> = ({
     onVerify(otpValue);
   };
 
-  // Resend OTP function
+
   const handleResendOTP = () => {
     if (!canResend && timeLeft > 0) return;
 
@@ -160,13 +156,12 @@ const OTPModal: React.FC<OTPModalProps> = ({
       description: "A new verification code has been sent to your Email.",
       duration: 3000,
     });
-    
-    // Reset timer
+
     setTimeLeft(60);
     setCanResend(false);
   };
 
-  // Close the modal if Escape key is pressed
+
   useEffect(() => {
     const handleEscKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {

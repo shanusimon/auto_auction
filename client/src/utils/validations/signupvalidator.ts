@@ -20,13 +20,12 @@ export const signupSchema: Yup.ObjectSchema<SignupFormValues> = Yup.object().sha
     .matches(/^\d{10}$/, "Phone number must be 10 digits")
     .required("Phone number is required"),
     
-  password: Yup.string()
+    password: Yup.string()
     .required("Password is required")
-    .min(6, "Password must be at least 6 characters long")
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-    ),
+    .min(8, "Password must be at least 8 characters long") 
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/[0-9]/, "Password must contain at least one digit")
+    .matches(/[@$!%*?&]/, "Password must contain at least one special character"),
   
   confirmPassword: Yup.string()
     .required("Please confirm your password")

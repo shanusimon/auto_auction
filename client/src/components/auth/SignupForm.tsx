@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -208,7 +208,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
               disabled={isSubmitting}
               className="w-full bg-green-400 hover:bg-green-500 text-black"
             >
-              {isSubmitting ? "Generating OTP.." : "Create account"}
+              {isSubmitting ? "Generating OTP..." : "Create account"}
             </Button>
           </Form>
         )}

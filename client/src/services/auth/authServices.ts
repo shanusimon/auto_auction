@@ -1,5 +1,6 @@
 import { api } from "@/api/auth.axios";
-import { RegisterData } from "../../types/auth";
+import { RegisterData,LoginData } from "../../types/auth";
+
 
 export const registerUser = async (data: RegisterData) => {
   try {
@@ -14,6 +15,7 @@ export const registerUser = async (data: RegisterData) => {
 export const sendOtp = async (email: string) => {
   try {
     const response = await api.post("/send-otp", { email });
+    console.log("Hello Response",response);
     return response;
   } catch (error: any) {
     throw error.response?.data || "Failed to send OTP";
@@ -29,3 +31,14 @@ export const verifyOtp = async (email: string, otp: string) => {
     throw error.response?.data || "Failed in Verify-otp";
   }
 };
+
+export const loginUser = async (data:LoginData) => {
+  try {
+    const response = await api.post("/verify-login",{...data});
+    console.log("login data response",response);
+    return response;
+  } catch (error:any) {
+    throw error.response?.data || "Failed to Login User"
+  }
+}
+

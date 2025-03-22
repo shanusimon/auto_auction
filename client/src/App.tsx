@@ -1,20 +1,26 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter,Routes, Route } from "react-router-dom";
 import Signup from "./pages/user/Signup";
-import { TooltipProvider } from "./components/ui/tooltip";
-import { Toaster } from "sonner";
-import Login from "./pages/user/Login";
 
+import Login from "./pages/user/Login";
+import { UserRoutes } from "./routes/ClientRoutes";
+import { GuestRoutes } from "./pages/protected/GuestRoute";
+import AdminLogin from "./pages/admin/AdminLogin";
+import { AdminRoutes } from "./routes/AdminRoutes";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <TooltipProvider>
-        <Toaster/>
-        <Routes>
-          <Route path="/" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
-        </Routes>    
-      </TooltipProvider>
+<BrowserRouter>
+      <Routes>
+        {/* Guest Routes */}
+        <Route path="/signup" element={<GuestRoutes element={<Signup/>}/>} />
+        <Route path="/login" element={<GuestRoutes element={<Login/>}/>} />
+        {/* User Routes */}
+        <Route path="/*" element={<UserRoutes/>}/>
+
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<GuestRoutes element={<AdminLogin/>}/>} />
+        <Route path="/admin/*" element={<AdminRoutes/>}/>
+      </Routes>
     </BrowserRouter>
   );
-}
+};

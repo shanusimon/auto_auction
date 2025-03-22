@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import SignupForm from "../../components/auth/SignupForm";
-import {
-  useRegister,
-  useSendOtp,
-  useVerifyOtp,
-} from "../../hooks/auth/useAuth";
+import {useRegister,useSendOtp, useVerifyOtp} from "../../hooks/auth/useAuth";
 import { SignupFormValues, RegisterData } from "../../types/auth";
 import OTPModal from "@/components/modals/OTPmodal";
 import { useToast } from "@/hooks/use-toast";
@@ -15,11 +11,8 @@ const Signup: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [formData, setFormData] = useState<RegisterData | null>(null);
-
   const navigate = useNavigate();
-
   const { toast } = useToast();
-
   // React Query hooks for API calls
   const registerUser = useRegister();
   const sendOtp = useSendOtp();
@@ -61,7 +54,6 @@ const Signup: React.FC = () => {
       setSubmitting(false);
     }
   };
-
   const resendOtp = async () => {
     if (!email) {
       toast({
@@ -91,7 +83,6 @@ const Signup: React.FC = () => {
       setIsLoading(false);
     }
   };
-
   const handleVerifyOtp = async (otp: string) => {
     if (!formData) {
       toast({
@@ -101,12 +92,12 @@ const Signup: React.FC = () => {
       });
       return;
     }
-
     try {
       setIsLoading(true);
       const optResponse = await verifyOtp.mutateAsync({ email, otp });
 
       if (optResponse) {
+        console.log("verifyyy OTP");
         await registerUser.mutateAsync(formData);
         toast({
           title: "Success",
@@ -125,7 +116,6 @@ const Signup: React.FC = () => {
       setIsLoading(false);
     }
   };
-
   return (
     <>
       <div className="flex min-h-screen bg-black text-white">
@@ -152,8 +142,6 @@ const Signup: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* OTP Modal */}
       <OTPModal
         isOpen={isOTPModalOpen}
         onClose={() => setIsOTPModalOpen(false)}

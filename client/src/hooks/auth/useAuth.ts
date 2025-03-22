@@ -1,6 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import { registerUser, sendOtp, verifyOtp } from "../../services/auth/authServices";
-import { RegisterData } from "../../types/auth";
+import { registerUser, sendOtp, verifyOtp,loginUser} from "../../services/auth/authServices";
+import { logoutUser } from "@/services/user/userServices";
+import { LoginData, RegisterData } from "../../types/auth";
+
 
 export const useRegister = () => {
   return useMutation({
@@ -28,3 +30,22 @@ export const useVerifyOtp = () => {
     },
   });
 };
+
+export const useLogin = ()=>{
+  return useMutation({
+    mutationFn:(data:LoginData)=>loginUser(data),
+    onError:(error:Error)=>{
+      console.log("Error on login user",error)
+    }
+  })
+}
+
+export const useLogout = ()=>{
+  return useMutation({
+    mutationFn:logoutUser,
+    onError:(error:Error)=>{
+      console.log("Error on Logout user",error)
+    }
+  })
+}
+
