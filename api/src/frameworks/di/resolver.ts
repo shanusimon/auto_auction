@@ -4,14 +4,18 @@ import {container} from "tsyringe";
 import { DependencyInjection } from ".";
 
 //* ====== Controller Imports ====== *//
-import { RegisterUserController } from "../../interface-adapters/controllers/auth/register.controller";
-import { SendOtpEmailContoller } from "../../interface-adapters/controllers/auth/SendOtpController";
-import { VerifyOtpController } from "../../interface-adapters/controllers/auth/verifyOtpController";
+import { BlockStatusMiddleware } from "../../interface-adapters/middlewares/blockStatusMiddleware";
+
+//* ====== Controller Imports ====== *//
+import { AuthController } from "../../interface-adapters/controllers/auth/AuthController";
+import { CustomerController } from "../../interface-adapters/controllers/CustomerController";
 // Registering all registries using a single class
+
 DependencyInjection.registerAll();
 
+//Middleware Resolving
+export const blockStatusMiddleware = container.resolve(BlockStatusMiddleware);
 
 //* ====== Controller Resolving ====== *//
-export const registerController = container.resolve(RegisterUserController);
-export const SendOtpController = container.resolve(SendOtpEmailContoller);
-export const OtpVerifyController = container.resolve(VerifyOtpController)
+export const authController = container.resolve(AuthController);
+export const customerController = container.resolve(CustomerController) 

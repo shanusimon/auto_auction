@@ -1,6 +1,6 @@
 import { inject,injectable } from "tsyringe";
 import { IRegisterStrategy } from "./register-strategies/register-strategy.interface";
-import { IRegisterUserUseCase } from "../../entities/useCaseInterfaces/auth/register-usecase.interface";
+import { IRegisterUserUseCase } from "../../entities/useCaseInterfaces/auth/IRegister-usecase.interface";
 import { UserDTO } from "../../shared/dtos/user.dto";
 import { CustomError } from "../../entities/utils/custom.error";
 import { ERROR_MESSAGES,HTTP_STATUS } from "../../shared/constants";

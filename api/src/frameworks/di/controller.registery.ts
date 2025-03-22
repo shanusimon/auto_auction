@@ -1,23 +1,23 @@
 //module imports
 import { container } from "tsyringe";
 
-//controller imports
-import { RegisterUserController } from "../../interface-adapters/controllers/auth/register.controller";
-import { SendOtpEmailContoller } from "../../interface-adapters/controllers/auth/SendOtpController";
-import { VerifyOtpController } from "../../interface-adapters/controllers/auth/verifyOtpController";
+//middleware imports
+import { BlockStatusMiddleware } from "../../interface-adapters/middlewares/blockStatusMiddleware";
 
+//controller imports
+import { AuthController } from "../../interface-adapters/controllers/auth/AuthController";
+import { CustomerController } from "../../interface-adapters/controllers/CustomerController";
 
 export class controllerRegistery{
     static registerControllers():void{
-        container.register("RegisterUserController",{
-            useClass:RegisterUserController
+        container.register("BlockStatusMiddleware",{
+            useClass:BlockStatusMiddleware
         })
-
-        container.register("SendOtpEmailController",{
-            useClass:SendOtpEmailContoller
+        container.register("AuthContorller",{
+            useClass:AuthController
         })
-        container.register("VerifyOtpController",{
-            useClass:VerifyOtpController
+        container.register("CustomerController",{
+            useClass:CustomerController
         })
     }
 }

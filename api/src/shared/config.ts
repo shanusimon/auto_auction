@@ -23,6 +23,12 @@ export const config ={
     redis:{
         redisURL:process.env.REDIS_URL
     },
+    jwt:{
+        ACCESS_SECRET_KEY: process.env.JWT_ACCESS_KEY || "access-secret-key",
+		REFRESH_SECRET_KEY: process.env.JWT_REFRESH_KEY || "refresh-secret-key",
+		ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN || "15m",
+		REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
+    },
     loggerStatus: process.env.LOGGER_STATUS || "dev",
     bcryptSaltRounds: parseInt(process.env.BCRYPT_SALT_ROUNDS || "10", 10)
 }

@@ -12,6 +12,7 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase{
     ){}
     async execute({ email, otp }: { email: string; otp: string; }): Promise<void> {
         const isOtpValid = await this.otpService.verifyOtp(email,otp);
+        console.log("si Valid OTP",isOtpValid)
 
         if(!isOtpValid)
             throw new CustomError("Invalid OTP",HTTP_STATUS.BAD_REQUEST);

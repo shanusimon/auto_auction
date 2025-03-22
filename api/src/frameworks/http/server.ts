@@ -5,9 +5,9 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 
-
 import { config } from "../../shared/config";
 import { AuthRoutes } from "../routes/auth/auth.route";
+import { PrivateRoutes } from "../routes/private/privateRoute";
 
 export class Server{
     private _app: Application;
@@ -46,7 +46,8 @@ export class Server{
         )
     }
     private configureRoutes():void{
-        this._app.use("/api/user/auth",new AuthRoutes().router)
+        this._app.use("/api/v_1/auth",new AuthRoutes().router);
+        this._app.use("/api/v_1/pvt",new PrivateRoutes().router);
     }
 
     private configureErrorHandling():void{

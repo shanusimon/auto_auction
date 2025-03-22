@@ -1,7 +1,6 @@
 import { inject,injectable } from "tsyringe";
 import { IUserExistenceService } from "../../entities/services/Iuser-existence-service.interface";
-import { IClientRepository } from "../../entities/repositoryInterfaces/client-repository-interface";
-
+import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
 
 @injectable()
 export class UserExistenceService implements IUserExistenceService{

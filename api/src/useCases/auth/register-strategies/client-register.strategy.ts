@@ -1,7 +1,7 @@
 import { inject,injectable } from "tsyringe";
 import { IRegisterStrategy } from "./register-strategy.interface";
 import { UserDTO } from "../../../shared/dtos/user.dto";
-import { IClientRepository } from "../../../entities/useCaseInterfaces/client/client-repository.interface";
+import { IClientRepository } from "../../../entities/repositoryInterfaces/client/IClient-repository.interface";
 import { ERROR_MESSAGES,HTTP_STATUS } from "../../../shared/constants";
 import { IBcrypt } from "../../../frameworks/security/bcrypt.interface";
 import { IUserEntity } from "../../../entities/models/user.entity";
@@ -34,7 +34,6 @@ export class ClientRegisterStrategy implements IRegisterStrategy{
             hashedPassword = await this.passwordBcrypt.hash(password);
         }
         const clientId = generateUniqueUid("user")
-        console.log(name,email,phone,password)
         return await this.clientRepository.save({
             name,
             email,

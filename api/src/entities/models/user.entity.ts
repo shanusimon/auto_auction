@@ -1,10 +1,11 @@
 import { TRole,IWalletTransaction } from "../../shared/constants"
 
+
 export interface IUserEntity{
     id?:string;
     name?:string;
     email?:string;
-    password?:string;
+    password:string;
     phone?:string;
     profileImage?:string;
     walletBalance?:number;

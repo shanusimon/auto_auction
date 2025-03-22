@@ -16,7 +16,7 @@ export class GenerateOtpUseCase implements IGenerateOtpUseCase{
         try {
        
         const otp = await this.otpService.generateOtp();
-            console.log("otp is",otp);
+        console.log("otp is",otp);
         const hashedOtp = await this.bcryptService.hash(otp);
         
         console.log(hashedOtp)
@@ -24,7 +24,7 @@ export class GenerateOtpUseCase implements IGenerateOtpUseCase{
         await this.otpService.storeOtp(email,hashedOtp);
 
         const storedOtp = await this.otpService.getOtp(email);
-
+            
         console.log(storedOtp);
 
         await this.mailService.sendOtpEmail(email,otp)

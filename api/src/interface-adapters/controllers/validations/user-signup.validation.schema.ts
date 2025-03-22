@@ -22,6 +22,6 @@ export const userSignupSchemas ={
 // Login schema for both "user" and "admin"
 export const loginSchema = z.object({
     email:strongEmailRegex,
-    passwordSchema:passwordSchema,
+    password:z.string().min(1,"password Required"),
     role:z.enum(["admin","user"])
 })
