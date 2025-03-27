@@ -26,12 +26,21 @@ import { IRevokeRefreshTokenUseCase } from "../../entities/useCaseInterfaces/aut
 import { RevokeRefreshTokenUseCase } from "../../useCases/auth/RevokeRefreshTokenUseCase";
 import { IRefreshTokenUseCase } from "../../entities/useCaseInterfaces/auth/IRefreshTokenUseCase";
 import { RefreshTokenUseCase } from "../../useCases/auth/RefreshTokenUseCase";
-import { IGetAllCustomersUseCase } from "../../entities/useCaseInterfaces/customers/IGetallCustomersUseCase";
+import { IGetAllCustomersUseCase } from "../../entities/useCaseInterfaces/admin/IGetallCustomersUseCase";
 import { getAllCustomers } from "../../useCases/admin/GetAllUserUseCase";
-import { IUpdateCustomerStatusUseCase } from "../../entities/useCaseInterfaces/customers/IUpdateCustomerStatusUseCase";
+import { IUpdateCustomerStatusUseCase } from "../../entities/useCaseInterfaces/admin/IUpdateCustomerStatusUseCase";
 import { UpdateCustomerStatusUseCase } from "../../useCases/admin/UpdateUserStatusUseCase";
 import { IGoogleAuthUseCase } from "../../entities/useCaseInterfaces/auth/IGoogleAuthUseCase";
 import { GoogleAuthUseCase } from "../../useCases/auth/GoogleAuthUseCase";
+import { ForgetPasswordUseCase } from "../../useCases/auth/ForgetPasswordUseCase";
+import { IForgetPasswordUseCase } from "../../entities/useCaseInterfaces/auth/IForgetPasswordUseCase";
+import { ResetPasswordUseCase } from "../../useCases/auth/ResetPasswordUseCase";
+import { IResetPasswordUseCase } from "../../entities/useCaseInterfaces/auth/IResetPasswordUseCase";
+import { IUpdateProfileUseCase } from "../../entities/useCaseInterfaces/user/IUpdateProfileUseCase";
+import { UpdateProfileUseCase } from "../../useCases/user/UpdateProfileUseCase";
+import { IUpdatePasswordUseCase } from "../../entities/useCaseInterfaces/user/IUpadatePasswordUseCase";
+import { UpdatePasswordUseCase } from "../../useCases/user/UpdatePasswordUseCase";
+
 
 export class UseCaseRegistery {
   static registerUseCases(): void {
@@ -79,6 +88,18 @@ export class UseCaseRegistery {
     container.register<IGoogleAuthUseCase>("IGoogleAuthUseCase", {
       useClass: GoogleAuthUseCase,
     });
+    container.register<IForgetPasswordUseCase>("IForgetPasswordUseCase",{
+      useClass:ForgetPasswordUseCase
+    })
+    container.register<IResetPasswordUseCase>("IResetPasswordUseCase",{
+      useClass:ResetPasswordUseCase
+    })
+    container.register<IUpdateProfileUseCase>("IUpdateProfileUseCase",{
+      useClass:UpdateProfileUseCase
+    })
+    container.register<IUpdatePasswordUseCase>("IUpdatePasswordUseCase",{
+      useClass:UpdatePasswordUseCase
+    })
     //* ====== Register Strategy ====== *//
     container.register("ClientRegisterStrategy", {
       useClass: ClientRegisterStrategy,

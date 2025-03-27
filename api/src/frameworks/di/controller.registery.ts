@@ -6,7 +6,8 @@ import { BlockStatusMiddleware } from "../../interface-adapters/middlewares/bloc
 
 //controller imports
 import { AuthController } from "../../interface-adapters/controllers/auth/AuthController";
-import { CustomerController } from "../../interface-adapters/controllers/CustomerController";
+import { UserController } from "../../interface-adapters/controllers/users/UserController";
+
 
 export class controllerRegistery{
     static registerControllers():void{
@@ -17,7 +18,7 @@ export class controllerRegistery{
             useClass:AuthController
         })
         container.register("CustomerController",{
-            useClass:CustomerController
+            useClass:UserController
         })
     }
 }

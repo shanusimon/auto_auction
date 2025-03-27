@@ -1,6 +1,8 @@
 import { Request,Response,NextFunction } from "express";
 
-export interface ICustomerController {
+export interface IUserController {
     getAllCustomers(req:Request,res:Response,next:NextFunction):Promise<void>;
     updateCustomerStatus(req:Request,res:Response,next:NextFunction):Promise<void>;
+    updateCustomerProfile(req:Request,res:Response,next:NextFunction):Promise<void>;
+    updateCustomerPassword(req:Request,res:Response,next:NextFunction):Promise<void>;
 }

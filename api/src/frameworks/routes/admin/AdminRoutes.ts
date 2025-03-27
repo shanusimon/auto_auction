@@ -1,8 +1,9 @@
 import {
   authorizeRole,
+  decodeToken,
   verifyAuth,
 } from "../../../interface-adapters/middlewares/authMiddleware";
-import { authController, customerController } from "../../di/resolver";
+import { authController, userController } from "../../di/resolver";
 import { BaseRoute } from "../base.route";
 import { Request, Response, NextFunction } from "express";
 
@@ -23,17 +24,24 @@ export class AdminRoutes extends BaseRoute {
       "/admin/get-allusers",
       verifyAuth,
       authorizeRole(["admin"]),
-      (req: Request, res: Response, next: NextFunction) => {
-        customerController.getAllCustomers(req, res, next);
+      (req: Request, res: Response) => {
+        userController.getAllCustomers(req, res);
       }
     );
     this.router.patch(
       "/admin/customer-status/:userId",
       verifyAuth,
       authorizeRole(["admin"]),
-      (req: Request, res: Response, next: NextFunction) => {
-        customerController.updateCustomerStatus(req, res, next);
+      (req: Request, res: Response) => {
+        userController.updateCustomerStatus(req, res);
       }
     );
+    this.router.post(
+      "/admin/refresh-token",
+      decodeToken,
+      (req:Request,res:Response)=>{
+        authController.refreshToken(req,res)
+      }
+    )
   }
 }

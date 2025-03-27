@@ -1,3 +1,4 @@
+import { ClientProfileResponse } from "../../../shared/dtos/user.dto";
 import { IClientEntity } from "../../models/client.entity";
 
 export interface IClientRepository{
@@ -8,6 +9,9 @@ export interface IClientRepository{
         filter: any,
         skip: number,
         limit: number
-    ): Promise<{users: IClientEntity[] | []; total: number}>
-    findByIdAndUpdateStatus(id:string):Promise<void>
+    ): Promise<{users: IClientEntity[] | []; total: number}>;
+    findByIdAndUpdateStatus(id:string):Promise<void>;
+    findAndUpdateByEmail(email:string,updates:Partial<IClientEntity>):Promise<IClientEntity | null>;
+    updateProfileById(id:string,data:Partial<IClientEntity>):Promise<ClientProfileResponse>
+    findByIdAndUpdatePassword(id:string,hashedPassword:string):Promise<void>
 }

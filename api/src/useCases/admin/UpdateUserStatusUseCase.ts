@@ -1,6 +1,6 @@
 import { inject,injectable } from "tsyringe";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
-import { IUpdateCustomerStatusUseCase } from "../../entities/useCaseInterfaces/customers/IUpdateCustomerStatusUseCase";
+import { IUpdateCustomerStatusUseCase } from "../../entities/useCaseInterfaces/admin/IUpdateCustomerStatusUseCase";
 
 @injectable()
 export class UpdateCustomerStatusUseCase implements IUpdateCustomerStatusUseCase{

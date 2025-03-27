@@ -28,6 +28,8 @@ export const config ={
 		REFRESH_SECRET_KEY: process.env.JWT_REFRESH_KEY || "refresh-secret-key",
 		ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN || "15m",
 		REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
+        RESET_SECRET_KEY:process.env.JWT_RESET_KEY || "reset-secret-key",
+        RESET_EXPIRES_IN:process.env.JWT_RESET_EXPIRES_IN || "5m"
     },
     loggerStatus: process.env.LOGGER_STATUS || "dev",
     bcryptSaltRounds: parseInt(process.env.BCRYPT_SALT_ROUNDS || "10", 10)

@@ -8,7 +8,7 @@ import { BlockStatusMiddleware } from "../../interface-adapters/middlewares/bloc
 
 //* ====== Controller Imports ====== *//
 import { AuthController } from "../../interface-adapters/controllers/auth/AuthController";
-import { CustomerController } from "../../interface-adapters/controllers/CustomerController";
+import { UserController } from "../../interface-adapters/controllers/users/UserController";
 // Registering all registries using a single class
 
 DependencyInjection.registerAll();
@@ -18,4 +18,4 @@ export const blockStatusMiddleware = container.resolve(BlockStatusMiddleware);
 
 //* ====== Controller Resolving ====== *//
 export const authController = container.resolve(AuthController);
-export const customerController = container.resolve(CustomerController) 
+export const userController = container.resolve(UserController) 

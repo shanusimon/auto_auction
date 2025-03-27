@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import { injectable } from "tsyringe";
 import { INodemailerService } from "../../entities/services/INodeMailerService";
 import { config } from "../../shared/config";
-import { VERIFICATION_MAIL_CONTENT,HTTP_STATUS,ERROR_MESSAGES,SUCCESS_MESSAGES } from "../../shared/constants";
+import { VERIFICATION_MAIL_CONTENT,HTTP_STATUS,ERROR_MESSAGES,SUCCESS_MESSAGES,RESET_PASSWORD_MAIL_CONTENT } from "../../shared/constants";
 
 @injectable()
 export class NodemailerService implements INodemailerService {
@@ -38,5 +38,15 @@ export class NodemailerService implements INodemailerService {
             console.error("❌ Error sending OTP email:", error);
             return { success: false, message: "Failed to send OTP email. Please try again later." };
         }
+    }
+
+    async sendRestEmail(email: string, subject: string, resetLink: string): Promise<void> {
+            const mailOptions = {
+                from:`Auo Auction <${config.nodemailer.EMAIL_USER}>`,
+                to:email,
+                subject:subject,
+                html:`${RESET_PASSWORD_MAIL_CONTENT(resetLink)}`
+            }
+            await this.transporter.sendMail(mailOptions);
     }
 }

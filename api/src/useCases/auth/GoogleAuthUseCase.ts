@@ -3,7 +3,6 @@ import { IGoogleAuthUseCase } from "../../entities/useCaseInterfaces/auth/IGoogl
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
 import { HTTP_STATUS, TRole } from "../../shared/constants"
 import { CustomError } from "../../entities/utils/custom.error";
-import { IUserEntity } from "../../entities/models/user.entity";
 import { OAuth2Client } from "google-auth-library";
 import { IClientEntity } from "../../entities/models/client.entity";
 import { generateUniqueUid } from "../../frameworks/security/uniqueuid.bcrypt";
@@ -34,12 +33,12 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase{
         const email = payload.email;
         const name = payload.given_name;
         const profileImage = payload.picture || "";
-
         if(!email){
             throw new CustomError("Email is required",HTTP_STATUS.BAD_REQUEST)
         }
 
         const existingUser = await this.clientRepo.findByEmail(email);
+        
         if(!existingUser){
             const customerId = generateUniqueUid();
             const newUser = await this.clientRepo.save({
@@ -50,8 +49,8 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase{
                 profileImage,
                 email,
                 role
-            })
-
+            });
+        
             if(!newUser){
                 throw new CustomError("Failed to register user. Please try again later.", HTTP_STATUS.INTERNAL_SERVER_ERROR)
             }

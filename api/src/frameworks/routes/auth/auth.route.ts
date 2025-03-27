@@ -22,5 +22,11 @@ export class AuthRoutes extends BaseRoute {
     this.router.post("/google-auth",(req:Request,res:Response)=>{
       authController.googleAuth(req,res)
     })
+    this.router.post("/forget-password",(req:Request,res:Response)=>{
+      authController.forgetPassword(req,res)
+    })
+    this.router.post("/reset-password",(req:Request,res:Response)=>{
+      authController.resetPassword(req,res);
+    })
   }
 }

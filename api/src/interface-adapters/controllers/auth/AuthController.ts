@@ -25,6 +25,7 @@ import {
   userSignupSchemas,
   loginSchema,
 } from "../validations/user-signup.validation.schema";
+import { forgotEmailValidationSchema } from "../validations/forgot-password.validation.schema";
 
 import { CustomRequest } from "../../middlewares/authMiddleware";
 
@@ -38,6 +39,9 @@ import { IGenerateOtpUseCase } from "../../../entities/useCaseInterfaces/auth/IG
 import { IVerifyOtpUseCase } from "../../../entities/useCaseInterfaces/auth/IVerifyOtpUseCase";
 import { IRefreshTokenUseCase } from "../../../entities/useCaseInterfaces/auth/IRefreshTokenUseCase";
 import { IGoogleAuthUseCase } from "../../../entities/useCaseInterfaces/auth/IGoogleAuthUseCase";
+import { IForgetPasswordUseCase } from "../../../entities/useCaseInterfaces/auth/IForgetPasswordUseCase";
+import { resetPasswordValidationSchema } from "../validations/reset-password.validation.schema";
+import { IResetPasswordUseCase } from "../../../entities/useCaseInterfaces/auth/IResetPasswordUseCase";
 
 @injectable()
 export class AuthController implements IAuthController {
@@ -61,7 +65,11 @@ export class AuthController implements IAuthController {
     @inject("IRefreshTokenUseCase")
     private refreshTokenUseCase: IRefreshTokenUseCase,
     @inject("IGoogleAuthUseCase")
-    private googleAuthUseCase:IGoogleAuthUseCase
+    private googleAuthUseCase:IGoogleAuthUseCase,
+    @inject("IForgetPasswordUseCase")
+    private forgetPasswordUseCase:IForgetPasswordUseCase,
+    @inject("IResetPasswordUseCase")
+    private resetPasswordUseCase:IResetPasswordUseCase
   ) {}
 
   //*                  🛠️ User Login
@@ -71,14 +79,7 @@ export class AuthController implements IAuthController {
       console.log("Hello World")
       const data = req.body as LoginUserDTO;
       const validatedData = loginSchema.parse(data);
-      console.log(validatedData);
-      console.log(req.body)
-      if (!validatedData) {
-        res.status(HTTP_STATUS.BAD_REQUEST).json({
-          success: false,
-          message: ERROR_MESSAGES.INVALID_CREDENTIALS,
-        });
-      }
+      console.log("THis is validated data",validatedData);
       const user = await this.loginUserUseCase.execute(validatedData);
 
       if (!user.id || !user.email || !user.role) {
@@ -108,6 +109,11 @@ export class AuthController implements IAuthController {
           name: user.name,
           email: user.email,
           role: user.role,
+          phone:user.phone,
+          profileImage:user.profileImage,
+          bio:user.bio,
+          walletBalance:user.walletBalance,
+          joinedAt:user.joinedAt
         },
       });
     } catch (error) {
@@ -234,6 +240,7 @@ export class AuthController implements IAuthController {
    async googleAuth(req: Request, res: Response): Promise<void> {
        try {
         const {credential,client_id,role} = req.body;
+        console.log("hello google data",req.body)
         const user = await this.googleAuthUseCase.execute(credential,client_id,role);
 
         if(!user.id || !user.email || !user.role){
@@ -260,11 +267,55 @@ export class AuthController implements IAuthController {
         res.status(HTTP_STATUS.OK).json({
           success:true,
           message:SUCCESS_MESSAGES.LOGIN_SUCCESS,
-          user:user
+          user: {
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            phone:user.phone,
+            profileImage:user.profileImage,
+            bio:user.bio,
+            walletBalance:user.walletBalance,
+            joinedAt:user.joinedAt
+          }
         })
 
        } catch (error) {
         handleErrorResponse(res,error)
        }
+   }
+
+      //*                  🛠️ Forget Password 
+
+   async forgetPassword(req: Request, res: Response): Promise<void> {
+       try {
+        const values = req.body;
+
+        const validatedDate = forgotEmailValidationSchema.parse(values);
+
+        await this.forgetPasswordUseCase.execute(validatedDate.email,validatedDate.role);
+
+        res.status(HTTP_STATUS.OK).json({
+          success:true,
+          message:SUCCESS_MESSAGES.RESETMAIL_SEND_SUCCESS
+        })
+       } catch (error) {
+        handleErrorResponse(res,error)
+       }
+   }
+
+      //*                  🛠️ Reset Password 
+
+   async resetPassword(req: Request, res: Response): Promise<void> {
+      try {
+        const {newPassword,token,role} = resetPasswordValidationSchema.parse(req.body);
+
+        await this.resetPasswordUseCase.execute(newPassword,token,role);
+        res.status(HTTP_STATUS.OK).json({
+          success:true,
+          message:SUCCESS_MESSAGES.PASSWORD_RESET_SUCCESS
+        })
+      } catch (error) {
+       handleErrorResponse(res,error) 
+      }
    }
 }

@@ -1,6 +1,6 @@
 import { inject,injectable } from "tsyringe";
 import { PagenateCustomers } from "../../entities/models/pageinated-customer.entity";
-import { IGetAllCustomersUseCase } from "../../entities/useCaseInterfaces/customers/IGetallCustomersUseCase";
+import { IGetAllCustomersUseCase } from "../../entities/useCaseInterfaces/admin/IGetallCustomersUseCase";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
 
 @injectable()

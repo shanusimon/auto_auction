@@ -63,7 +63,8 @@ try {
     )as CustomJwtPayload;
     console.log(user)
     if(!user || !user.id){
-        res.status(HTTP_STATUS.UNAUTHORIZED).json({message:ERROR_MESSAGES.UNAUTHORIZED_ACCESS})
+        console.log("this 1 si triggering");
+        res.status(HTTP_STATUS.UNAUTHORIZED).json({message:ERROR_MESSAGES.TOKEN_EXPIRED})
     return;
     }
     (req as CustomRequest).user = {
@@ -73,10 +74,15 @@ try {
     };
     next();
 } catch (error:any) {
+    console.log("secodn is ")
     if(error.name === "TokenExpiredError"){
-    res.status(HTTP_STATUS.UNAUTHORIZED).json({message:ERROR_MESSAGES.INVALID_TOKEN});
+    res
+    .status(HTTP_STATUS.UNAUTHORIZED)
+    .json({message:ERROR_MESSAGES.TOKEN_EXPIRED});
     return
     }
+
+    res.status(HTTP_STATUS.UNAUTHORIZED).json({message:ERROR_MESSAGES.INVALID_TOKEN})
 }
 }
 
@@ -103,6 +109,7 @@ export const decodeToken = async(
 )=>{
     try {
         const token = extractToken(req);
+        console.log("Refresh Token Triggerd");
         if(!token){
             console.log("no token")
             res.status(HTTP_STATUS.UNAUTHORIZED).json({message:ERROR_MESSAGES.UNAUTHORIZED_ACCESS})

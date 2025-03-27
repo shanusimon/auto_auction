@@ -8,4 +8,6 @@ export interface IAuthController{
     verifyOtp(req:Request,res:Response):Promise<void>
     refreshToken(req:Request,res:Response):void  
     googleAuth(req:Request,res:Response):Promise<void>;
+    forgetPassword(req:Request,res:Response):Promise<void>;
+    resetPassword(req:Request,res:Response):Promise<void>;
 }

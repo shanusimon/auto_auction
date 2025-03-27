@@ -2,6 +2,7 @@ import { injectable } from "tsyringe";
 import { IClientEntity } from "../../../entities/models/client.entity";
 import { ClientModel } from "../../../frameworks/database/models/client.model";;
 import { IClientRepository } from "../../../entities/repositoryInterfaces/client/IClient-repository.interface";
+import { ClientProfileResponse } from "../../../shared/dtos/user.dto";
 
 @injectable()
 export class ClientRepository implements IClientRepository{
@@ -47,5 +48,30 @@ export class ClientRepository implements IClientRepository{
         const result = await ClientModel.findByIdAndUpdate(id,{$set:{isBlocked:updateStatus}})
 
     }
+    async findAndUpdateByEmail(email: string, updates: Partial<IClientEntity>): Promise<IClientEntity| null> {
+        const client = await ClientModel.findOneAndUpdate({email},{$set:updates},{new:true}).lean()
+            if(!client) return null;
+    
+            return client as IClientEntity
+    }
+    async updateProfileById(id: string, data: Partial<IClientEntity>): Promise<ClientProfileResponse> {
+        const updateProfile = await ClientModel.findByIdAndUpdate(
+            id,
+            {$set:data},
+            {
+                new:true
+            }
+        )
+        .select('name phone profileImage bio email joinedAt role walletBalance')
+        .exec()
 
+        if(!updateProfile){
+            throw new Error("Profile not found");
+        }
+
+        return updateProfile as ClientProfileResponse
+    }
+    async findByIdAndUpdatePassword(id: string, hashedPassword: string): Promise<void> {
+        await ClientModel.findByIdAndUpdate(id,{password:hashedPassword})
+    }
 }

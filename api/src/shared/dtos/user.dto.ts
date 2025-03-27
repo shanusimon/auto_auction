@@ -13,3 +13,14 @@ export interface LoginUserDTO{
     password:string;
     role:TRole
 }
+
+export interface ClientProfileResponse {
+    name: string;
+    phone: string;
+    profileImage: string;
+    bio: string;
+    email: string;
+    joinedAt: Date;
+    role: string;
+    walletBalance: number;
+}
