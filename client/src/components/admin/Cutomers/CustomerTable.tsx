@@ -42,6 +42,7 @@ const CustomerTable: React.FC<CustomerTableProps> = ({ customers, onBlockStatusC
         <Table>
           <TableHeader className="bg-gray-50">
             <TableRow>
+              <TableHead className='font-medium'>No.</TableHead>
               <TableHead className="font-medium">ID</TableHead>
               <TableHead className="font-medium">Name</TableHead>
               <TableHead className="font-medium">Email</TableHead>
@@ -51,8 +52,9 @@ const CustomerTable: React.FC<CustomerTableProps> = ({ customers, onBlockStatusC
             </TableRow>
           </TableHeader>
           <TableBody>
-            {customers.map((customer) => (
+            {customers.map((customer,index) => (
               <TableRow key={customer._id}>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>{customer.clientId.slice(0,25)}</TableCell>
                 <TableCell>{customer.name}</TableCell>
                 <TableCell>{customer.email}</TableCell>

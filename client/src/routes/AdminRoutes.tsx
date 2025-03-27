@@ -1,5 +1,5 @@
 import { Route,Routes } from "react-router-dom";
-import { ProtectedRoutes } from "@/pages/protected/AuthRoute";
+import { ProtectedRoutes } from "@/routes/protected/AuthRoute";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminCustomers from "@/pages/admin/AdminCustomers";
 import UnauthorizedPage from "@/pages/common/UnauthorizedPage";

@@ -1,9 +1,10 @@
 import {Route,Routes} from "react-router-dom";
-import { ProtectedRoutes } from "@/pages/protected/AuthRoute";
+import { ProtectedRoutes } from "@/routes/protected/AuthRoute";
 import { Navigate } from "react-router-dom";
 import UserHomePage from "@/pages/user/UserHomePage";
 import UnauthorizedPage from "@/pages/common/UnauthorizedPage";
-import Profile from "@/pages/user/Profile";
+import Profile from "@/pages/user/UserDashboard";
+import UserProfile from "@/pages/user/Profile";
 
 export function UserRoutes(){
     return (
@@ -19,6 +20,9 @@ export function UserRoutes(){
             path="/unauthorized" 
             element={<UnauthorizedPage/>}
           />
+          <Route
+          path="/user/profile"
+          element={<ProtectedRoutes allowedRoles={["user"]} element={<UserProfile/>}/>}/>
           {/* Default redirect for unmatched user routes */}
           <Route 
             path="*" 

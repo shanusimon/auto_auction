@@ -76,7 +76,7 @@ const FormikLoginForm: React.FC<FormikLoginFormProps> = ({ onSubmit, onGoogleLog
                   Password
                 </label>
                 <a 
-                  href="#" 
+                  href="/forgot-password" 
                   className="text-sm text-[#3BE188] hover:underline"
                 >
                   Forgot password?

@@ -3,9 +3,10 @@ import Signup from "./pages/user/Signup";
 
 import Login from "./pages/user/Login";
 import { UserRoutes } from "./routes/ClientRoutes";
-import { GuestRoutes } from "./pages/protected/GuestRoute";
+import { GuestRoutes } from "./routes/protected/GuestRoute";
 import AdminLogin from "./pages/admin/AdminLogin";
 import { AdminRoutes } from "./routes/AdminRoutes";
+import ForgotPassword from "./pages/user/ForgetPassword";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         {/* Guest Routes */}
         <Route path="/signup" element={<GuestRoutes element={<Signup/>}/>} />
         <Route path="/login" element={<GuestRoutes element={<Login/>}/>} />
+        <Route path="/forgot-password" element={<GuestRoutes element={<ForgotPassword/>}/>}/>
         {/* User Routes */}
         <Route path="/*" element={<UserRoutes/>}/>
 

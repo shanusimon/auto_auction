@@ -13,14 +13,18 @@ let isRefreshing = false;
 adminAxiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
+        console.log("error",error)
         const originalRequest = error.config;
+        console.log("hello",originalRequest);
 
         if (error.response?.status === 401 && !originalRequest._retry && error.response.data.message === "Token Expired") {
+            console.log("its inside")
             originalRequest._retry = true;
 
             if (!isRefreshing) {
                 isRefreshing = true;
                 try {
+                    console.log("hello123")
                     await adminAxiosInstance.post("/_ad/admin/refresh-token");
                     isRefreshing = false;
                     return adminAxiosInstance(originalRequest);

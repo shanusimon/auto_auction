@@ -1,20 +1,17 @@
 import Header from '@/components/header/Header'
-import { useSelector } from 'react-redux'
-import { RootState } from '@/store/store'
 import Footer from '@/components/footer/Footer';
 import FeaturedCar from '@/components/cars/featuredCars';
 import { Button } from '@/components/ui/button';
 
 export default function UserHomePage() {
-  const user = useSelector((state: RootState) => state.user.user);
-  console.log("hai", user)
+
   return (
     <>
-      <Header username={user?.name} />
+      <Header/>
       <FeaturedCar />
       <section className="py-16 px-6 bg-black">
           <div className="container mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-12 text-white">Why Choose AutoBid</h2>
+            <h2 className="text-3xl font-bold mb-12 text-white">Why Choose Auto Auction</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               <div className="bg-zinc-800 p-8 rounded-lg">
@@ -55,7 +52,7 @@ export default function UserHomePage() {
           <div className="container mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">Have a special car to sell?</h2>
             <p className="text-xl text-gray-400 mb-10 max-w-3xl mx-auto">
-              List your vehicle on AutoBid and reach thousands of passionate car enthusiasts.
+              List your vehicle on Auto Auction and reach thousands of passionate car enthusiasts.
             </p>
             <Button 
               className="bg-[#3BE188] hover:bg-[#2dd077] text-black font-semibold px-8 py-6 text-lg rounded-full"

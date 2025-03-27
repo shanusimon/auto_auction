@@ -5,20 +5,18 @@ import Logo from './Logo';
 import { useDispatch } from 'react-redux';
 import { userLogout } from '@/store/slices/user.slice';
 import { useLogout } from '@/hooks/auth/useAuth';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
 
-interface HeaderProps {
-  username?: string;
-}
 
-const Header: React.FC<HeaderProps> = ({ username = "Guest User" }) => {
+const Header: React.FC = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const logoutUser = useLogout();
+  const user = useSelector((state:RootState)=>state.user.user)
 
 
-
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -117,7 +115,7 @@ const Header: React.FC<HeaderProps> = ({ username = "Guest User" }) => {
               <User size={16} className="text-white" />
             </div>
             <span className="text-sm font-medium text-white">
-              {username}
+            {user?.name}
             </span>
           </div>
           
@@ -130,7 +128,7 @@ const Header: React.FC<HeaderProps> = ({ username = "Guest User" }) => {
                   className="flex items-center px-4 py-2 text-sm hover:bg-zinc-700 transition-all duration-200 text-white"
                 >
                   <User size={16} className="mr-2 text-gray-400" />
-                  Profile
+                  Dashboard
                 </Link>
                 <button
                   onClick={handleLogout}

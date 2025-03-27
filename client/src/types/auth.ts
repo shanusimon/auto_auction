@@ -15,6 +15,8 @@ export interface SignupFormValues {
     role:string;
   }
 
+
+
   export interface LoginData {
     email:string,
     password:string
@@ -25,7 +27,12 @@ export interface SignupFormValues {
     id:string;
     name:string;
     email:string;
-    role:string
+    role:string,
+    phone:string,
+    profileImage:string,
+    bio:string,
+    walletBalance:number,
+    joinedAt:Date
 }
 
 export interface IClient {

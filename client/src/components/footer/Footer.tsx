@@ -61,7 +61,7 @@ const Footer = () => {
         
         <div className="border-t border-zinc-800 mt-12 pt-8 text-sm text-gray-400">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p>© 2023 AutoBid. All rights reserved.</p>
+            <p>© 2023 AutoAuction. All rights reserved.</p>
             <div className="mt-4 md:mt-0">
               <ul className="flex space-x-6">
                 <li><Link to="/terms" className="hover:text-white">Terms</Link></li>

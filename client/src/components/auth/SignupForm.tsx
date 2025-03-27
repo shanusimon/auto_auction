@@ -213,6 +213,18 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           </Form>
         )}
       </Formik>
+      <>
+          <p className="text-center mt-8 text-sm text-[#8E9196]">
+            Don't have an account?{" "}
+            <a 
+              href="/login" 
+              className="text-[#3BE188] hover:underline cursor-pointer"
+            >
+              Login to Your Account
+            </a>
+          </p>
+        </>
+
     </div>
   );
 };
