@@ -1,7 +1,7 @@
 import { updateStatus } from "@/services/admin/adminService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToaster } from "../useToaster";
-import { IClient } from "@/types/auth";
+import { IClient } from "@/types/Types";
 import { customerResponse } from "./useAllUsers";
 
 export const useUpdateCustomerStatus = (currentPage: number, limit: number, search: string) => {
@@ -14,7 +14,7 @@ export const useUpdateCustomerStatus = (currentPage: number, limit: number, sear
             const queryKey = ["customers", currentPage, limit, search] as const;
             await queryClient.cancelQueries({ queryKey });
 
-            const previousData = queryClient.getQueryData<customerResponse>(queryKey); // Ensure proper typing
+            const previousData = queryClient.getQueryData<customerResponse>(queryKey);
 
             queryClient.setQueryData(queryKey, (oldData: customerResponse | undefined) => {
                 if (!oldData || !oldData.users) return oldData;

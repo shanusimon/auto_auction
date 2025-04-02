@@ -139,3 +139,14 @@
 .slide-up {
   animation: slideUp 0.4s ease-out forwards;
 }
+
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none; /* IE and Edge */
+}

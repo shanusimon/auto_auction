@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { loginSchema as LoginSchema } from "@/utils/validations/loginvalidator";
-import { LoginData as FormValues } from "@/types/auth";
+import { LoginData as FormValues } from "@/types/Types";
 import { GoogleAuthButton } from "./GoogleSignup";
 import { CredentialResponse } from "@react-oauth/google";
 

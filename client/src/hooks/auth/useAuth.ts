@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
-import { registerUser, sendOtp, verifyOtp,loginUser, googleAuth} from "../../services/auth/authServices";
+import { registerUser, sendOtp, verifyOtp,loginUser, googleAuth, forgetPassword} from "../../services/auth/authServices";
 import { logoutUser } from "@/services/user/userServices";
-import { AuthResponse, LoginData, RegisterData } from "../../types/auth";
+import { AuthResponse, LoginData, RegisterData } from "../../types/Types";
 
 
 export const useRegister = () => {
@@ -57,3 +57,13 @@ export const useGoogleAuth = () =>{
     mutationFn:googleAuth
 })
 }
+
+
+export const useForgetPassword = () =>{
+    return useMutation({
+      mutationFn:forgetPassword,
+      onError:(error:Error)=>{
+        console.log("Error on ForgetPassword",error)
+      }
+    })
+} 

@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Bell, User, LogOut } from 'lucide-react';
+import { Search, Bell, User, LogOut, UserIcon } from 'lucide-react';
 import Logo from './Logo';
 import { useDispatch } from 'react-redux';
 import { userLogout } from '@/store/slices/user.slice';
 import { useLogout } from '@/hooks/auth/useAuth';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
+import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 
 
 const Header: React.FC = () => {
@@ -14,7 +15,7 @@ const Header: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const logoutUser = useLogout();
-  const user = useSelector((state:RootState)=>state.user.user)
+  const user = useSelector((state: RootState) => state.user.user)
 
 
   useEffect(() => {
@@ -23,27 +24,27 @@ const Header: React.FC = () => {
         setShowDropdown(false);
       }
     };
-    
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
-  const handleLogout = async() => {
+  const handleLogout = async () => {
     try {
-            const response = await logoutUser.mutateAsync();
-            dispatch(userLogout())
-            console.log(response)
-          } catch (error) {
-            console.log("Error in handle Logout")
-          }
+      const response = await logoutUser.mutateAsync();
+      dispatch(userLogout())
+      console.log(response)
+    } catch (error) {
+      console.log("Error in handle Logout")
+    }
   };
 
   return (
-    <header 
+    <header
       className="w-full flex items-center justify-between px-6 py-3"
-      style={{ 
+      style={{
         backgroundColor: "#000000",
         borderBottom: "1px solid #222222"
       }}
@@ -55,26 +56,26 @@ const Header: React.FC = () => {
 
         {/* Navigation links */}
         <nav className="hidden md:flex items-center space-x-6">
-          <Link 
-            to="/auctions" 
+          <Link
+            to="/auctions"
             className="text-sm font-medium hover:opacity-80 transition-opacity text-white"
           >
             Auctions
           </Link>
-          <Link 
-            to="/sell" 
+          <Link
+            to="/sell"
             className="text-sm font-bold rounded-full px-5 py-2 transition-all duration-200 hover:opacity-90 bg-[#3BE188] text-black"
           >
             Sell a Car
           </Link>
-          <Link 
-            to="/community" 
+          <Link
+            to="/community"
             className="text-sm font-medium hover:opacity-80 transition-opacity text-white"
           >
             Community
           </Link>
-          <Link 
-            to="/bids" 
+          <Link
+            to="/bids"
             className="text-sm font-medium hover:opacity-80 transition-opacity text-white"
           >
             What's AutoBid?
@@ -87,8 +88,8 @@ const Header: React.FC = () => {
         {/* Search */}
         <div className="hidden md:flex items-center relative">
           <div className="relative w-64 lg:w-80">
-            <Search 
-              size={18} 
+            <Search
+              size={18}
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
             />
             <input
@@ -107,26 +108,33 @@ const Header: React.FC = () => {
 
         {/* Username Display with Dropdown */}
         <div className="hidden md:flex items-center relative" ref={dropdownRef}>
-          <div 
-            className="flex items-center cursor-pointer" 
+          <div
+            className="flex items-center cursor-pointer"
             onClick={() => setShowDropdown(!showDropdown)}
           >
             <div className="w-8 h-8 bg-zinc-700 rounded-full flex items-center justify-center mr-2">
-              <User size={16} className="text-white" />
+              {user?.profileImage ? (<Avatar className="w-full h-full">
+                <AvatarImage src={user.profileImage} alt={user.name} className="object-cover rounded-2xl" />
+                <AvatarFallback className="bg-zinc-700">
+                  <UserIcon size={48} className="text-gray-400" />
+                </AvatarFallback>
+              </Avatar>) : (<User size={16} className="text-white" />)}
+
             </div>
             <span className="text-sm font-medium text-white">
-            {user?.name}
+              {user?.name}
             </span>
           </div>
-          
+
           {/* Dropdown menu */}
           {showDropdown && (
             <div className="absolute top-full right-0 mt-1 w-40 rounded-md shadow-lg z-50 bg-zinc-800">
               <div className="py-1" role="menu" aria-orientation="vertical">
-                <Link 
-                  to="/profile" 
+                <Link
+                  to="/user/profile"
                   className="flex items-center px-4 py-2 text-sm hover:bg-zinc-700 transition-all duration-200 text-white"
                 >
+
                   <User size={16} className="mr-2 text-gray-400" />
                   Dashboard
                 </Link>

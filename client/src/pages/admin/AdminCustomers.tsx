@@ -7,7 +7,7 @@ import { Search } from "lucide-react";
 import {debounce} from "lodash"
 import { useGetAllCustomersQuery } from "@/hooks/admin/useAllUsers";
 import { getAllCustomers } from "@/services/admin/adminService";
-import { IClient } from "@/types/auth";
+import { IClient } from "@/types/Types";
 import { Pagination1 } from "./Pagination1";
 import { useUpdateCustomerStatus } from "@/hooks/admin/useUpdateCustomerStatus";
 

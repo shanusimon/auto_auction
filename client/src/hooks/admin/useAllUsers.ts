@@ -1,4 +1,4 @@
-import { IClient } from "@/types/auth";
+import { IClient } from "@/types/Types";
 import { useQuery } from "@tanstack/react-query";
 
 
@@ -14,7 +14,7 @@ export type customerResponse = {
     currentPage:number;
 }
 
-export const useGetAllCustomersQuery= (
+export const useGetAllCustomersQuery = (
     queryFunc:(params:FetchCustomerParams)=>Promise<customerResponse>,
     page:number,
     limit:number,

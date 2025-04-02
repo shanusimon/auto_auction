@@ -9,13 +9,12 @@ import { toast } from 'sonner';
 import { Eye, EyeOff } from 'lucide-react';
 import { passwordSchema } from '@/utils/validations/passwordvalidator';
 import * as z from 'zod';
-
+import { useUserChangePassword } from '@/hooks/user/userDashboard';
 
 interface PasswordChangeDialogProps {
   open: boolean;
   onClose: () => void;
 }
-
 
 type PasswordFormValues = z.infer<typeof passwordSchema>;
 
@@ -26,6 +25,8 @@ export const PasswordChangeDialog: React.FC<PasswordChangeDialogProps> = ({
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const {mutateAsync} = useUserChangePassword();
+
 
   const form = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
@@ -38,21 +39,16 @@ export const PasswordChangeDialog: React.FC<PasswordChangeDialogProps> = ({
 
   const onSubmit = async (values: PasswordFormValues) => {
     try {
-      // In a real app, you would make an API call to update the password
-      console.log('Password change submitted:', values);
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Show success message
-      toast.success('Password updated successfully');
-      
-      // Reset form and close dialog
+      const response = await mutateAsync({currPass:values.currentPassword,newPass:values.newPassword})
+      console.log("response",response);
+      if(response.success){
+        toast.success("password changed successfully")
+      }
       form.reset();
       onClose();
-    } catch (error) {
+    } catch (error:any) {
       console.error('Error updating password:', error);
-      toast.error('Failed to update password. Please try again.');
+      toast.error('Failed to update password. Please try again.',error.message);
     }
   };
 

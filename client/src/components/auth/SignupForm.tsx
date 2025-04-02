@@ -6,7 +6,7 @@ import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { Car, User, Mail, Lock, Eye, EyeOff, Phone } from "lucide-react";
 import { signupSchema } from "../../utils/validations/signupvalidator";
-import { SignupFormValues } from "../../types/auth";
+import { SignupFormValues } from "../../types/Types";
 
 
 interface SignupFormProps {

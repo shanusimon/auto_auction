@@ -1,7 +1,7 @@
 import { Car } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import FormikLoginForm from "@/components/auth/LoginForm";
-import { LoginData as FormValues } from "@/types/auth";
+import { LoginData as FormValues } from "@/types/Types";
 import { useGoogleAuth, useLogin } from "@/hooks/auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import { userLogin } from "@/store/slices/user.slice";

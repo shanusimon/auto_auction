@@ -41,9 +41,11 @@ export const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ element, allow
     if (location.pathname.startsWith("/admin")) {
       return <Navigate to="/unauthorized" replace />;
     }
+
     if (location.pathname === "/login" || location.pathname === "/signup") {
       return <Navigate to="/" replace />;
     }
+
     if (!allowedRoles.includes("user")) {
       return <Navigate to="/unauthorized" replace />;
     }

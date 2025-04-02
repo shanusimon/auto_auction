@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import Header from '@/components/header/Header';
 import { uploadProfileImageCloudinary } from '@/utils/cloudinaryProfileImageUpload';
 import { UpdateProfilePayLoad, updateUserProfile } from '@/store/slices/user.slice';
-import { PasswordChangeDialog } from '@/components/user/PasswordChangeModal';
+import { PasswordChangeDialog } from '@/components/modals/PasswordChangeModal';
 
 
 const UserProfile: React.FC = () => {

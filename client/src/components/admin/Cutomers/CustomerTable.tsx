@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { ShieldAlert, ShieldCheck } from 'lucide-react';
 import { format } from 'date-fns';
-import { IClient } from '@/types/auth';
+import { IClient } from '@/types/Types';
 
 interface CustomerTableProps {
   customers: IClient[];

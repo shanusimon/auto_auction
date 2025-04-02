@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import SignupForm from "../../components/auth/SignupForm";
 import {useRegister,useSendOtp, useVerifyOtp} from "../../hooks/auth/useAuth";
-import { SignupFormValues, RegisterData } from "../../types/auth";
+import { SignupFormValues, RegisterData } from "../../types/Types";
 import OTPModal from "@/components/modals/OTPmodal";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";

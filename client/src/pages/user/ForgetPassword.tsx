@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Mail, CheckCircle } from "lucide-react";
@@ -9,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { useForgetPassword } from "@/hooks/auth/useAuth";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
+  role:z.enum(["user"])
 });
 
 const ForgotPassword = () => {
@@ -19,26 +20,38 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const forgetPasswordMutation = useForgetPassword();
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
+      role:"user"
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (email: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      toast({
-        title: "Reset link sent",
-        description: "Check your email for the password reset link",
-      });
-      setEmailSent(true);
-      setIsLoading(false);
-    }, 1500);
+    forgetPasswordMutation.mutate(email,{
+      onSuccess:()=>{
+        setEmailSent(true)
+      },
+      onError:(error:any)=>{
+        toast({
+          title:"Something went wrong",
+          description:error.message || "Something went wrong sending reset link",
+          variant:"destructive",
+          duration:3000
+        })
+      },
+      onSettled:()=>{
+        setIsLoading(false);
+  
+      }
+    }
+
+    )
   };
 
   return (
@@ -49,7 +62,7 @@ const ForgotPassword = () => {
           {/* Back button */}
           <button
             onClick={() => navigate("/login")}
-            className="flex items-center text-[#8E9196] hover:text-white transition-colors"
+            className="flex items-center text-[#8E9196] hover:text-white transition-colors cursor-pointer"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Login
@@ -103,7 +116,7 @@ const ForgotPassword = () => {
                           <FormControl>
                             <Input
                               placeholder="Enter your email"
-                              className="h-11 pl-10 bg-black border-admin-charcoal text-white focus:ring-1 focus:ring-admin-primary"
+                              className="h-11 w-full rounded pl-10 pr-4 border-0 outline-none transition-all duration-300 ease-in-out bg-gray-900 text-white "
                               {...field}
                             />
                           </FormControl>
@@ -116,7 +129,7 @@ const ForgotPassword = () => {
                   <Button 
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-[#3BE188] hover:bg-admin-secondary text-white h-11"
+                    className="w-full bg-[#3BE188] hover:bg-admin-secondary text-black h-11"
                   >
                     {isLoading ? "Sending..." : "Send Reset Link"}
                   </Button>

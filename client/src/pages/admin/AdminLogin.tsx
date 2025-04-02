@@ -2,7 +2,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Shield } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import FormikLoginForm from "@/components/auth/LoginForm";
-import { LoginData } from "@/types/auth";
+import { LoginData } from "@/types/Types";
 import Logo from "@/components/header/Logo";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";

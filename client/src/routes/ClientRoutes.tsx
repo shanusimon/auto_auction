@@ -5,6 +5,7 @@ import UserHomePage from "@/pages/user/UserHomePage";
 import UnauthorizedPage from "@/pages/common/UnauthorizedPage";
 import Profile from "@/pages/user/UserDashboard";
 import UserProfile from "@/pages/user/Profile";
+import WalletPage from "@/pages/user/Wallet";
 
 export function UserRoutes(){
     return (
@@ -23,6 +24,9 @@ export function UserRoutes(){
           <Route
           path="/user/profile"
           element={<ProtectedRoutes allowedRoles={["user"]} element={<UserProfile/>}/>}/>
+           <Route
+          path="/user/wallet"
+          element={<ProtectedRoutes allowedRoles={["user"]} element={<WalletPage/>}/>}/>
           {/* Default redirect for unmatched user routes */}
           <Route 
             path="*" 

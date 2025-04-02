@@ -1,5 +1,5 @@
 import { createSlice,PayloadAction } from "@reduxjs/toolkit";
-import { User as Admin } from "@/types/auth";
+import { User as Admin } from "@/types/Types";
 
 interface AdminState {
     admin:Admin | null

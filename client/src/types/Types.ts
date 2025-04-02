@@ -55,3 +55,24 @@ export interface AuthResponse {
     role: "client" | "admin" | "vendor";
   };
 }
+
+interface WalletTransaction {
+    _id: string;
+    walletId: string;
+    type: "deposit" | "withdraw";
+    amount: number;
+    status: string;
+    stripePaymentId?: string;
+    receiptUrl?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface WalletTransactionsResponse {
+  transactions:WalletTransaction[],
+  total:number,
+  currentPage:number
+}
+export interface WalletBalanceResponse {
+  balance: number;
+}

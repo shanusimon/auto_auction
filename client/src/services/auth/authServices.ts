@@ -1,6 +1,12 @@
 import { api } from "@/api/auth.axios";
-import { RegisterData, LoginData } from "../../types/auth";
-import { AuthResponse } from "../../types/auth";
+import { RegisterData, LoginData } from "../../types/Types";
+import { AuthResponse } from "../../types/Types";
+
+export interface AxiosResponse {
+  success: boolean;
+  message: string;
+}
+
 
 export const registerUser = async (data: RegisterData) => {
   try {
@@ -58,3 +64,12 @@ export const googleAuth = async ({
   });
   return response.data;
 };
+
+export const forgetPassword = async(values:{email:string,role:string})=>{
+  try {
+    const response = await api.post("/forget-password",values)
+    return response.data
+  } catch (error:any) {
+    throw error.response?.data || "Failed to Login User";
+  }
+}

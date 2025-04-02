@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { User, Package, FileText, Settings} from 'lucide-react';
+import { User, Package, FileText, Wallet} from 'lucide-react';
 
 const UserSidebar: React.FC = () => {
   const location = useLocation();
@@ -22,9 +22,9 @@ const UserSidebar: React.FC = () => {
       icon: FileText 
     },
     { 
-      path: '/user/settings', 
-      name: 'Settings', 
-      icon: Settings 
+      path: '/user/wallet', 
+      name: 'Wallet', 
+      icon: Wallet 
     },
   ];
 
