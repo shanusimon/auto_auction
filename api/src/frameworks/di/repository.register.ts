@@ -12,6 +12,10 @@ import { IRefreshTokenRepository } from "../../entities/repositoryInterfaces/aut
 import { RefreshTokenRepository } from "../../interface-adapters/repositories/auth/refreshTokenRepository";
 import { IRedisTokenRepository } from "../../entities/repositoryInterfaces/redis/IRedisTokenRepository";
 import { RedisTokenRepository } from "../../interface-adapters/repositories/redis/RedisTokenRepository";
+import { IWalletRepository } from "../../entities/repositoryInterfaces/wallet/IWalletRepositoryInterface";
+import { WalletRepository } from "../../interface-adapters/repositories/wallet/WalletRepository";
+import { IWalletTransactionRepository } from "../../entities/repositoryInterfaces/wallet-transaction/IWalletTransactionRepository";
+import { WalletTransactionRepository } from "../../interface-adapters/repositories/wallet-transaction/WalletTransactionRepository";
 
 //service imports
 import { IOtpService } from "../../entities/services/IOtpService";
@@ -20,6 +24,8 @@ import { INodemailerService } from "../../entities/services/INodeMailerService";
 import { NodemailerService } from "../../interface-adapters/services/NodemailerService";
 import { JWTService } from "../../interface-adapters/services/JwtTokenService";
 import { ITokenService } from "../../entities/services/ITokenService";
+import { StripeService } from "../../interface-adapters/services/StripeService";
+import { IPaymentService } from "../../entities/services/IStripeService";
 
 export class RepositoryRegistry{
     static registerRepositories():void{
@@ -31,6 +37,9 @@ export class RepositoryRegistry{
         });
         container.register<IRefreshTokenRepository>("IRefreshTokenRepository",{
             useClass:RefreshTokenRepository
+        });
+        container.register<IWalletRepository>("IWalletRepository",{
+            useClass:WalletRepository
         });
         container.register<IOtpService>("IOtpService",{
             useClass:OtpService
@@ -44,11 +53,17 @@ export class RepositoryRegistry{
         container.register<ITokenService>("ITokenService",{
             useClass:JWTService
         });
+        container.register<IWalletTransactionRepository>("IWalletTransactionRepository",{
+            useClass:WalletTransactionRepository
+        })
         container.register<IClientRepository>("IClientRepository",{
             useClass:ClientRepository
         });
         container.register<IRedisTokenRepository>("IRedisTokenRepository",{
             useClass:RedisTokenRepository
+        })
+        container.register<IPaymentService>("IPaymentService",{
+            useClass:StripeService
         })
     }
 }

@@ -22,7 +22,7 @@ export const handleErrorResponse = (res:Response,error:unknown)=>{
         });
         return
     }
-    console.log("Error at login Controller",error);
+    console.log("Unhandled Error",error);
     res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success:false,
         message:ERROR_MESSAGES.SERVER_ERROR

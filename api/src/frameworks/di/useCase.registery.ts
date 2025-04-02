@@ -40,7 +40,14 @@ import { IUpdateProfileUseCase } from "../../entities/useCaseInterfaces/user/IUp
 import { UpdateProfileUseCase } from "../../useCases/user/UpdateProfileUseCase";
 import { IUpdatePasswordUseCase } from "../../entities/useCaseInterfaces/user/IUpadatePasswordUseCase";
 import { UpdatePasswordUseCase } from "../../useCases/user/UpdatePasswordUseCase";
-
+import { IAddMoneyToWalletUseCase } from "../../entities/useCaseInterfaces/wallet/IAddMoneyToWalletUseCase";
+import { AddMoneyToWalletUseCase } from "../../useCases/wallet/AddMoneyToWalletUseCase";
+import { IWebHookUseCase } from "../../entities/useCaseInterfaces/payment/IWebHookUseCase";
+import { WebHookUseCase } from "../../useCases/payment/HandleWebHookUseCase";
+import { IGetWalletDeatailsUseCase } from "../../entities/useCaseInterfaces/wallet/IGetWalletDeatailsUseCase";
+import { GetWalletDeatailsUseCase } from "../../useCases/wallet/GetWalletDeatailsUseCase";
+import { IGetWalletTransactionsUseCase } from "../../entities/useCaseInterfaces/transactions/IGetAllTransactionUseCase";
+import { GetWalletTransactionsUseCase } from "../../useCases/transactions/GetAllWalletTransactions";
 
 export class UseCaseRegistery {
   static registerUseCases(): void {
@@ -99,6 +106,18 @@ export class UseCaseRegistery {
     })
     container.register<IUpdatePasswordUseCase>("IUpdatePasswordUseCase",{
       useClass:UpdatePasswordUseCase
+    })
+    container.register<IAddMoneyToWalletUseCase>("IAddMoneyToWalletUseCase",{
+      useClass:AddMoneyToWalletUseCase
+    })
+    container.register<IWebHookUseCase>("IWebHookUseCase",{
+      useClass:WebHookUseCase
+    });
+    container.register<IGetWalletDeatailsUseCase>("IGetWalletDeatailsUseCase",{
+      useClass:GetWalletDeatailsUseCase
+    });
+    container.register<IGetWalletTransactionsUseCase>("IGetWalletTransactionsUseCase",{
+      useClass:GetWalletTransactionsUseCase
     })
     //* ====== Register Strategy ====== *//
     container.register("ClientRegisterStrategy", {

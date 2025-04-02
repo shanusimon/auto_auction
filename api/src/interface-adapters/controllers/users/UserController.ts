@@ -65,7 +65,7 @@ export class UserController implements IUserController{
          try {
 
             const userId = (req as CustomRequest).user.id;
-
+            console.log("hello user profile edit")
             // const {name,phone,profileImage,bio,}:Partial<IClientEntity> = req.body
 
             const updatedDate:Partial<IClientEntity> = {}
@@ -103,12 +103,12 @@ export class UserController implements IUserController{
         try {
             const userId = (req as CustomRequest).user.id
 
-            const {currentPassword,newPassword}= req.body as {
-                currentPassword:string,
-                newPassword:string
+            const {currPass,newPass}= req.body as {
+                currPass:string,
+                newPass:string
             }
-
-            await this.updateClientPassword.execute(userId,currentPassword,newPassword)
+            console.log("crr",currPass,"new",newPass)
+            await this.updateClientPassword.execute(userId,currPass,newPass)
 
             res.status(HTTP_STATUS.OK).json({sucesss:true,message:SUCCESS_MESSAGES.UPDATE_SUCCESS})
 

@@ -112,7 +112,6 @@ export class AuthController implements IAuthController {
           phone:user.phone,
           profileImage:user.profileImage,
           bio:user.bio,
-          walletBalance:user.walletBalance,
           joinedAt:user.joinedAt
         },
       });
@@ -274,7 +273,6 @@ export class AuthController implements IAuthController {
             phone:user.phone,
             profileImage:user.profileImage,
             bio:user.bio,
-            walletBalance:user.walletBalance,
             joinedAt:user.joinedAt
           }
         })
@@ -291,7 +289,7 @@ export class AuthController implements IAuthController {
         const values = req.body;
 
         const validatedDate = forgotEmailValidationSchema.parse(values);
-
+        console.log("THis is validte Data",validatedDate)
         await this.forgetPasswordUseCase.execute(validatedDate.email,validatedDate.role);
 
         res.status(HTTP_STATUS.OK).json({

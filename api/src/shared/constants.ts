@@ -18,6 +18,7 @@ export const ERROR_MESSAGES = {
 	WRONG_ID: "Wrong ID",
 	TOKEN_EXPIRED: "Token Expired",
 	EMAIL_NOT_FOUND: "Email Not Found",
+   CONFIRM_PAYMENT_FAILED: "Failed to confirm payment",
 	FORBIDDEN:
 		"Access denied. You do not have permission to access this resource.",
 	BLOCKED: "Your account has been blocked.",
@@ -37,6 +38,7 @@ export const ERROR_MESSAGES = {
 	MISSING_PARAMETERS: "Missing required parameters.",
 	WRONG_CURRENT_PASSWORD: "Current password is wrong",
 	SAME_CURR_NEW_PASSWORD: "Please enter a different password from current",
+   WALLET_NOT_FOUND:"wallet not found"
 } as const;
 
 export const SUCCESS_MESSAGES = {

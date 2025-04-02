@@ -7,12 +7,15 @@ import { IBcrypt } from "../../../frameworks/security/bcrypt.interface";
 import { IUserEntity } from "../../../entities/models/user.entity";
 import { generateUniqueUid } from "../../../frameworks/security/uniqueuid.bcrypt";
 import { CustomError } from "../../../entities/utils/custom.error";
+import { IWalletRepository } from "../../../entities/repositoryInterfaces/wallet/IWalletRepositoryInterface";
+import { IWallet } from "../../../entities/models/wallet.entity";
 
 @injectable()
 export class ClientRegisterStrategy implements IRegisterStrategy{
     constructor(
         @inject("IClientRepository") private clientRepository:IClientRepository,
-        @inject("IPasswordBcrypt") private passwordBcrypt:IBcrypt
+        @inject("IPasswordBcrypt") private passwordBcrypt:IBcrypt,
+        @inject("IWalletRepository") private walletRepository:IWalletRepository
     ){}
 
     async register(user: UserDTO): Promise<IUserEntity | void> {
@@ -33,15 +36,41 @@ export class ClientRegisterStrategy implements IRegisterStrategy{
         if(password){
             hashedPassword = await this.passwordBcrypt.hash(password);
         }
-        const clientId = generateUniqueUid("user")
-        return await this.clientRepository.save({
-            name,
-            email,
-            password:hashedPassword ?? "",
-            phone,
-            clientId,
-            role:"user"
-        })
+        const clientId = generateUniqueUid("user");
+
+        let wallet :IWallet | null = null;
+        
+        try {
+            wallet = await this.walletRepository.create({
+                userId:null,
+                balance:0
+            })
+
+            const newUser = await this.clientRepository.save({
+                name,
+                email,
+                password:hashedPassword ?? "",
+                phone,
+                clientId,
+                role:"user",
+                walletId:wallet._id
+            })
+
+            await this.walletRepository.update(wallet._id,{
+                userId:newUser.id
+            })
+            
+            return newUser
+        } catch (error) {
+            if(wallet && wallet._id){
+                console.log(`Rolling back: Deleting wallet ${wallet._id}`);
+                await this.walletRepository.delete(wallet._id);
+            }
+            throw new CustomError(
+                ERROR_MESSAGES.SERVER_ERROR,
+                HTTP_STATUS.INTERNAL_SERVER_ERROR
+            )
+        }
     }
     
 }

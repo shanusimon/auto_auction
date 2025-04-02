@@ -20,6 +20,8 @@ export class ForgetPasswordUseCase implements IForgetPasswordUseCase{
 
     async execute(email: string, role: string): Promise<void> {
         const user = await this.clientRepository.findByEmail(email);
+        console.log("HelloForgetPassword UseCase")
+        console.log(user)
         if(!user || !user.id){
             throw new CustomError(ERROR_MESSAGES.EMAIL_NOT_FOUND,HTTP_STATUS.FORBIDDEN)
         }

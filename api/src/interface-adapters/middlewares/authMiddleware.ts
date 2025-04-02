@@ -26,7 +26,8 @@ const extractToken = (req:Request):{access_token:string,refresh_token:string} | 
     console.log(routeIndex)
     if(routeIndex !== -1 && pathSegment[routeIndex + 1]){
      const userType = pathSegment[routeIndex + 1];
-        console.log(userType)
+        console.log("HELLO",userType)
+        console.log("access_token:",req.cookies[`${userType}_access_token`])
      return{
         access_token:req.cookies[`${userType}_access_token`],
         refresh_token:req.cookies[`${userType}_refresh_token`]
@@ -61,7 +62,7 @@ try {
     const user = tokenService.verifyAccessToken(
         token.access_token,
     )as CustomJwtPayload;
-    console.log(user)
+    console.log("hello ",user)
     if(!user || !user.id){
         console.log("this 1 si triggering");
         res.status(HTTP_STATUS.UNAUTHORIZED).json({message:ERROR_MESSAGES.TOKEN_EXPIRED})
@@ -74,7 +75,7 @@ try {
     };
     next();
 } catch (error:any) {
-    console.log("secodn is ")
+    console.log("secodn is, ",error)
     if(error.name === "TokenExpiredError"){
     res
     .status(HTTP_STATUS.UNAUTHORIZED)

@@ -14,7 +14,7 @@ export class UpdatePasswordUseCase implements IUpdatePasswordUseCase{
     ){}
     async execute(id: string, currPass: string, newPass: string): Promise<void> {
         const user = await this.clientRepo.findById(id);
-
+        
         if(!user){
             throw new CustomError(
                 ERROR_MESSAGES.USER_NOT_FOUND,
@@ -22,18 +22,20 @@ export class UpdatePasswordUseCase implements IUpdatePasswordUseCase{
             )
         }
 
-        const isPasswordMatch = await this.passwordBcrypt.compare(currPass,newPass);
+        const isPasswordMatch = await this.passwordBcrypt.compare(currPass,user.password);
 
-        if(isPasswordMatch){
+        
+        if(!isPasswordMatch){
             throw new CustomError(
-                ERROR_MESSAGES.USER_NOT_FOUND,
+                ERROR_MESSAGES.WRONG_CURRENT_PASSWORD,
                 HTTP_STATUS.BAD_REQUEST
             )
         }
 
-        const isCurrentMatchWithOld = await this.passwordBcrypt.compare(newPass,currPass);
+        const isCurrentMatchWithOld = await this.passwordBcrypt.compare(newPass,user.password);
 
-        if(isCurrentMatchWithOld){
+
+        if(!isCurrentMatchWithOld){
             throw new CustomError(
                 ERROR_MESSAGES.SAME_CURR_NEW_PASSWORD,
                 HTTP_STATUS.BAD_REQUEST

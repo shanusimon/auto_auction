@@ -22,5 +22,4 @@ export interface ClientProfileResponse {
     email: string;
     joinedAt: Date;
     role: string;
-    walletBalance: number;
 }

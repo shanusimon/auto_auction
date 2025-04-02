@@ -7,7 +7,9 @@ import { BlockStatusMiddleware } from "../../interface-adapters/middlewares/bloc
 //controller imports
 import { AuthController } from "../../interface-adapters/controllers/auth/AuthController";
 import { UserController } from "../../interface-adapters/controllers/users/UserController";
-
+import { WalletController } from "../../interface-adapters/controllers/wallet/walletController";
+import { HandleWebHookController } from "../../interface-adapters/controllers/payment/HandleWebHookController";
+import { TransactionController } from "../../interface-adapters/controllers/transaction/TransactoinController";
 
 export class controllerRegistery{
     static registerControllers():void{
@@ -19,6 +21,15 @@ export class controllerRegistery{
         })
         container.register("CustomerController",{
             useClass:UserController
+        })
+        container.register("WalletController",{
+            useClass:WalletController
+        })
+        container.register("HandleWebHookController",{
+            useClass:HandleWebHookController
+        })
+        container.register("TransactionController",{
+            useClass:TransactionController
         })
     }
 }

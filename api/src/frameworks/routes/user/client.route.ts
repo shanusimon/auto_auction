@@ -6,9 +6,10 @@ import {
   
 } from "../../../interface-adapters/middlewares/authMiddleware";
 
-import { authController, userController } from "../../di/resolver";
+import { authController, transactionController, userController, walletController } from "../../di/resolver";
 import { BaseRoute } from "../base.route";
 import { blockStatusMiddleware } from "../../di/resolver";
+
 
 export class ClientRoutes extends BaseRoute {
   constructor() {
@@ -17,7 +18,6 @@ export class ClientRoutes extends BaseRoute {
   protected initializeRoutes(): void {
 
     //logout
-
     this.router.post(
       "/user/logout",
       verifyAuth,
@@ -30,7 +30,6 @@ export class ClientRoutes extends BaseRoute {
     );
 
     //profile-edit
-
     this.router.patch(
       "/user/edit-profile",
       verifyAuth,
@@ -42,19 +41,39 @@ export class ClientRoutes extends BaseRoute {
     )
 
     //User password change 
-
     this.router.patch(
-      "/user/password-change",
+      "/user/change-password",
       verifyAuth,
       authorizeRole(["user"]),
       blockStatusMiddleware.checkStatus as RequestHandler,
       (req:Request,res:Response)=>{
         userController.updateCustomerPassword(req,res);
       }
+    );
+
+    //Wallet Balance
+    this.router.get(
+      "/user/getWalletBalance",
+      verifyAuth,
+      authorizeRole(["user"]),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        walletController.getWalletBalance(req,res);
+      }
+    )
+
+    //transaction history
+    this.router.get(
+      "/user/getAllTransaction",
+      verifyAuth,
+      authorizeRole(["user"]),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        transactionController.getAllTransaction(req,res);
+      }
     )
     
     //token refresh
-    
     this.router.post(
       "/user/refresh-token",
       decodeToken,

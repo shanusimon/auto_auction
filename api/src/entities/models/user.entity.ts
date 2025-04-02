@@ -1,4 +1,5 @@
-import { TRole, IWalletTransaction } from "../../shared/constants";
+import { TRole } from "../../shared/constants";
+import { ObjectId } from "mongoose";
 
 export interface IUserEntity {
     id?: string;
@@ -8,15 +9,13 @@ export interface IUserEntity {
     phone?: string;
     profileImage?: string;
     googleId: string;
-    walletBalance?: number;
     joinedAt?: Date;
     role: TRole;
     bio:string,
     isBlocked: Boolean;
     bids?: string[];
     listings?: string[];
-    joinedCommunities?: string[];
-    walletTransactions?: IWalletTransaction[];
+    walletId: ObjectId | string
 
     // Seller Details
     isSeller?: boolean;

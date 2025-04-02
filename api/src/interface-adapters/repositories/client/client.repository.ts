@@ -62,7 +62,7 @@ export class ClientRepository implements IClientRepository{
                 new:true
             }
         )
-        .select('name phone profileImage bio email joinedAt role walletBalance')
+        .select('name phone profileImage bio email joinedAt role')
         .exec()
 
         if(!updateProfile){

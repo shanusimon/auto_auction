@@ -32,5 +32,9 @@ export const config ={
         RESET_EXPIRES_IN:process.env.JWT_RESET_EXPIRES_IN || "5m"
     },
     loggerStatus: process.env.LOGGER_STATUS || "dev",
-    bcryptSaltRounds: parseInt(process.env.BCRYPT_SALT_ROUNDS || "10", 10)
+    bcryptSaltRounds: parseInt(process.env.BCRYPT_SALT_ROUNDS || "10", 10),
+    stripe:{
+        STRIPE_SECRET_KEY:process.env.STRIPE_SECRET_KEY,
+        STRIPE_WEBHOOK_SECRET:process.env.STRIPE_WEBHOOK_KEY
+    }
 }

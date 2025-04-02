@@ -4,10 +4,11 @@ import express,{Application,NextFunction,Request,Response} from "express";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
-
+import { dataParser } from "../../interface-adapters/middlewares/dataParserMiddleware";
 import { config } from "../../shared/config";
 import { AuthRoutes } from "../routes/auth/auth.route";
 import { PrivateRoutes } from "../routes/private/privateRoute";
+
 
 export class Server{
     private _app: Application;
@@ -32,11 +33,9 @@ export class Server{
             })
         );
 
-        this._app.use((req:Request,res:Response,next:NextFunction)=>{
-            express.json()(req,res,next)
-        })
-   
-        this._app.use(cookieParser());
+        this._app.use(cookieParser())
+
+        this._app.use(dataParser);
 
         this._app.use(
             rateLimit({
