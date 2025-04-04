@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { useForgetPassword } from "@/hooks/auth/useAuth";
+import { resetPasswordRequest } from "@/types/Types";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),

@@ -3,7 +3,6 @@ import { changePassword, getAllTransaction, getWalletBalance } from "@/services/
 import { AxiosResponse } from "@/services/auth/authServices";
 import { AddMoneyData, addMoneyToWallet } from "@/services/payment/paymentServices"; 
 import { WalletBalanceResponse, WalletTransactionsResponse } from "@/types/Types";
-import { useQueryClient } from "@tanstack/react-query";
 
 export interface ChangePasswordData { 
     currPass: string;
@@ -21,20 +20,12 @@ export const useUserChangePassword = () => {
 };
 
 export const useAddMoneyToWallet = () => {
-    const queryClient = useQueryClient(); // Get the query client instance
-
-    return useMutation<AddMoneyToWalletResponse, Error, AddMoneyData>({
-        mutationFn: addMoneyToWallet,
-        onSuccess: (_, variables) => {
-            queryClient.setQueryData<WalletBalanceResponse>(['walletBalance'], (oldData) => {
-                if (!oldData) return { balance: variables.amount }; 
-                return { ...oldData, balance: oldData.balance + variables.amount }; 
-            });
-        },
-        onError: (error) => {
-            console.error('Error adding money to wallet:', error);
-        },
-    });
+    return useMutation<AddMoneyToWalletResponse,Error,AddMoneyData>({
+        mutationFn:addMoneyToWallet,
+        onError:(error)=>{
+            console.error("Error adding money to wallet:",error)
+        }
+    })
 };
 
 export const useGetWalletTransaction  = (page:number=1,limit:number=6)=>{
@@ -43,15 +34,18 @@ export const useGetWalletTransaction  = (page:number=1,limit:number=6)=>{
         queryFn:()=>getAllTransaction(page,limit),
         placeholderData:(prevdata) => prevdata ? {...prevdata} : undefined,
         retry: 2, 
-        staleTime: 5 * 60 * 1000
     })
 }
 
-export const useGetWalletBalance = ()=>{
+export const useGetWalletBalance = () => {
     return useQuery<WalletBalanceResponse>({
-        queryKey:['walletBalance'],
-        queryFn:()=>getWalletBalance(),
-        retry:2,
-        staleTime:5*60*1000
+        queryKey: ['walletBalance'],
+        queryFn: async () => {
+            const balance = await getWalletBalance();
+            console.log('Fetched wallet balance:', balance);
+            return balance;
+        },
+        retry: 2,
+        staleTime: 0, 
     })
-}
+};

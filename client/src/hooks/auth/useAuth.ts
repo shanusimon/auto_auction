@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { registerUser, sendOtp, verifyOtp,loginUser, googleAuth, forgetPassword} from "../../services/auth/authServices";
+import { registerUser, sendOtp, verifyOtp,loginUser, googleAuth, forgetPassword, resetPassword} from "../../services/auth/authServices";
 import { logoutUser } from "@/services/user/userServices";
 import { AuthResponse, LoginData, RegisterData } from "../../types/Types";
 
@@ -67,3 +67,13 @@ export const useForgetPassword = () =>{
       }
     })
 } 
+
+
+export const useResetPassword = ()=>{
+  return useMutation({
+    mutationFn:resetPassword,
+    onError:(error:Error)=>{
+      console.log("Error on Reset Password",error)
+    }
+  })
+}

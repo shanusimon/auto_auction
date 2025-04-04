@@ -24,3 +24,8 @@ export const getWalletBalance = async()=>{
     const response = await userAxiosInstance.get("/_us/user/getWalletBalance");
     return response.data
 }
+
+export const getIsSeller = async()=>{
+    const repsonse = await userAxiosInstance.get("/_us/user/seller-status");
+    return repsonse.data;
+}

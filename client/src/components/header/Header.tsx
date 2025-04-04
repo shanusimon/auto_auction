@@ -63,7 +63,7 @@ const Header: React.FC = () => {
             Auctions
           </Link>
           <Link
-            to="/sell"
+            to="/user/sellerapplication"
             className="text-sm font-bold rounded-full px-5 py-2 transition-all duration-200 hover:opacity-90 bg-[#3BE188] text-black"
           >
             Sell a Car
@@ -108,23 +108,29 @@ const Header: React.FC = () => {
 
         {/* Username Display with Dropdown */}
         <div className="hidden md:flex items-center relative" ref={dropdownRef}>
-          <div
-            className="flex items-center cursor-pointer"
-            onClick={() => setShowDropdown(!showDropdown)}
-          >
-            <div className="w-8 h-8 bg-zinc-700 rounded-full flex items-center justify-center mr-2">
-              {user?.profileImage ? (<Avatar className="w-full h-full">
-                <AvatarImage src={user.profileImage} alt={user.name} className="object-cover rounded-2xl" />
-                <AvatarFallback className="bg-zinc-700">
-                  <UserIcon size={48} className="text-gray-400" />
-                </AvatarFallback>
-              </Avatar>) : (<User size={16} className="text-white" />)}
+        <div
+  className="flex items-center cursor-pointer"
+  onClick={() => setShowDropdown(!showDropdown)}
+>
+  <div className="w-8 h-8 bg-zinc-700 rounded-full flex items-center justify-center overflow-hidden mr-2">
+    {user?.profileImage ? (
+      <Avatar className="w-full h-full">
+        <AvatarImage
+          src={user.profileImage}
+          alt={user.name}
+          className="object-cover w-full h-full"
+        />
+        <AvatarFallback className="bg-zinc-700 flex items-center justify-center w-full h-full">
+          <UserIcon size={16} className="text-gray-400" />
+        </AvatarFallback>
+      </Avatar>
+    ) : (
+      <User size={16} className="text-white" />
+    )}
+  </div>
+  <span className="text-sm font-medium text-white">{user?.name}</span>
+</div>
 
-            </div>
-            <span className="text-sm font-medium text-white">
-              {user?.name}
-            </span>
-          </div>
 
           {/* Dropdown menu */}
           {showDropdown && (

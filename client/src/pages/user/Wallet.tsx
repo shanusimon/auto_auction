@@ -13,21 +13,25 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useAddMoneyToWallet } from '@/hooks/user/userDashboard';
 import { useGetWalletTransaction } from '@/hooks/user/userDashboard';
 import { useGetWalletBalance } from '@/hooks/user/userDashboard';
+import { useQueryClient } from '@tanstack/react-query';
+
 
 const WalletPage: React.FC = () => {
     const [isAddMoneyOpen, setIsAddMoneyOpen] = useState(false);
     const [amount, setAmount] = useState('');
-    const [currentPage, setCurrentPage] = useState(1); 
-    const limit = 6; 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [isProcessingPayment, setIsProcessingPayment] = useState(false); 
+    const limit = 6;
     const { toast } = useToast();
     const { mutateAsync, isPending: mutationPending } = useAddMoneyToWallet();
     const stripe = useStripe();
     const elements = useElements();
+    const queryClient = useQueryClient();
 
     const {
         data: transactionsData,
         isLoading: isTransactionsLoading,
-    } = useGetWalletTransaction(currentPage, limit); 
+    } = useGetWalletTransaction(currentPage, limit);
     const {
         data: balanceData,
         isLoading: isBalanceLoading,
@@ -35,11 +39,12 @@ const WalletPage: React.FC = () => {
 
     const transactions = transactionsData?.transactions || [];
     const totalTransactions = transactionsData?.total || 0;
-    const totalPages = Math.ceil(totalTransactions / limit); 
+    const totalPages = Math.ceil(totalTransactions / limit);
     const walletBalance = balanceData?.balance || 0;
 
     const handleAddMoney = async () => {
         const parsedAmount = parseFloat(amount);
+
         if (!amount || parsedAmount <= 0) {
             toast({
                 title: 'Invalid Amount',
@@ -63,14 +68,14 @@ const WalletPage: React.FC = () => {
                 throw new Error('Card element not found');
             }
 
-            console.log("Client secret:", clientSecret);
+            setIsProcessingPayment(true);
+
             const { error: stripeError } = await stripe.confirmCardPayment(clientSecret, {
                 payment_method: {
                     card: cardElement,
                 },
             });
 
-            console.log("Stripe error:", stripeError);
             if (stripeError) {
                 toast({
                     title: 'Stripe Error',
@@ -84,6 +89,16 @@ const WalletPage: React.FC = () => {
                 title: 'Payment Successful',
                 description: `Successfully added ₹${parsedAmount} to your wallet`,
             });
+            
+            
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            await Promise.all([
+                queryClient.refetchQueries({ queryKey: ['walletBalance'] }),
+                queryClient.refetchQueries({ queryKey: ['walletTransactions'] }),
+            ]);
+            setIsProcessingPayment(false);
+
         } catch (error: any) {
             toast({
                 title: 'Payment Initiation Failed',
@@ -128,7 +143,7 @@ const WalletPage: React.FC = () => {
                                 <CardContent>
                                     <div className="flex flex-col">
                                         <span className="text-3xl font-bold text-white">
-                                            ${isBalanceLoading ? 'Loading...' : walletBalance.toLocaleString()}
+                                            ${isBalanceLoading ? '...' : walletBalance.toLocaleString()}
                                         </span>
                                         <span className="text-gray-400 text-sm mt-1">
                                             Available for bidding and purchases
@@ -322,9 +337,9 @@ const WalletPage: React.FC = () => {
                             <Button
                                 className="bg-[#3BE188] hover:bg-[#32c676] text-black"
                                 onClick={handleAddMoney}
-                                disabled={mutationPending}
+                                disabled={mutationPending || isProcessingPayment}
                             >
-                                {mutationPending ? 'Processing...' : 'Pay with Stripe'}
+                                {isProcessingPayment ? 'Processing...' : 'Pay with Stripe'}
                             </Button>
                         </DialogFooter>
                     </DialogContent>

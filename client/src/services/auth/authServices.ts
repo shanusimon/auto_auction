@@ -1,6 +1,8 @@
 import { api } from "@/api/auth.axios";
 import { RegisterData, LoginData } from "../../types/Types";
 import { AuthResponse } from "../../types/Types";
+import { resetPasswordRequest } from "../../types/Types";
+
 
 export interface AxiosResponse {
   success: boolean;
@@ -71,5 +73,14 @@ export const forgetPassword = async(values:{email:string,role:string})=>{
     return response.data
   } catch (error:any) {
     throw error.response?.data || "Failed to Login User";
+  }
+}
+
+export const resetPassword = async(data:resetPasswordRequest)=>{
+  try {
+    const response = await api.post("/reset-password",data);
+    return response.data
+  } catch (error:any) {
+    throw error.response?.data || "Failed to change password"
   }
 }

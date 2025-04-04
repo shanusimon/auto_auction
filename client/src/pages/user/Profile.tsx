@@ -3,27 +3,33 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import UserSidebar from '@/components/user/Sidebar';
 import { Button } from '@/components/ui/button';
-import { User as UserIcon, Camera } from 'lucide-react';
+import * as Yup from 'yup';
+import { User as UserIcon, Camera, AlertCircle } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import Header from '@/components/header/Header';
 import { uploadProfileImageCloudinary } from '@/utils/cloudinaryProfileImageUpload';
 import { UpdateProfilePayLoad, updateUserProfile } from '@/store/slices/user.slice';
 import { PasswordChangeDialog } from '@/components/modals/PasswordChangeModal';
-
+import { profileSchema } from '@/utils/validations/proflevalidator';
 
 const UserProfile: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
-  console.log("Hello",user)
   const dispatch = useDispatch<AppDispatch>();
 
   const [profileImage, setProfileImage] = useState<string | null>(user?.profileImage || null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [name, setName] = useState<string>(user?.name || '');
-  const [phoneNumber, setPhoneNumber] = useState<string>(user?.phone||'');
-  const [about, setAbout] = useState<string>(user?.bio||'');
-  const [loading,setLoading] = useState<boolean>(false)
-  const [passwordDialogOpen,setpasswordDialogOpen] = useState<boolean>(false)
+  const [phoneNumber, setPhoneNumber] = useState<string>(user?.phone || '');
+  const [about, setAbout] = useState<string>(user?.bio || '');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState<boolean>(false);
+
+  const [errors, setErrors] = useState<{
+    name?: string;
+    phoneNumber?: string;
+    about?: string;
+  }>({});
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -57,48 +63,65 @@ const UserProfile: React.FC = () => {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setProfileImage(reader.result as string); 
+      setProfileImage(reader.result as string);
     };
     reader.readAsDataURL(file);
 
-    setSelectedImage(file); 
+    setSelectedImage(file);
   };
 
-
   const handleSaveChanges = async () => {
+    const formData = {
+      name: name.trim(),
+      phoneNumber: phoneNumber.trim() || null, 
+      about: about.trim() || null,
+    };
+
     try {
+      await profileSchema.validate(formData, { abortEarly: false });
+
       setLoading(true);
       let imageUrl = profileImage || "";
-  
-      if(selectedImage){
+
+      if (selectedImage) {
         const response = await uploadProfileImageCloudinary(selectedImage);
-        if(response){
-          imageUrl = response
+        if (response) {
+          imageUrl = response;
         }
       }
 
-      const profileData:UpdateProfilePayLoad = {
-        name,
-        bio:about,
-        phone:phoneNumber,
-        profileImage:imageUrl
-      }
+      const profileData: UpdateProfilePayLoad = {
+        name: formData.name,
+        bio: formData.about || '',
+        phone: formData.phoneNumber || '',
+        profileImage: imageUrl,
+      };
 
-      await dispatch(updateUserProfile(profileData)).unwrap()
+      await dispatch(updateUserProfile(profileData)).unwrap();
       setLoading(false);
-      toast.success("User deatils updated successfully");
-    } catch (error:any) {
-      toast.error("Failed Updating user profile",error);
-      setLoading(false)
+      setErrors({}); 
+      toast.success("User details updated successfully");
+    } catch (error: any) {
+      if (error instanceof Yup.ValidationError) {
+        const validationErrors: Record<string, string> = {};
+        error.inner.forEach((err:any) => {
+          validationErrors[err.path] = err.message;
+        });
+        setErrors(validationErrors);
+        toast.error("Please correct the validation errors");
+      } else {
+        toast.error(`Failed updating user profile: ${error.message || 'Unknown error'}`);
+      }
+      setLoading(false);
     }
   };
 
   const handlePasswordChangeClick = () => {
-    setpasswordDialogOpen(true);
+    setPasswordDialogOpen(true);
   };
 
   const handlePasswordDialogClose = () => {
-    setpasswordDialogOpen(false);
+    setPasswordDialogOpen(false);
   };
 
   return (
@@ -156,13 +179,21 @@ const UserProfile: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-gray-400 mb-2">Full Name</label>
+                  <label className="block text-gray-400 mb-2">Full Name *</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-zinc-700 text-white border-none rounded-md px-4 py-2"
+                    className={`w-full bg-zinc-700 text-white border-none rounded-md px-4 py-2 ${
+                      errors.name ? 'ring-2 ring-red-500' : ''
+                    }`}
                   />
+                  {errors.name && (
+                    <div className="flex items-center mt-1 text-red-500 text-sm">
+                      <AlertCircle size={14} className="mr-1" />
+                      {errors.name}
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -181,9 +212,17 @@ const UserProfile: React.FC = () => {
                     type="tel"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder="+1 (555) 123-4567"
-                    className="w-full bg-zinc-700 text-white border-none rounded-md px-4 py-2"
+                    placeholder="1234567890"
+                    className={`w-full bg-zinc-700 text-white border-none rounded-md px-4 py-2 ${
+                      errors.phoneNumber ? 'ring-2 ring-red-500' : ''
+                    }`}
                   />
+                  {errors.phoneNumber && (
+                    <div className="flex items-center mt-1 text-red-500 text-sm">
+                      <AlertCircle size={14} className="mr-1" />
+                      {errors.phoneNumber}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -193,8 +232,16 @@ const UserProfile: React.FC = () => {
                   value={about}
                   onChange={(e) => setAbout(e.target.value)}
                   placeholder="Tell us about yourself and your interest in cars..."
-                  className="w-full bg-zinc-700 text-white border-none rounded-md px-4 py-2 h-32"
-                ></textarea>
+                  className={`w-full bg-zinc-700 text-white border-none rounded-md px-4 py-2 h-32 ${
+                    errors.about ? 'ring-2 ring-red-500' : ''
+                  }`}
+                />
+                {errors.about && (
+                  <div className="flex items-center mt-1 text-red-500 text-sm">
+                    <AlertCircle size={14} className="mr-1" />
+                    {errors.about}
+                  </div>
+                )}
               </div>
 
               <div className="mt-6">
@@ -227,8 +274,8 @@ const UserProfile: React.FC = () => {
         </div>
       </div>
       <PasswordChangeDialog
-      open={passwordDialogOpen}
-      onClose={handlePasswordDialogClose}
+        open={passwordDialogOpen}
+        onClose={handlePasswordDialogClose}
       />
     </>
   );

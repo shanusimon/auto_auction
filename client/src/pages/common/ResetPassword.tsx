@@ -1,32 +1,28 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Lock, CheckCircle, Eye, EyeOff } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { resetPasswordSchema } from "@/types/Types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { useResetPassword } from "@/hooks/auth/useAuth";
+import { resetPasswordRequest } from "@/types/Types";
 
-const resetPasswordSchema = z.object({
-  password: z.string()
-    .min(6, { message: "Password must be at least 6 characters" }),
-  confirmPassword: z.string()
-    .min(6, { message: "Confirm password must be at least 6 characters" }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
 
 const ResetPassword = () => {
+  const {token} = useParams()
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const { toast } = useToast();
+  const resetPasswordMutation = useResetPassword();
+
 
   const form = useForm<z.infer<typeof resetPasswordSchema>>({
     resolver: zodResolver(resetPasswordSchema),
@@ -36,19 +32,31 @@ const ResetPassword = () => {
     },
   });
 
+  
+
   const onSubmit = async (values: z.infer<typeof resetPasswordSchema>) => {
     setIsLoading(true);
-    
-    // Here you would call your reset password API
-    // For now, we'll simulate a successful call
-    setTimeout(() => {
-      toast({
-        title: "Password reset successful",
-        description: "Your password has been reset successfully",
-      });
-      setIsSuccess(true);
-      setIsLoading(false);
-    }, 1500);
+    const mutationData: resetPasswordRequest = {
+      newPassword: values.password,
+      token: token || "", 
+      role: "user"
+    };
+    resetPasswordMutation.mutate(mutationData,{
+      onSuccess:()=>{
+        setIsSuccess(true);
+        setIsLoading(false);
+      },
+      onError:(error:any)=>{
+        toast({
+          title:"Failed to change password",
+          description:error.message || "Something went wrong",
+          variant:"destructive"
+        })
+      },
+      onSettled:()=>{
+        setIsLoading(false)
+      }
+    })
   };
 
   return (
@@ -169,17 +177,17 @@ const ResetPassword = () => {
       </div>
 
       {/* Right side - Decorative */}
-      <div className="hidden md:block md:w-1/2 bg-gradient-to-br from-[#3BE188] to-[#2ecd75] p-12">
+      <div className="hidden md:block md:w-1/2 bg-gradient-to-br from-[#8E9196] to-[#8E996]  p-12">
         <div className="h-full flex flex-col justify-center items-center text-center">
           <div className="max-w-md animate-slide-up">
-            <h2 className="text-4xl font-bold text-black mb-6">
+            <h2 className="text-4xl font-bold text-white mb-6">
               Reset Your Password
             </h2>
-            <p className="text-black/90 text-lg mb-8">
+            <p className="text-white/90 text-lg mb-8">
               Create a strong password that you don't use for other websites. A strong password is a combination of letters, numbers, and special characters.
             </p>
-            <div className="bg-black/10 p-6 rounded-lg backdrop-blur-sm border border-black/20">
-              <p className="text-black font-medium">
+            <div className="bg-white/10 p-6 rounded-lg backdrop-blur-sm border border-black/20">
+              <p className="text-white font-medium">
                 After resetting your password, you'll be able to log in to your account with your new credentials.
               </p>
             </div>

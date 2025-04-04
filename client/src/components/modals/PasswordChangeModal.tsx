@@ -5,11 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import { passwordSchema } from '@/utils/validations/passwordvalidator';
 import * as z from 'zod';
 import { useUserChangePassword } from '@/hooks/user/userDashboard';
+
 
 interface PasswordChangeDialogProps {
   open: boolean;
@@ -26,7 +27,7 @@ export const PasswordChangeDialog: React.FC<PasswordChangeDialogProps> = ({
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const {mutateAsync} = useUserChangePassword();
-
+  const { toast } = useToast();
 
   const form = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
@@ -40,15 +41,21 @@ export const PasswordChangeDialog: React.FC<PasswordChangeDialogProps> = ({
   const onSubmit = async (values: PasswordFormValues) => {
     try {
       const response = await mutateAsync({currPass:values.currentPassword,newPass:values.newPassword})
-      console.log("response",response);
+      console.log("raw response", response);
       if(response.success){
-        toast.success("password changed successfully")
+        toast({
+          title: "passsword updated successgully",
+          duration: 3000,
+        });
       }
       form.reset();
       onClose();
     } catch (error:any) {
       console.error('Error updating password:', error);
-      toast.error('Failed to update password. Please try again.',error.message);
+      toast({
+        title: "failed to update password",
+        duration: 3000,
+      });
     }
   };
 
