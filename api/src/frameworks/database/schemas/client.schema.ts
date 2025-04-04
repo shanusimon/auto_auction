@@ -3,7 +3,6 @@ import { ROLES } from "../../../shared/constants";
 import { IClientModel } from "../models/client.model";
 
 
-
 export const ClientSchema = new Schema<IClientModel>(
     {
         clientId: { type: String, required: true },
@@ -20,18 +19,8 @@ export const ClientSchema = new Schema<IClientModel>(
         bids: [{ type: String }],
         listings: [{ type: String }],
         walletId:{type:Schema.Types.ObjectId,ref:"Wallet",required:true},
-
         isSeller: { type: Boolean, default: false },
-        sellerSince: { type: Date },
-
-        isProfessionalDealer: { type: Boolean, default: false },
-        businessDetails: {
-            licenseNumber: { type: String },
-            businessName: { type: String },
-            taxID: { type: String },
-            website: { type: String }
-        },
-        approvalStatus: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" }
+        sellerId: { type: Schema.Types.ObjectId, ref: "Seller", default: null },
     },
     { timestamps: true }
 );

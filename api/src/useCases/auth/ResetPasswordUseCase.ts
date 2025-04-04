@@ -11,7 +11,7 @@ import { CustomError } from "../../entities/utils/custom.error";
 @injectable()
 export class ResetPasswordUseCase implements IResetPasswordUseCase{
     constructor(
-        @inject("IRedisClient") private redisRepository:IRedisTokenRepository,
+        @inject("IRedisTokenRepository") private redisRepository:IRedisTokenRepository,
         @inject("IPasswordBcrypt") private bcrypt:IBcrypt,
         @inject("ITokenService") private tokenService:ITokenService,
         @inject("IClientRepository") private clientRepository:IClientRepository

@@ -17,17 +17,6 @@ export interface IUserEntity {
     listings?: string[];
     walletId: ObjectId | string
 
-    // Seller Details
     isSeller?: boolean;
-    sellerSince?: Date;
-
-    // Professional Dealer (Needs Admin Approval)
-    isProfessionalDealer?: boolean;
-    businessDetails?: {
-        licenseNumber?: string;
-        businessName?: string;
-        taxID?: string;
-        website?: string;
-    };
-    approvalStatus?: "pending" | "approved" | "rejected";
+    sellerId?:ObjectId | string
 }

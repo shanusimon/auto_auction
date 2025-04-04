@@ -19,6 +19,7 @@ export class RedisTokenRepository implements IRedisTokenRepository{
     async verifyResetToken(userId: string, token: string): Promise<boolean> {
         const key = `reset_token:${userId}`;
         const storedToken = await this.redisClient.get(key);
+        console.log(storedToken);
         return storedToken === token
     }
     async deleteResetToken(userId: string): Promise<void> {

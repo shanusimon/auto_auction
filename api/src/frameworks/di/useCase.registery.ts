@@ -48,6 +48,8 @@ import { IGetWalletDeatailsUseCase } from "../../entities/useCaseInterfaces/wall
 import { GetWalletDeatailsUseCase } from "../../useCases/wallet/GetWalletDeatailsUseCase";
 import { IGetWalletTransactionsUseCase } from "../../entities/useCaseInterfaces/transactions/IGetAllTransactionUseCase";
 import { GetWalletTransactionsUseCase } from "../../useCases/transactions/GetAllWalletTransactions";
+import { IsSellerUseCase } from "../../useCases/user/IsSellerUseCase";
+import { IIsSellerUseCase } from "../../entities/useCaseInterfaces/user/IIsSellerUseCase";
 
 export class UseCaseRegistery {
   static registerUseCases(): void {
@@ -119,6 +121,9 @@ export class UseCaseRegistery {
     container.register<IGetWalletTransactionsUseCase>("IGetWalletTransactionsUseCase",{
       useClass:GetWalletTransactionsUseCase
     })
+    container.register<IIsSellerUseCase>('IsSellerUseCase',{
+      useClass:IsSellerUseCase
+    });
     //* ====== Register Strategy ====== *//
     container.register("ClientRegisterStrategy", {
       useClass: ClientRegisterStrategy,

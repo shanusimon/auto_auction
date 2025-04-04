@@ -62,6 +62,17 @@ export class ClientRoutes extends BaseRoute {
       }
     )
 
+    //seller status
+    this.router.get(
+      "/user/seller-status",
+      verifyAuth,
+      authorizeRole(["user"]),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response,next:NextFunction)=>{
+        userController.isSeller(req,res,next);
+      }
+    )
+
     //transaction history
     this.router.get(
       "/user/getAllTransaction",

@@ -112,6 +112,7 @@ export class AuthController implements IAuthController {
           phone:user.phone,
           profileImage:user.profileImage,
           bio:user.bio,
+          isSeller:user.isSeller,
           joinedAt:user.joinedAt
         },
       });
@@ -240,6 +241,7 @@ export class AuthController implements IAuthController {
        try {
         const {credential,client_id,role} = req.body;
         console.log("hello google data",req.body)
+        
         const user = await this.googleAuthUseCase.execute(credential,client_id,role);
 
         if(!user.id || !user.email || !user.role){

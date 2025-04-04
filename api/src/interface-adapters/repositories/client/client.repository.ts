@@ -72,6 +72,8 @@ export class ClientRepository implements IClientRepository{
         return updateProfile as ClientProfileResponse
     }
     async findByIdAndUpdatePassword(id: string, hashedPassword: string): Promise<void> {
-        await ClientModel.findByIdAndUpdate(id,{password:hashedPassword})
+        console.log("hello")
+        const data = await ClientModel.findByIdAndUpdate(id,{password:hashedPassword})
+        console.log(data)
     }
 }

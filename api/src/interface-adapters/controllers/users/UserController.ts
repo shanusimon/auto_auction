@@ -9,6 +9,7 @@ import { IClientEntity } from "../../../entities/models/client.entity";
 import { CustomRequest } from "../../middlewares/authMiddleware";
 import { IUpdateProfileUseCase } from "../../../entities/useCaseInterfaces/user/IUpdateProfileUseCase";
 import { IUpdatePasswordUseCase } from "../../../entities/useCaseInterfaces/user/IUpadatePasswordUseCase";
+import { IIsSellerUseCase } from "../../../entities/useCaseInterfaces/user/IIsSellerUseCase";
 
 
 
@@ -18,7 +19,8 @@ export class UserController implements IUserController{
         @inject("IGetAllCustomersUseCase") private getCustomers:IGetAllCustomersUseCase,
         @inject("IUpdateCustomerStatusUseCase") private updateCustomers:IUpdateCustomerStatusUseCase,
         @inject("IUpdateProfileUseCase") private updateClientProfile:IUpdateProfileUseCase,
-        @inject("IUpdatePasswordUseCase") private updateClientPassword:IUpdatePasswordUseCase
+        @inject("IUpdatePasswordUseCase") private updateClientPassword:IUpdatePasswordUseCase,
+        @inject("IsSellerUseCase") private isSellerUseCase:IIsSellerUseCase
     ){}
 
   //*                  🛠️ Get Users
@@ -110,11 +112,24 @@ export class UserController implements IUserController{
             console.log("crr",currPass,"new",newPass)
             await this.updateClientPassword.execute(userId,currPass,newPass)
 
-            res.status(HTTP_STATUS.OK).json({sucesss:true,message:SUCCESS_MESSAGES.UPDATE_SUCCESS})
+            res.status(HTTP_STATUS.OK).json({success:true,message:SUCCESS_MESSAGES.UPDATE_SUCCESS})
 
         } catch (error) {
             handleErrorResponse(res,error)
         }
     }
+
+    async isSeller(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userId = (req as CustomRequest).user.id;
+
+            const seller = await this.isSellerUseCase.execute(userId);
+
+            res.status(HTTP_STATUS.OK).json({success:true,message:SUCCESS_MESSAGES.DATA_RETRIEVED,data:seller})
+            
+        } catch (error) {
+            handleErrorResponse(res,error)
+        }    
+    } 
 
 }
