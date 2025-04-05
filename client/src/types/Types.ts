@@ -98,22 +98,42 @@ export interface resetPasswordRequest {
 
 
 export const formSchema = z.object({
-  isProfessionalDealer: z.boolean().default(false),
-  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  phone: z.string().min(10, { message: "Please enter a valid phone number" }),
-  address: z.string().min(5, { message: "Please enter your complete address" }),
-  reason: z.string().min(20, { message: "Please provide a detailed reason (min 20 characters)" }),
-  identificationNumber: z.string().min(5, { message: "Please provide a valid ID number" }),
-  
+  isProfessionalDealer: z.boolean(),
+  name: z.string().optional(),
+  phone: z.string().optional(),
+  address: z.string().min(5, "Address is required"),
+  identificationNumber: z.string().min(1, "ID number is required"),
   businessName: z.string().optional(),
   licenseNumber: z.string().optional(),
   taxID: z.string().optional(),
-  website: z.string().url({ message: "Please enter a valid URL" }).optional().or(z.literal("")),
+  website: z.string().url().optional().or(z.literal("")),
   yearsInBusiness: z.string().optional(),
-  
-  agreeToTerms: z.literal(true, {
-    errorMap: () => ({ message: "You must agree to the terms and conditions" }),
+  agreeToTerms: z.boolean().refine((val) => val === true, {
+    message: "You must agree to the terms",
   }),
-});
-
+}).refine(
+  (data) => {
+    if (data.isProfessionalDealer) {
+      return !!data.businessName && !!data.licenseNumber && !!data.taxID;
+    }
+    return true;
+  },
+  {
+    message: "Business Name, License Number, and Tax ID are required for professional dealers",
+    path: ["businessName"],
+  }
+);
 export type FormValues = z.infer<typeof formSchema>;
+
+export interface SellerRequestPayload {
+  isProfessionalDealer: boolean;
+  address: string;
+  identificationNumber: string;
+  businessName?: string;
+  licenseNumber?: string;
+  taxID?: string;
+  website?: string;
+  yearsInBusiness?: string;
+}
+
+

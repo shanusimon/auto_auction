@@ -1,6 +1,6 @@
 import { userAxiosInstance } from "@/api/clientAxios";
 import { ChangePasswordData } from "@/hooks/user/userDashboard";
-import { WalletTransactionsResponse } from "@/types/Types";
+import { SellerRequestPayload, WalletTransactionsResponse } from "@/types/Types";
 
 export const logoutUser = async()=>{
     const response = await userAxiosInstance.post("/_us/user/logout");
@@ -28,4 +28,9 @@ export const getWalletBalance = async()=>{
 export const getIsSeller = async()=>{
     const repsonse = await userAxiosInstance.get("/_us/user/seller-status");
     return repsonse.data;
+}
+
+export const getSellerRequest = async(data:SellerRequestPayload)=>{
+    const response = await userAxiosInstance.post("/_us/user/seller-request",data);
+    return response.data;
 }

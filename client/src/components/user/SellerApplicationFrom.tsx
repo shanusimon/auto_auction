@@ -13,14 +13,16 @@ import { useToast } from "@/hooks/use-toast";
 import { FormValues, formSchema } from "@/types/Types";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { useSellerRequest } from "@/hooks/user/useSeller";
+import { SellerRequestPayload } from "@/types/Types";
 
 export const SellerApplicationForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   
-
   const userData = useSelector((state:RootState) => state.user.user);
+  const {mutateAsync}= useSellerRequest();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -43,12 +45,23 @@ export const SellerApplicationForm = () => {
 
   const onSubmit = async (data: FormValues) => {
     setIsLoading(true);
-    console.log("These are the datas", data);
     try {
-      console.log("Submitting application data:", data);
+      console.log(data);
+      const payload: SellerRequestPayload = {
+        isProfessionalDealer: data.isProfessionalDealer,
+        address: data.address,
+        identificationNumber: data.identificationNumber,
+        ...(data.isProfessionalDealer && {
+          businessName: data.businessName,
+          licenseNumber: data.licenseNumber,
+          taxID: data.taxID,
+          website: data.website,
+          yearsInBusiness: data.yearsInBusiness,
+        }),
+      };
 
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
+      const response = await mutateAsync(payload);
+      if(response.success){
       toast({
         title: "Application submitted successfully",
         description: "We'll review your application and get back to you soon.",
@@ -56,6 +69,7 @@ export const SellerApplicationForm = () => {
       });
 
       navigate("/profile");
+    }
     } catch (error) {
       toast({
         title: "Something went wrong",
