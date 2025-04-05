@@ -16,6 +16,8 @@ import { IWalletRepository } from "../../entities/repositoryInterfaces/wallet/IW
 import { WalletRepository } from "../../interface-adapters/repositories/wallet/WalletRepository";
 import { IWalletTransactionRepository } from "../../entities/repositoryInterfaces/wallet-transaction/IWalletTransactionRepository";
 import { WalletTransactionRepository } from "../../interface-adapters/repositories/wallet-transaction/WalletTransactionRepository";
+import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/sellerRepository";
+import { SellerRepository } from "../../interface-adapters/repositories/seller/SellerRepository";
 
 //service imports
 import { IOtpService } from "../../entities/services/IOtpService";
@@ -64,6 +66,9 @@ export class RepositoryRegistry{
         })
         container.register<IPaymentService>("IPaymentService",{
             useClass:StripeService
+        })
+        container.register<ISellerRepository>("ISellerRepository",{
+            useClass:SellerRepository
         })
     }
 }

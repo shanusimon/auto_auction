@@ -50,6 +50,8 @@ import { IGetWalletTransactionsUseCase } from "../../entities/useCaseInterfaces/
 import { GetWalletTransactionsUseCase } from "../../useCases/transactions/GetAllWalletTransactions";
 import { IsSellerUseCase } from "../../useCases/user/IsSellerUseCase";
 import { IIsSellerUseCase } from "../../entities/useCaseInterfaces/user/IIsSellerUseCase";
+import { ISellerRegisterUseCase } from "../../entities/useCaseInterfaces/seller/ISellerUseCase";
+import { SellerRegisterUseCase } from "../../useCases/seller/SellerRegisterUseCase";
 
 export class UseCaseRegistery {
   static registerUseCases(): void {
@@ -97,32 +99,38 @@ export class UseCaseRegistery {
     container.register<IGoogleAuthUseCase>("IGoogleAuthUseCase", {
       useClass: GoogleAuthUseCase,
     });
-    container.register<IForgetPasswordUseCase>("IForgetPasswordUseCase",{
-      useClass:ForgetPasswordUseCase
-    })
-    container.register<IResetPasswordUseCase>("IResetPasswordUseCase",{
-      useClass:ResetPasswordUseCase
-    })
-    container.register<IUpdateProfileUseCase>("IUpdateProfileUseCase",{
-      useClass:UpdateProfileUseCase
-    })
-    container.register<IUpdatePasswordUseCase>("IUpdatePasswordUseCase",{
-      useClass:UpdatePasswordUseCase
-    })
-    container.register<IAddMoneyToWalletUseCase>("IAddMoneyToWalletUseCase",{
-      useClass:AddMoneyToWalletUseCase
-    })
-    container.register<IWebHookUseCase>("IWebHookUseCase",{
-      useClass:WebHookUseCase
+    container.register<IForgetPasswordUseCase>("IForgetPasswordUseCase", {
+      useClass: ForgetPasswordUseCase,
     });
-    container.register<IGetWalletDeatailsUseCase>("IGetWalletDeatailsUseCase",{
-      useClass:GetWalletDeatailsUseCase
+    container.register<IResetPasswordUseCase>("IResetPasswordUseCase", {
+      useClass: ResetPasswordUseCase,
     });
-    container.register<IGetWalletTransactionsUseCase>("IGetWalletTransactionsUseCase",{
-      useClass:GetWalletTransactionsUseCase
-    })
-    container.register<IIsSellerUseCase>('IsSellerUseCase',{
-      useClass:IsSellerUseCase
+    container.register<IUpdateProfileUseCase>("IUpdateProfileUseCase", {
+      useClass: UpdateProfileUseCase,
+    });
+    container.register<IUpdatePasswordUseCase>("IUpdatePasswordUseCase", {
+      useClass: UpdatePasswordUseCase,
+    });
+    container.register<IAddMoneyToWalletUseCase>("IAddMoneyToWalletUseCase", {
+      useClass: AddMoneyToWalletUseCase,
+    });
+    container.register<IWebHookUseCase>("IWebHookUseCase", {
+      useClass: WebHookUseCase,
+    });
+    container.register<IGetWalletDeatailsUseCase>("IGetWalletDeatailsUseCase", {
+      useClass: GetWalletDeatailsUseCase,
+    });
+    container.register<IGetWalletTransactionsUseCase>(
+      "IGetWalletTransactionsUseCase",
+      {
+        useClass: GetWalletTransactionsUseCase,
+      }
+    );
+    container.register<IIsSellerUseCase>("IsSellerUseCase", {
+      useClass: IsSellerUseCase,
+    });
+    container.register<ISellerRegisterUseCase>("ISellerRegisterUseCase", {
+      useClass: SellerRegisterUseCase,
     });
     //* ====== Register Strategy ====== *//
     container.register("ClientRegisterStrategy", {

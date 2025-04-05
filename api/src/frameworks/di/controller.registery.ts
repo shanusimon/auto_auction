@@ -9,12 +9,16 @@ import { AuthController } from "../../interface-adapters/controllers/auth/AuthCo
 import { UserController } from "../../interface-adapters/controllers/users/UserController";
 import { WalletController } from "../../interface-adapters/controllers/wallet/walletController";
 import { HandleWebHookController } from "../../interface-adapters/controllers/payment/HandleWebHookController";
+import { SellerController } from "../../interface-adapters/controllers/seller/SellerController";
 import { TransactionController } from "../../interface-adapters/controllers/transaction/TransactoinController";
 
 export class controllerRegistery{
     static registerControllers():void{
         container.register("BlockStatusMiddleware",{
             useClass:BlockStatusMiddleware
+        })
+        container.register("SellerController",{
+            useClass:SellerController
         })
         container.register("AuthContorller",{
             useClass:AuthController
