@@ -5,4 +5,12 @@ import { ISellerEntity } from "../../models/seller.entity";
 export interface ISellerRepository {
     create(seller:SellerDTO):Promise<ISellerEntity>
     findByUserId(userId:string):Promise<ISellerEntity | null>
+    find(
+        filter:any,
+        skip:number,
+        limit:number
+    ):Promise<{sellers:ISellerEntity[] | [];total:number}>
+    count(filter:any):Promise<number>
+    update(seller:ISellerEntity):Promise<ISellerEntity | null>
+    findOne(_id:string):Promise<ISellerEntity | null>
 }

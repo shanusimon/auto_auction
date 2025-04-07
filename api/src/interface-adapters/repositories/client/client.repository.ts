@@ -76,4 +76,14 @@ export class ClientRepository implements IClientRepository{
         const data = await ClientModel.findByIdAndUpdate(id,{password:hashedPassword})
         console.log(data)
     }
+    async findBySearchTerm(searchTerm: string): Promise<String[]> {
+        const useQuery = {
+            $or:[
+                {name:{$regex:searchTerm,$options:'i'}},
+                {email:{$regex:searchTerm,$options:'i'}}
+            ]
+        };
+        const matchingusers = await ClientModel.find(useQuery).select('_id');
+        return matchingusers.map(user=>user._id.toString())
+    }
 }

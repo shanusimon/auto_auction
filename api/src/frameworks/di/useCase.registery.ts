@@ -52,6 +52,10 @@ import { IsSellerUseCase } from "../../useCases/user/IsSellerUseCase";
 import { IIsSellerUseCase } from "../../entities/useCaseInterfaces/user/IIsSellerUseCase";
 import { ISellerRegisterUseCase } from "../../entities/useCaseInterfaces/seller/ISellerUseCase";
 import { SellerRegisterUseCase } from "../../useCases/seller/SellerRegisterUseCase";
+import { IGetAllSellerRequestUseCase } from "../../entities/useCaseInterfaces/seller/IGetAllSellerRequestUseCase";
+import { GetAllSellerUseCase } from "../../useCases/admin/GetAllSellerRequestUseCase";
+import { IUpdateSellerStatusUseCase } from "../../entities/useCaseInterfaces/seller/IUpdateSellerStatusUseCase";
+import { updateSellerStatusUseCase } from "../../useCases/seller/UpdateSellerStatusUseCase";
 
 export class UseCaseRegistery {
   static registerUseCases(): void {
@@ -63,8 +67,14 @@ export class UseCaseRegistery {
     container.register<IRegisterUserUseCase>("IRegisterUserUseCase", {
       useClass: RegisterUserUseCase,
     });
+    container.register<IUpdateSellerStatusUseCase>("IUpdateSellerStatusUseCase",{
+      useClass:updateSellerStatusUseCase
+    });
     container.register<IGetAllCustomersUseCase>("IGetAllCustomersUseCase", {
       useClass: getAllCustomers,
+    });
+    container.register<IGetAllSellerRequestUseCase>("IGetAllSellerRequestUseCase",{
+      useClass:GetAllSellerUseCase
     });
     container.register<IGenerateOtpUseCase>("IGenerateOtpUseCase", {
       useClass: GenerateOtpUseCase,

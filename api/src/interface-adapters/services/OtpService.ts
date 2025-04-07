@@ -14,7 +14,7 @@ export class OtpService implements IOtpService {
     }
 
     async storeOtp(email: string, hashedOtp: string): Promise<void> {
-        const result = await this.redisClient.setex(`otp:${email}`, 60, hashedOtp); // Store OTP for 5 minutes
+        const result = await this.redisClient.setex(`otp:${email}`, 60, hashedOtp); 
     }
 
     async verifyOtp(email: string, otp: string): Promise<boolean> {

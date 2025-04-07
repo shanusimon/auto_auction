@@ -38,7 +38,8 @@ export const ERROR_MESSAGES = {
 	MISSING_PARAMETERS: "Missing required parameters.",
 	WRONG_CURRENT_PASSWORD: "Current password is wrong",
 	SAME_CURR_NEW_PASSWORD: "Please enter a different password from current",
-   WALLET_NOT_FOUND:"wallet not found"
+   WALLET_NOT_FOUND:"wallet not found",
+   UPDATE_FAILED:"updation failed"
 } as const;
 
 export const SUCCESS_MESSAGES = {

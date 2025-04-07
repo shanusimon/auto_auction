@@ -14,4 +14,5 @@ export interface IClientRepository{
     findAndUpdateByEmail(email:string,updates:Partial<IClientEntity>):Promise<IClientEntity | null>;
     updateProfileById(id:string,data:Partial<IClientEntity>):Promise<ClientProfileResponse>
     findByIdAndUpdatePassword(id:string,hashedPassword:string):Promise<void>
+    findBySearchTerm(searchTerm:string):Promise<String[]>
 }

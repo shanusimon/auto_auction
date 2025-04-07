@@ -11,8 +11,6 @@ import { IUpdateProfileUseCase } from "../../../entities/useCaseInterfaces/user/
 import { IUpdatePasswordUseCase } from "../../../entities/useCaseInterfaces/user/IUpadatePasswordUseCase";
 import { IIsSellerUseCase } from "../../../entities/useCaseInterfaces/user/IIsSellerUseCase";
 
-
-
 @injectable()
 export class UserController implements IUserController{
     constructor(

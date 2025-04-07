@@ -3,9 +3,9 @@ import {
   decodeToken,
   verifyAuth,
 } from "../../../interface-adapters/middlewares/authMiddleware";
-import { authController, userController } from "../../di/resolver";
+import { authController, sellerController, userController } from "../../di/resolver";
 import { BaseRoute } from "../base.route";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 
 export class AdminRoutes extends BaseRoute {
   constructor() {
@@ -28,6 +28,14 @@ export class AdminRoutes extends BaseRoute {
         userController.getAllCustomers(req, res);
       }
     );
+    this.router.get(
+      "/admin/get-allSellerRequests",
+      verifyAuth,
+      authorizeRole(["admin"]),
+      (req:Request,res:Response)=>{
+        sellerController.getAllSellerRequest(req,res);
+      }
+    )
     this.router.patch(
       "/admin/customer-status/:userId",
       verifyAuth,
@@ -35,13 +43,21 @@ export class AdminRoutes extends BaseRoute {
       (req: Request, res: Response) => {
         userController.updateCustomerStatus(req, res);
       }
-    );
+    )
     this.router.post(
       "/admin/refresh-token",
       decodeToken,
       (req:Request,res:Response)=>{
         authController.refreshToken(req,res)
       }
+    )
+    this.router.patch(
+       "/admin/sellerRequest-update/:userId",
+       verifyAuth,
+       authorizeRole(["admin"]),
+       (req:Request,res:Response)=>{
+        sellerController.updateSellerStatus(req,res)
+       }
     )
   }
 }
