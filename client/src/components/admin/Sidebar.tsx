@@ -22,7 +22,7 @@ const Sidebar: React.FC = () => {
   const sidebarItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
     { icon: Users, label: 'Customers', path: '/admin/customers' },
-    { icon: FolderInput, label: 'Seller Request', path: '' },
+    { icon: FolderInput, label: 'Seller Request', path: '/admin/seller-request' },
     { icon: Settings, label: 'Settings', path: '/admin/settings' },
   ];
 

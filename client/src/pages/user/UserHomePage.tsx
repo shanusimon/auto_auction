@@ -2,8 +2,18 @@ import Header from '@/components/header/Header'
 import Footer from '@/components/footer/Footer';
 import FeaturedCar from '@/components/cars/featuredCars';
 import { Button } from '@/components/ui/button';
+import { requestNotificationPresmission,listenForForegroundMessages } from "@/services/firebase/messaging";
+import { useEffect } from 'react';
 
 export default function UserHomePage() {
+  useEffect(()=>{
+    requestNotificationPresmission().then((token)=>{
+      if(token){
+        console.log(token)
+      }
+    });
+    listenForForegroundMessages();
+  },[])
 
   return (
     <>

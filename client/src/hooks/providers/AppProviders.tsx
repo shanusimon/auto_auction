@@ -13,6 +13,14 @@ const queryClient = new QueryClient();
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+      .register("/firebase-messaging-sw.js")
+      .then(reg => console.log("SW registered:", reg))
+      .catch(err => console.error("SW registration failed:", err));
+  }
+  
+
   return (
     <StrictMode>
       <Provider store={store}>

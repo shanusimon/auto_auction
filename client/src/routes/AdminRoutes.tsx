@@ -4,6 +4,7 @@ import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminCustomers from "@/pages/admin/AdminCustomers";
 import UnauthorizedPage from "@/pages/common/UnauthorizedPage";
 import { Navigate } from "react-router-dom";
+import AdminSellers from "@/pages/admin/AdminSellerRequests";
 
 export function AdminRoutes(){
     return (
@@ -15,6 +16,10 @@ export function AdminRoutes(){
           <Route 
             path="/customers" 
             element={<ProtectedRoutes allowedRoles={["admin"]} element={<AdminCustomers/>}/>} 
+          />
+           <Route 
+            path="/seller-request" 
+            element={<ProtectedRoutes allowedRoles={["admin"]} element={<AdminSellers/>}/>} 
           />
           <Route 
             path="/unauthorized" 

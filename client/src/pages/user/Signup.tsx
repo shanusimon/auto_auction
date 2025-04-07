@@ -13,7 +13,7 @@ const Signup: React.FC = () => {
   const [formData, setFormData] = useState<RegisterData | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
-  // React Query hooks for API calls
+  
   const registerUser = useRegister();
   const sendOtp = useSendOtp();
   const verifyOtp = useVerifyOtp();
@@ -97,7 +97,7 @@ const Signup: React.FC = () => {
       const optResponse = await verifyOtp.mutateAsync({ email, otp });
 
       if (optResponse) {
-        console.log("verifyyy OTP");
+        console.log("verify OTP");
         await registerUser.mutateAsync(formData);
         toast({
           title: "Success",

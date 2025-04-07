@@ -1,12 +1,8 @@
 import { IClient } from "@/types/Types";
 import { useQuery } from "@tanstack/react-query";
+import { FetchCustomerParams } from "@/types/AdminTypes";
 
 
-interface FetchCustomerParams {
-    page:number,
-    limit:number,
-    search:string
-}
 
 export type customerResponse = {
     users:IClient[];
