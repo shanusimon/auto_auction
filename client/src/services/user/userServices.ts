@@ -34,3 +34,9 @@ export const getSellerRequest = async(data:SellerRequestPayload)=>{
     const response = await userAxiosInstance.post("/_us/user/seller-request",data);
     return response.data;
 }
+
+export const saveFCMtoken = async(token:string)=>{
+    const response = await userAxiosInstance.post("/_us/user/savefcm-token",{
+        token});
+    return response.data
+}

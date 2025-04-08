@@ -7,7 +7,7 @@ import { useGetIsSeller } from "@/hooks/user/useSeller";
 const SellerApplication = () => {
   const navigate = useNavigate();
   const { data, error, isPending } = useGetIsSeller();
-  
+  console.log(data)
 
   const isApprovedSeller = data?.data?.isSeller;
   const sellerDetails = data?.data?.sellerDetails; 

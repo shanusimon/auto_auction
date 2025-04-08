@@ -4,16 +4,32 @@ import FeaturedCar from '@/components/cars/featuredCars';
 import { Button } from '@/components/ui/button';
 import { requestNotificationPresmission,listenForForegroundMessages } from "@/services/firebase/messaging";
 import { useEffect } from 'react';
+import { useStoreFCMToken } from '@/hooks/user/userDashboard';
+import { toast } from 'sonner';
 
 export default function UserHomePage() {
+  const {mutate} = useStoreFCMToken();
   useEffect(()=>{
-    requestNotificationPresmission().then((token)=>{
-      if(token){
-        console.log(token)
+    const setupFCM = async()=>{
+      const cachedToken = localStorage.getItem("fcmToken");
+      const token = await requestNotificationPresmission();
+      if(token && token !== cachedToken){
+        console.log("FCM TOKEN:-",token);
+        mutate(token, {
+          onSuccess: () => {
+            localStorage.setItem("fcmToken", token);
+            toast.success("Notifications enabled");
+          },
+          onError: (err) => {
+            console.error("Failed to save token:", err);
+            toast.error("Failed to enable notifications");
+          },
+        });
       }
-    });
-    listenForForegroundMessages();
-  },[])
+      listenForForegroundMessages()
+    }
+    setupFCM()
+  },[mutate])
 
   return (
     <>

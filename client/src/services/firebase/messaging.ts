@@ -1,6 +1,6 @@
 import { getToken, onMessage } from "firebase/messaging";
 import { messaging } from "./firebase.config";
-
+import { toast } from "sonner";
 
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_NOTIFICATION_KEY;
 
@@ -30,5 +30,12 @@ export const requestNotificationPresmission = async (): Promise<
 export const listenForForegroundMessages = () => {
     onMessage(messaging, (payload) => {
       console.log("📩 Foreground FCM message received:", payload);
+      const title = payload.notification?.title || "New Notification";
+      const body = payload.notification?.body || "You have a new message";
+  
+      toast(title, {
+        description: body,
+        duration: 5000, 
+      });
     });
   };

@@ -8,7 +8,8 @@ import { useLogout } from '@/hooks/auth/useAuth';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
-
+import { deleteToken } from 'firebase/messaging';
+import { messaging } from '@/services/firebase/firebase.config';
 
 const Header: React.FC = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -33,11 +34,23 @@ const Header: React.FC = () => {
 
   const handleLogout = async () => {
     try {
+      try {
+        await deleteToken(messaging);
+        localStorage.removeItem("fcmToken");
+        console.log("FCM token deleted on logout");
+      } catch (err) {
+        console.warn("Failed to delete FCM token (proceeding anyway):", err);
+      }
+
       const response = await logoutUser.mutateAsync();
-      dispatch(userLogout())
-      console.log(response)
+      console.log("Logout response:", response);
+  
+      dispatch(userLogout());
+  
     } catch (error) {
-      console.log("Error in handle Logout")
+      console.error("Logout error:", error);
+      dispatch(userLogout());
+
     }
   };
 

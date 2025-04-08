@@ -3,6 +3,8 @@ import { changePassword, getAllTransaction, getWalletBalance } from "@/services/
 import { AxiosResponse } from "@/services/auth/authServices";
 import { AddMoneyData, addMoneyToWallet } from "@/services/payment/paymentServices"; 
 import { WalletBalanceResponse, WalletTransactionsResponse } from "@/types/Types";
+import { saveFCMtoken } from "@/services/user/userServices";
+
 
 export interface ChangePasswordData { 
     currPass: string;
@@ -11,6 +13,12 @@ export interface ChangePasswordData {
 
 export interface AddMoneyToWalletResponse {
     clientSecret: string; 
+}
+
+export const useStoreFCMToken = ()=>{
+    return useMutation({
+        mutationFn:saveFCMtoken
+    })
 }
 
 export const useUserChangePassword = () => {
