@@ -1,3 +1,3 @@
 export interface IRevokeRefreshTokenUseCase {
-    execute(token:string):Promise<void>;
+    execute(id:string):Promise<void>;
 }

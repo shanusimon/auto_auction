@@ -55,7 +55,11 @@ import { SellerRegisterUseCase } from "../../useCases/seller/SellerRegisterUseCa
 import { IGetAllSellerRequestUseCase } from "../../entities/useCaseInterfaces/seller/IGetAllSellerRequestUseCase";
 import { GetAllSellerUseCase } from "../../useCases/admin/GetAllSellerRequestUseCase";
 import { IUpdateSellerStatusUseCase } from "../../entities/useCaseInterfaces/seller/IUpdateSellerStatusUseCase";
-import { updateSellerStatusUseCase } from "../../useCases/seller/UpdateSellerStatusUseCase";
+import { UpdateSellerStatusUseCase } from "../../useCases/seller/UpdateSellerStatusUseCase";
+import { ISaveFCMTokenUseCase } from "../../entities/useCaseInterfaces/user/ISaveFcmTokenUseCase";
+import { SaveFCMTokenUseCase } from "../../useCases/user/SaveFCMTokenUseCase";
+import { IRevokeFCMTokenUseCase } from "../../entities/useCaseInterfaces/auth/IRevokeFCMTokenUseCase";
+import { RevokeFCMTokenUseCase } from "../../useCases/auth/RevokeFCMTokenUseCase";
 
 export class UseCaseRegistery {
   static registerUseCases(): void {
@@ -67,8 +71,14 @@ export class UseCaseRegistery {
     container.register<IRegisterUserUseCase>("IRegisterUserUseCase", {
       useClass: RegisterUserUseCase,
     });
+    container.register<ISaveFCMTokenUseCase>("SaveFCMTokenUseCase",{
+      useClass:SaveFCMTokenUseCase
+    })
+    container.register<IRevokeFCMTokenUseCase>("IRevokeFCMTokenUseCase",{
+      useClass:RevokeFCMTokenUseCase
+    })
     container.register<IUpdateSellerStatusUseCase>("IUpdateSellerStatusUseCase",{
-      useClass:updateSellerStatusUseCase
+      useClass:UpdateSellerStatusUseCase
     });
     container.register<IGetAllCustomersUseCase>("IGetAllCustomersUseCase", {
       useClass: getAllCustomers,

@@ -40,6 +40,17 @@ export class ClientRoutes extends BaseRoute {
       }
     )
 
+    //saving fcm token
+    this.router.post(
+      "/user/savefcm-token",
+      verifyAuth,
+      authorizeRole(["user"]),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        userController.saveFcmToken(req,res);
+      }
+    )
+
     //User password change 
     this.router.patch(
       "/user/change-password",
@@ -69,7 +80,7 @@ export class ClientRoutes extends BaseRoute {
       authorizeRole(["user"]),
       blockStatusMiddleware.checkStatus as RequestHandler,
       (req:Request,res:Response,next:NextFunction)=>{
-        userController.isSeller(req,res,next);
+        userController.isSeller(req,res);
       }
     )
 

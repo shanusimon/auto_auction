@@ -16,6 +16,7 @@ export interface IUserEntity {
     bids?: string[];
     listings?: string[];
     walletId: ObjectId | string
+    fcmToken?:string
 
     isSeller?: boolean;
     sellerId?:ObjectId | string

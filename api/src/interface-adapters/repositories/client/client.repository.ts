@@ -3,6 +3,8 @@ import { IClientEntity } from "../../../entities/models/client.entity";
 import { ClientModel } from "../../../frameworks/database/models/client.model";;
 import { IClientRepository } from "../../../entities/repositoryInterfaces/client/IClient-repository.interface";
 import { ClientProfileResponse } from "../../../shared/dtos/user.dto";
+import { CustomError } from "../../../entities/utils/custom.error";
+import { ERROR_MESSAGES, HTTP_STATUS } from "../../../shared/constants";
 
 @injectable()
 export class ClientRepository implements IClientRepository{
@@ -86,4 +88,21 @@ export class ClientRepository implements IClientRepository{
         const matchingusers = await ClientModel.find(useQuery).select('_id');
         return matchingusers.map(user=>user._id.toString())
     }
+    async updateFcmToken(id: string, fcmToken: string): Promise<void> {
+        const result = await ClientModel.findByIdAndUpdate(id,{
+            $set:{fcmToken}
+        })
+        if(!result){
+            throw new CustomError(ERROR_MESSAGES.USER_NOT_FOUND,HTTP_STATUS.BAD_REQUEST)
+        }
+    }
+    async revokeFcmToken(id: string): Promise<void> {
+        const result = await ClientModel.findByIdAndUpdate(id, {
+            $unset: { fcmToken: "" }
+          });
+          if (!result) {
+            throw new CustomError(ERROR_MESSAGES.USER_NOT_FOUND, HTTP_STATUS.BAD_REQUEST);
+          }
+    }
+
 }

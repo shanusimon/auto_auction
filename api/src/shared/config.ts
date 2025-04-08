@@ -1,8 +1,26 @@
 import dotenv from "dotenv";
 import path from "path"
 dotenv.config({path:path.resolve(__dirname,"../../.env")});
+import * as admin from "firebase-admin";
 
+const serviceAccountPath = path.resolve(__dirname, "../../auto-auction-ce674-firebase-adminsdk-fbsvc-7aa3c3be76.json");
 
+let serviceAccount: admin.ServiceAccount;
+
+try {
+  serviceAccount = require(serviceAccountPath);
+} catch (error) {
+  console.error("Failed to load Firebase service account:", error);
+  throw new Error("Firebase Admin SDK initialization failed due to missing or invalid service account file");
+}
+
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
+
+export const messaging = admin.messaging();
 
 export const config ={
     cors:{

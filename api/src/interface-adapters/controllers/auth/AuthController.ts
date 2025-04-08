@@ -42,6 +42,8 @@ import { IGoogleAuthUseCase } from "../../../entities/useCaseInterfaces/auth/IGo
 import { IForgetPasswordUseCase } from "../../../entities/useCaseInterfaces/auth/IForgetPasswordUseCase";
 import { resetPasswordValidationSchema } from "../validations/reset-password.validation.schema";
 import { IResetPasswordUseCase } from "../../../entities/useCaseInterfaces/auth/IResetPasswordUseCase";
+import { IRevokeFCMTokenUseCase } from "../../../entities/useCaseInterfaces/auth/IRevokeFCMTokenUseCase";
+
 
 @injectable()
 export class AuthController implements IAuthController {
@@ -69,7 +71,9 @@ export class AuthController implements IAuthController {
     @inject("IForgetPasswordUseCase")
     private forgetPasswordUseCase:IForgetPasswordUseCase,
     @inject("IResetPasswordUseCase")
-    private resetPasswordUseCase:IResetPasswordUseCase
+    private resetPasswordUseCase:IResetPasswordUseCase,
+    @inject("IRevokeFCMTokenUseCase")
+    private revokeFCMtokenUseCase:IRevokeFCMTokenUseCase
   ) {}
 
   //*                  🛠️ User Login
@@ -150,15 +154,26 @@ export class AuthController implements IAuthController {
 
   async logout(req: Request, res: Response): Promise<void> {
     try {
+      
+      const user = (req as CustomRequest).user;
+
+      if (user.role === "user") {
+        try {
+          await this.revokeFCMtokenUseCase.execute(user.id); 
+        } catch (err) {
+          console.warn(`Failed to revoke FCM token for user ${user.id}:`, err);
+        }
+      }
+
       await this.blacklistTokenUseCase.execute(
         (req as CustomRequest).user.access_token
       );
+
 
       await this.revokeRefreshTokenUseCase.execute(
         (req as CustomRequest).user.refresh_token
       );
 
-      const user = (req as CustomRequest).user;
       console.log("logout user", user);
       const accessTokenName = `${user.role}_access_token`;
       const refreshTokenName = `${user.role}_refresh_token`;

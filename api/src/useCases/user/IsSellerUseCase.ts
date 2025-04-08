@@ -22,9 +22,8 @@ export class IsSellerUseCase implements IIsSellerUseCase {
         }
 
         const seller = await this.sellerRepository.findByUserId(user.id);
-        
         return {
-            isSeller: user.isSeller && seller?.approvalStatus === "approved" ? true : false,
+            isSeller: seller?.approvalStatus === "approved" ? true : false,
             sellerDetails: seller ? {
                 approvalStatus: seller.approvalStatus,
             } : null

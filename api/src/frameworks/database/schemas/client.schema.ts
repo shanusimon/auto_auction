@@ -19,6 +19,7 @@ export const ClientSchema = new Schema<IClientModel>(
         bids: [{ type: String }],
         listings: [{ type: String }],
         walletId:{type:Schema.Types.ObjectId,ref:"Wallet",required:true},
+        fcmToken:{type:String,default:null},
         isSeller: { type: Boolean, default: false },
         sellerId: { type: Schema.Types.ObjectId, ref: "Seller", default: null },
     },
