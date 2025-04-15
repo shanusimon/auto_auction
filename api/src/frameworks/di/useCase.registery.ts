@@ -60,6 +60,12 @@ import { ISaveFCMTokenUseCase } from "../../entities/useCaseInterfaces/user/ISav
 import { SaveFCMTokenUseCase } from "../../useCases/user/SaveFCMTokenUseCase";
 import { IRevokeFCMTokenUseCase } from "../../entities/useCaseInterfaces/auth/IRevokeFCMTokenUseCase";
 import { RevokeFCMTokenUseCase } from "../../useCases/auth/RevokeFCMTokenUseCase";
+import { ICarRegisterUseCase } from "../../entities/useCaseInterfaces/car/ICarRegisterUsecase";
+import { CarRegisterUseCase } from "../../useCases/car/CarRegisterUseCase";
+import { IGetAllCarsUseCase } from "../../entities/useCaseInterfaces/car/IGetAllCarsUseCase";
+import { GetAllCarsUseCase } from "../../useCases/car/GetAllCarsUseCase";
+import { IFindSellerDetailsUseCase } from "../../entities/useCaseInterfaces/seller/IFindSellerDetails";
+import { FindSellerDetailsUseCase } from "../../useCases/seller/FindSellerDetailsUseCase";
 
 export class UseCaseRegistery {
   static registerUseCases(): void {
@@ -68,14 +74,23 @@ export class UseCaseRegistery {
       useClass: PasswordBcrypt,
     });
     //* ====== Register UseCases ====== *//
+    container.register<ICarRegisterUseCase>("ICarRegisterUseCase",{
+      useClass:CarRegisterUseCase
+    })
     container.register<IRegisterUserUseCase>("IRegisterUserUseCase", {
       useClass: RegisterUserUseCase,
     });
+    container.register<IFindSellerDetailsUseCase>("IFindSellerDetailsUseCase",{
+      useClass:FindSellerDetailsUseCase
+    })
     container.register<ISaveFCMTokenUseCase>("SaveFCMTokenUseCase",{
       useClass:SaveFCMTokenUseCase
     })
     container.register<IRevokeFCMTokenUseCase>("IRevokeFCMTokenUseCase",{
       useClass:RevokeFCMTokenUseCase
+    })
+    container.register<IGetAllCarsUseCase>("IGetAllCarsUseCase",{
+      useClass:GetAllCarsUseCase
     })
     container.register<IUpdateSellerStatusUseCase>("IUpdateSellerStatusUseCase",{
       useClass:UpdateSellerStatusUseCase

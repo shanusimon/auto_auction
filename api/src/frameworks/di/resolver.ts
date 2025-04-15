@@ -13,6 +13,7 @@ import { WalletController } from "../../interface-adapters/controllers/wallet/wa
 import { TransactionController } from "../../interface-adapters/controllers/transaction/TransactoinController";
 import { HandleWebHookController } from "../../interface-adapters/controllers/payment/HandleWebHookController";
 import { SellerController } from "../../interface-adapters/controllers/seller/SellerController";
+import { CarController } from "../../interface-adapters/controllers/car/CarController";
 // Registering all registries using a single class
 
 DependencyInjection.registerAll();
@@ -27,3 +28,4 @@ export const walletController = container.resolve(WalletController);
 export const webHookController = container.resolve(HandleWebHookController);
 export const transactionController = container.resolve(TransactionController);
 export const sellerController = container.resolve(SellerController);
+export const carController = container.resolve(CarController)

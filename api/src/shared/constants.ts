@@ -39,7 +39,8 @@ export const ERROR_MESSAGES = {
 	WRONG_CURRENT_PASSWORD: "Current password is wrong",
 	SAME_CURR_NEW_PASSWORD: "Please enter a different password from current",
    WALLET_NOT_FOUND:"wallet not found",
-   UPDATE_FAILED:"updation failed"
+   UPDATE_FAILED:"updation failed",
+   SELLER_NOT_FOUND:"seller not found"
 } as const;
 
 export const SUCCESS_MESSAGES = {

@@ -18,7 +18,8 @@ import { IWalletTransactionRepository } from "../../entities/repositoryInterface
 import { WalletTransactionRepository } from "../../interface-adapters/repositories/wallet-transaction/WalletTransactionRepository";
 import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/sellerRepository";
 import { SellerRepository } from "../../interface-adapters/repositories/seller/SellerRepository";
-
+import { CarRepository } from "../../interface-adapters/repositories/car/car.repository";
+import { ICarRepository } from "../../entities/repositoryInterfaces/car/carRepository";
 //service imports
 import { IOtpService } from "../../entities/services/IOtpService";
 import { OtpService } from "../../interface-adapters/services/OtpService";
@@ -37,6 +38,9 @@ export class RepositoryRegistry{
         container.register<IUserExistenceService>("IUserExistenceService",{
             useClass:UserExistenceService
         });
+        container.register<ICarRepository>("ICarRepository",{
+            useClass:CarRepository
+        })
         container.register<IRefreshTokenRepository>("IRefreshTokenRepository",{
             useClass:RefreshTokenRepository
         });

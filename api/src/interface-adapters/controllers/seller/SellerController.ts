@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import { ISellerController } from "../../../entities/controllerInterfaces/seller/ISellerController";
 import { inject, injectable } from "tsyringe";
 import { CustomRequest } from "../../middlewares/authMiddleware";
@@ -13,7 +13,7 @@ import { ISellerRegisterUseCase } from "../../../entities/useCaseInterfaces/sell
 import { IGetAllSellerRequestUseCase } from "../../../entities/useCaseInterfaces/seller/IGetAllSellerRequestUseCase";
 import { CustomError } from "../../../entities/utils/custom.error";
 import { IUpdateSellerStatusUseCase } from "../../../entities/useCaseInterfaces/seller/IUpdateSellerStatusUseCase";
-
+import { IFindSellerDetailsUseCase } from "../../../entities/useCaseInterfaces/seller/IFindSellerDetails";
 @injectable()
 export class SellerController implements ISellerController {
   constructor(
@@ -22,7 +22,9 @@ export class SellerController implements ISellerController {
     @inject("IGetAllSellerRequestUseCase")
     private getAllSellerRequestUseCase: IGetAllSellerRequestUseCase,
     @inject("IUpdateSellerStatusUseCase")
-    private updateSellerStatusUseCase: IUpdateSellerStatusUseCase
+    private updateSellerStatusUseCase: IUpdateSellerStatusUseCase,
+    @inject("IFindSellerDetailsUseCase")
+    private findSellerDetailsUseCase:IFindSellerDetailsUseCase
   ) {}
   async register(req: Request, res: Response): Promise<void> {
     try {
@@ -98,7 +100,6 @@ export class SellerController implements ISellerController {
     if (!status || !["approved", "rejected"].includes(status)) {
         throw new CustomError(ERROR_MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.BAD_REQUEST);
     }
-    console.log("heelo controllerrrrr");
       await this.updateSellerStatusUseCase.execute(String(userId), status as "approved" | "rejected");
 
       res
@@ -107,5 +108,23 @@ export class SellerController implements ISellerController {
     } catch (error) {
       handleErrorResponse(res, error);
     }
+  }
+  
+  async getSellerDetails(req: Request, res: Response): Promise<void> {
+      try {
+        const {sellerId} = req.params as {sellerId?:string};
+        if(!sellerId){
+          throw new CustomError(ERROR_MESSAGES.INVALID_CREDENTIALS,HTTP_STATUS.BAD_REQUEST);
+        }
+
+        const userDetails = await this.findSellerDetailsUseCase.execute(sellerId);
+        console.log(userDetails);
+        
+
+        res.status(HTTP_STATUS.OK).json({userDetails})
+       
+      } catch (error) {
+        handleErrorResponse(res,error);
+      }
   }
 }

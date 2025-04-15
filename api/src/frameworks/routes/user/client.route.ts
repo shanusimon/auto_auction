@@ -6,7 +6,7 @@ import {
   
 } from "../../../interface-adapters/middlewares/authMiddleware";
 
-import { authController, transactionController, userController, walletController,sellerController } from "../../di/resolver";
+import { authController, transactionController, userController, walletController,sellerController, carController } from "../../di/resolver";
 import { BaseRoute } from "../base.route";
 import { blockStatusMiddleware } from "../../di/resolver";
 
@@ -92,6 +92,16 @@ export class ClientRoutes extends BaseRoute {
       blockStatusMiddleware.checkStatus as RequestHandler,
       (req:Request,res:Response)=>{
         transactionController.getAllTransaction(req,res);
+      }
+    )
+
+    this.router.post(
+      "/user/register-car",
+      verifyAuth,
+      authorizeRole(["user"]),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        carController.register(req,res);
       }
     )
 
