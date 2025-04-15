@@ -8,7 +8,7 @@ import { User as UserIcon, Camera, AlertCircle } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import Header from '@/components/header/Header';
-import { uploadProfileImageCloudinary } from '@/utils/cloudinaryProfileImageUpload';
+import { uploadProfileImageCloudinary } from '@/utils/cloudinaryImageUpload';
 import { UpdateProfilePayLoad, updateUserProfile } from '@/store/slices/user.slice';
 import { PasswordChangeDialog } from '@/components/modals/PasswordChangeModal';
 import { profileSchema } from '@/utils/validations/proflevalidator';

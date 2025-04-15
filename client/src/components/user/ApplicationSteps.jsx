@@ -1,4 +1,4 @@
-mport { FileCheck, Building2, UserCheck } from "lucide-react";
+import { FileCheck, Building2, UserCheck } from "lucide-react";
 
 export const ApplicationSteps = () => {
   return (
@@ -28,18 +28,18 @@ export const ApplicationSteps = () => {
   );
 };
 
-const StepCard = ({ icon, title, description }: { 
-  icon: React.ReactNode; 
-  title: string; 
-  description: string 
-}) => {
-  return (
-    <div className="bg-zinc-800 p-6 rounded-lg">
-      <div className="bg-zinc-700 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-        {icon}
-      </div>
-      <h4 className="text-white font-medium mb-2">{title}</h4>
-      <p className="text-sm text-zenith-light-gray">{description}</p>
-    </div>
-  );
-};
+// const StepCard = ({ icon, title, description }: { 
+//   icon: React.ReactNode; 
+//   title: string; 
+//   description: string 
+// }) => {
+//   return (
+//     <div className="bg-zinc-800 p-6 rounded-lg">
+//       <div className="bg-zinc-700 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
+//         {icon}
+//       </div>
+//       <h4 className="text-white font-medium mb-2">{title}</h4>
+//       <p className="text-sm text-zenith-light-gray">{description}</p>
+//     </div>
+//   );
+// };

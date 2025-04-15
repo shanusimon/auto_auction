@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Check, X, Eye } from 'lucide-react';
 import { format } from 'date-fns';
@@ -15,28 +14,16 @@ const SellerRequestTable: React.FC<SellerRequestTableProps> = ({
   onReject ,
   isPending
 }) => {
-  const { toast } = useToast();
   const [selectedRequest, setSelectedRequest] = useState<ISellerEntity | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
       console.log(selectedRequest);
   const handleApprove = (requestId: string) => {
-    console.log("Hello this is userId",requestId)
     onApprove(requestId);
-    toast({
-      title: "Seller Request Approved",
-      description: "The seller request has been approved successfully.",
-      duration: 3000,
-    });
     setDetailsOpen(false);
   };
 
   const handleReject = (requestId: string) => {
     onReject(requestId);
-    toast({
-      title: "Seller Request Rejected",
-      description: "The seller request has been rejected.",
-      duration: 3000,
-    });
     setDetailsOpen(false);
   };
 
@@ -144,15 +131,15 @@ const SellerRequestTable: React.FC<SellerRequestTableProps> = ({
                     <dl className="space-y-2">
                       <div>
                         <dt className="text-sm font-medium text-gray-500">Name</dt>
-                        <dd>{selectedRequest.userName}</dd>
+                        <dd>{selectedRequest.userId?.name}</dd>
                       </div>
                       <div>
                         <dt className="text-sm font-medium text-gray-500">Email</dt>
-                        <dd>{selectedRequest.userEmail}</dd>
+                        <dd>{selectedRequest.userId?.email}</dd>
                       </div>
                       <div>
                         <dt className="text-sm font-medium text-gray-500">Phone</dt>
-                        <dd>{selectedRequest.userPhone}</dd>
+                        <dd>{selectedRequest.userId?.phone}</dd>
                       </div>
                       <div>
                         <dt className="text-sm font-medium text-gray-500">Address</dt>

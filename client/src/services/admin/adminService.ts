@@ -6,6 +6,30 @@ export const logoutAdmin = async()=>{
     return response.data
 }
 
+export const getAllCarRequests = async({
+    page = 1,
+    limit = 10,
+    search=""
+}:{
+    page:number,
+    limit:number,
+    search:string
+})=>{
+    const response = await adminAxiosInstance.get("/_ad/admin/get-allCarRequests",{
+        params:{
+            page,
+            limit,
+            search
+        }
+    })
+    return response.data
+}
+
+export const getSellerDetails = async(sellerId:string)=>{
+        const response = await adminAxiosInstance.get(`/_ad/admin/seller-details/${sellerId}`);
+        return response.data
+}
+
 export const getAllCustomers = async({
     page = 1,
     limit = 10,

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/components/header/Header";
 import { SellerApplicationForm } from "@/components/user/SellerApplicationFrom";
 import { useGetIsSeller } from "@/hooks/user/useSeller";
+import { CarListingForm } from "@/components/user/CarSellingApplication/CarListingFrom";
+
 
 const SellerApplication = () => {
   const navigate = useNavigate();
@@ -44,13 +46,7 @@ const SellerApplication = () => {
             </div>
           ) : isApprovedSeller ? (
             <>
-              <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-white mb-3">Car Registration</h1>
-                <p className="text-[#8E9196] max-w-lg mx-auto">
-                  Register your cars for sale on our platform
-                </p>
-              </div>
-              {/* Add your Car Registration component/form here */}
+              <CarListingForm/>
             </>
           ) : sellerDetails && approvalStatus === "pending" ? (
             <div className="text-center py-12">

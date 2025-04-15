@@ -5,6 +5,7 @@ import AdminCustomers from "@/pages/admin/AdminCustomers";
 import UnauthorizedPage from "@/pages/common/UnauthorizedPage";
 import { Navigate } from "react-router-dom";
 import AdminSellers from "@/pages/admin/AdminSellerRequests";
+import CarApprovals from "@/pages/admin/AdminCarApprovals";
 
 export function AdminRoutes(){
     return (
@@ -20,6 +21,10 @@ export function AdminRoutes(){
            <Route 
             path="/seller-request" 
             element={<ProtectedRoutes allowedRoles={["admin"]} element={<AdminSellers/>}/>} 
+          />
+            <Route 
+            path="/car-approvals" 
+            element={<ProtectedRoutes allowedRoles={["admin"]} element={<CarApprovals/>}/>} 
           />
           <Route 
             path="/unauthorized" 

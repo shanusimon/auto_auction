@@ -68,7 +68,7 @@ export const SellerApplicationForm = () => {
         duration: 5000,
       });
 
-      navigate("/profile");
+      navigate("/");
     }
     } catch (error) {
       toast({
