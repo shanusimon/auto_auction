@@ -14,6 +14,7 @@ import { TransactionController } from "../../interface-adapters/controllers/tran
 import { HandleWebHookController } from "../../interface-adapters/controllers/payment/HandleWebHookController";
 import { SellerController } from "../../interface-adapters/controllers/seller/SellerController";
 import { CarController } from "../../interface-adapters/controllers/car/CarController";
+// import { BidController } from "../../interface-adapters/controllers/bid/BidController";
 // Registering all registries using a single class
 
 DependencyInjection.registerAll();
@@ -29,3 +30,4 @@ export const webHookController = container.resolve(HandleWebHookController);
 export const transactionController = container.resolve(TransactionController);
 export const sellerController = container.resolve(SellerController);
 export const carController = container.resolve(CarController)
+// export const bidController = container.resolve(BidController);

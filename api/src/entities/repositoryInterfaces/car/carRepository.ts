@@ -1,5 +1,5 @@
 import { ICarEntity } from "../../models/car.entity";
-import { CreateCarDTO } from "../../../shared/dtos/car.dto";
+import { CreateCarDTO, ICarFilter } from "../../../shared/dtos/car.dto";
 
 export interface ICarRepository{
     create(data:CreateCarDTO):Promise<ICarEntity>
@@ -11,4 +11,7 @@ export interface ICarRepository{
     count(
         filter:any
     ):Promise<number>
-}
+    findById(carId:string):Promise<ICarEntity | null>
+    findByIdAndUpdate(id:string,data:ICarEntity):Promise<void>
+    getFilteredCars(filter:ICarFilter,sort:string,page:number,limit:number):Promise<ICarEntity[]>
+} 

@@ -28,6 +28,7 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
     seller.approvalStatus = status;
     if (status === SellerStatus.APPROVED) {
       seller.sellerSince = new Date();
+      seller.isActive = true;
       seller.isSeller = true;
     } else if (status === SellerStatus.REJECTED) {
       seller.sellerSince = undefined;

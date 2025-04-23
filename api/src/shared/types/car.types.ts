@@ -7,10 +7,18 @@ export enum FuelType {
 }
 
 export enum BodyType {
-  Sedan = "Sedan",
-  SUV = "SUV",
-  Coupe = "Coupe",
-  Convertible = "Convertible",
-  Wagon = "Wagon",
-  Limousine = "Limousine",
+  Sedan = "sedan",
+  SUV = "suv",
+  Coupe = "coupe",
+  Convertible = "convertible",
+  Wagon = "wagon",
+  Limousine = "limousine",
 }
+
+export enum TransmissionType {
+  automatic="automatic",
+  manual="manual",
+  semi_automatic="semi_automatic",
+  cvt="cvt"
+}
+

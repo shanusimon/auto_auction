@@ -8,15 +8,29 @@ import { dataParser } from "../../interface-adapters/middlewares/dataParserMiddl
 import { config } from "../../shared/config";
 import { AuthRoutes } from "../routes/auth/auth.route";
 import { PrivateRoutes } from "../routes/private/privateRoute";
+import {Server as SocketIOServer} from 'socket.io'
+import { createServer } from "http";
+// import { bidController } from "../di/resolver";
 
 
 export class Server{
     private _app: Application;
+    private _httpServer:ReturnType<typeof createServer>;
+    private _io: SocketIOServer;
     constructor(){
         this._app = express();
+        this._httpServer = createServer(this._app);
+        this._io = new SocketIOServer(this._httpServer,{
+            cors:{
+                origin:config.cors.ALLOWED_ORGIN,
+                methods:['GET','POST'],
+                credentials:true
+            }
+        })
         this.configureMiddlewares();
         this.configureRoutes();
         this.configureErrorHandling();
+        // this.configureSocketEvents();
     }
 
     private configureMiddlewares():void{
@@ -48,7 +62,10 @@ export class Server{
         this._app.use("/api/v_1/auth",new AuthRoutes().router);
         this._app.use("/api/v_1/pvt",new PrivateRoutes().router);
     }
-
+    // private configureSocketEvents():void{
+    //     bidController.setupSocketEvents(this._io)
+    // }
+ 
     private configureErrorHandling():void{
         this._app.use(
             (err:any,req:Request,res:Response,next:NextFunction)=>{

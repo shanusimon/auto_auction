@@ -10,11 +10,12 @@ export class GetAllSellerUseCase implements IGetAllSellerRequestUseCase{
         @inject("ISellerRepository") private sellerRepository:ISellerRepository,
         @inject("IClientRepository") private clientRepository:IClientRepository
     ){}
-    async execute(page: number, pageSize: number, searchTerm: string): Promise<PagenateSellers> {
+    async execute(page: number, pageSize: number, searchTerm: string,isRequestTable:boolean): Promise<PagenateSellers> {
         const validPageNumber = Math.max(1, page || 1);
         const validPageSize = Math.max(1, pageSize || 10);
         const skip = (validPageNumber - 1) * validPageSize;
-        let filter:any = {approvalStatus:'pending'};
+        
+        let filter:any = {approvalStatus:isRequestTable?'pending':'approved'};
 
         if(searchTerm){
             const matchingUserIds = await this.clientRepository.findBySearchTerm(searchTerm);

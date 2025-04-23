@@ -10,7 +10,6 @@ import { authController, transactionController, userController, walletController
 import { BaseRoute } from "../base.route";
 import { blockStatusMiddleware } from "../../di/resolver";
 
-
 export class ClientRoutes extends BaseRoute {
   constructor() {
     super();
@@ -84,6 +83,15 @@ export class ClientRoutes extends BaseRoute {
       }
     )
 
+    this.router.get(
+      "/user/cars",
+      verifyAuth,
+      authorizeRole(["user"]),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        carController.getCarsWithFilter(req,res)
+      }
+    )
     //transaction history
     this.router.get(
       "/user/getAllTransaction",
@@ -95,6 +103,7 @@ export class ClientRoutes extends BaseRoute {
       }
     )
 
+    //get cars in home page 
     this.router.post(
       "/user/register-car",
       verifyAuth,
@@ -115,6 +124,17 @@ export class ClientRoutes extends BaseRoute {
         sellerController.register(req,res);
       }
     )
+
+    //car-details
+    this.router.get(
+      "/user/car/:id",
+      verifyAuth,
+      authorizeRole(['user']),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        carController.getCarDetails(req,res);
+      }
+    )
     
     //token refresh
     this.router.post(
@@ -124,6 +144,6 @@ export class ClientRoutes extends BaseRoute {
         console.log("refresh Token triggered");
         authController.refreshToken(req,res);
       }
-    )
+    )  
   }
 }

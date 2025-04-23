@@ -12,6 +12,7 @@ import { HandleWebHookController } from "../../interface-adapters/controllers/pa
 import { SellerController } from "../../interface-adapters/controllers/seller/SellerController";
 import { TransactionController } from "../../interface-adapters/controllers/transaction/TransactoinController";
 import { CarController } from "../../interface-adapters/controllers/car/CarController";
+// import { BidController } from "../../interface-adapters/controllers/bid/BidController";
 
 export class controllerRegistery{
     static registerControllers():void{
@@ -39,5 +40,8 @@ export class controllerRegistery{
         container.register("CarController",{
             useClass:CarController
         })
+        // container.register("BidController",{
+        //     useClass:BidController
+        // })
     }
 }

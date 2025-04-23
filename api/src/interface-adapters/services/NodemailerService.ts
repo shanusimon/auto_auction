@@ -2,7 +2,8 @@ import nodemailer from "nodemailer";
 import { injectable } from "tsyringe";
 import { INodemailerService } from "../../entities/services/INodeMailerService";
 import { config } from "../../shared/config";
-import { VERIFICATION_MAIL_CONTENT,HTTP_STATUS,ERROR_MESSAGES,SUCCESS_MESSAGES,RESET_PASSWORD_MAIL_CONTENT } from "../../shared/constants";
+import { VERIFICATION_MAIL_CONTENT,HTTP_STATUS,ERROR_MESSAGES,SUCCESS_MESSAGES,RESET_PASSWORD_MAIL_CONTENT, CAR_APPROVAL_MAIL_CONTENT, CAR_REJECTION_MAIL_CONTENT } from "../../shared/constants";
+import { ICarEntity } from "../../entities/models/car.entity";
 
 @injectable()
 export class NodemailerService implements INodemailerService {
@@ -49,4 +50,23 @@ export class NodemailerService implements INodemailerService {
             }
             await this.transporter.sendMail(mailOptions);
     }
+    async sendCarRejectEmail(email: string, car: ICarEntity,rejectionReason:string): Promise<void> {
+        const mailOptions = {
+            from:`Auo Auction <${config.nodemailer.EMAIL_USER}>`,
+            to:email,
+            subject:"Your Car Listing Was Rejected",
+            html:`${CAR_REJECTION_MAIL_CONTENT(car,rejectionReason)}`
+        }
+        await this.transporter.sendMail(mailOptions)
+    }
+    async sendCarApprovalEmail(email: string, car: ICarEntity): Promise<void> {
+        const mailOptions = {
+            from:`Auo Auction <${config.nodemailer.EMAIL_USER}>`,
+            to:email,
+            subject:"Your Car Listing Was Approved",
+            html:`${CAR_APPROVAL_MAIL_CONTENT(car)}`
+        }
+        await this.transporter.sendMail(mailOptions)
+    }
+
 }

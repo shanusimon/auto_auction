@@ -1,3 +1,4 @@
+import { ICarEntity } from "../entities/models/car.entity";
 export const ROLES = {
 	ADMIN:"admin",
 	USER:"user"
@@ -40,7 +41,11 @@ export const ERROR_MESSAGES = {
 	SAME_CURR_NEW_PASSWORD: "Please enter a different password from current",
    WALLET_NOT_FOUND:"wallet not found",
    UPDATE_FAILED:"updation failed",
-   SELLER_NOT_FOUND:"seller not found"
+   SELLER_NOT_FOUND:"seller not found",
+   CAR_NOT_FOUND:"car details on this Id is not found",
+   REJECTION_REASON_IS_NEEDED:"rejection reason is needed",
+   CAR_UPDATE_CREDENTIALS_MISSING:"Car ID or SellerEmail is required and must be a string",
+   REJECTION_REASON_IS_MISSING:"Rejection reason is required when rejecting a car",
 } as const;
 
 export const SUCCESS_MESSAGES = {
@@ -170,4 +175,223 @@ export const RESET_PASSWORD_MAIL_CONTENT = (
    <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #8A898C;">
       © ${new Date().getFullYear()} AUTO<span style="color: #9b87f5;">AUCTION</span>. All rights reserved.
    </div>
+</div>`;
+export const CAR_REJECTION_MAIL_CONTENT = (
+   car: ICarEntity,
+   rejectionReason: string
+) => `<div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #ffffff; background-color: #1A1F2C;">
+  <!-- Logo & Header Section -->
+  <div style="text-align: center; margin-bottom: 30px; padding-top: 20px;">
+     <h1 style="font-size: 42px; font-weight: bold; margin: 0; color: #ffffff;">
+        🚗 AUTO<span style="color: #9b87f5;">AUCTION</span>
+     </h1>
+  </div>
+
+  <h2 style="color: #ff6b6b; text-align: center; margin-bottom: 30px;">
+     Car Listing Rejected ❌
+  </h2>
+  
+  <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px; text-align: center; color: #C8C8C9;">
+     We're sorry to inform you that your car listing has been rejected. <br> Please review the details below for more information.
+  </p>
+  
+  <!-- Rejection Reason Section -->
+  <div style="background-color: #2D2834; border-radius: 8px; padding: 20px; margin: 25px 0; text-align: center; border: 1px solid #ff6b6b;">
+     <h3 style="color: #ff6b6b; margin-top: 0; margin-bottom: 15px;">Reason for Rejection</h3>
+     <p style="color: #C8C8C9; font-size: 16px;">${rejectionReason}</p>
+  </div>
+
+  <!-- Car Details Section -->
+  <div style="background-color: #221F26; border-radius: 8px; padding: 20px; margin: 25px 0; border: 1px solid #7E69AB;">
+     <h3 style="color: #9b87f5; margin-top: 0; margin-bottom: 15px;">Car Details</h3>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Title:</div>
+        <div style="width: 60%; color: #ffffff; font-weight: bold;">${car.title}</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Make:</div>
+        <div style="width: 60%; color: #ffffff;">${car.make}</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Model:</div>
+        <div style="width: 60%; color: #ffffff;">${car.model}</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Year:</div>
+        <div style="width: 60%; color: #ffffff;">${car.year}</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Mileage:</div>
+        <div style="width: 60%; color: #ffffff;">${car.mileage.toLocaleString()} miles</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Body Type:</div>
+        <div style="width: 60%; color: #ffffff;">${car.bodyType}</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Fuel Type:</div>
+        <div style="width: 60%; color: #ffffff;">${car.fuel}</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Transmission:</div>
+        <div style="width: 60%; color: #ffffff;">${car.transmission}</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Location:</div>
+        <div style="width: 60%; color: #ffffff;">${car.location}</div>
+     </div>
+  </div>
+  
+  <p style="font-size: 16px; line-height: 1.5; margin: 20px 0; text-align: center; color: #C8C8C9;">
+     You can address the issues mentioned and submit a new listing at any time.
+  </p>
+
+  <!-- Support Section -->
+  <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #403E43; text-align: center;">
+     <p style="font-size: 14px; color: #9F9EA1;">
+        Need help? Contact our support team! 🚀<br>
+        📧 Email: <a href="mailto:support@autoauction.com" style="color: #9b87f5; text-decoration: none;">support@autoauction.com</a>
+     </p>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #8A898C;">
+     © ${new Date().getFullYear()} AUTO<span style="color: #9b87f5;">AUCTION</span>. All rights reserved.
+  </div>
+</div>`;
+
+export const CAR_APPROVAL_MAIL_CONTENT = (
+   car: ICarEntity
+) => `<div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #ffffff; background-color: #1A1F2C;">
+  <!-- Logo & Header Section -->
+  <div style="text-align: center; margin-bottom: 30px; padding-top: 20px;">
+     <h1 style="font-size: 42px; font-weight: bold; margin: 0; color: #ffffff;">
+        🚗 AUTO<span style="color: #9b87f5;">AUCTION</span>
+     </h1>
+  </div>
+
+  <h2 style="color: #66d9a8; text-align: center; margin-bottom: 30px;">
+     Congratulations! Your Car Listing Is Approved ✅
+  </h2>
+  
+  <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px; text-align: center; color: #C8C8C9;">
+     Great news! Your car has been approved and is now live for auction on our platform.
+  </p>
+  
+  <!-- Auction Timing Section -->
+  <div style="background-color: #2D2834; border-radius: 8px; padding: 20px; margin: 25px 0; text-align: center; border: 1px solid #66d9a8;">
+     <h3 style="color: #66d9a8; margin-top: 0; margin-bottom: 15px;">Auction Schedule</h3>
+     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+        <div style="width: 48%; background-color: #221F26; padding: 15px; border-radius: 6px;">
+           <p style="color: #8A898C; margin: 0 0 5px 0;">Start Time</p>
+           <p style="color: #ffffff; font-size: 16px; font-weight: bold; margin: 0;">
+              ${car.auctionStartTime?.toLocaleString('en-US', { 
+                 year: 'numeric', 
+                 month: 'long', 
+                 day: 'numeric', 
+                 hour: '2-digit', 
+                 minute: '2-digit' 
+              })}
+           </p>
+        </div>
+        <div style="width: 48%; background-color: #221F26; padding: 15px; border-radius: 6px;">
+           <p style="color: #8A898C; margin: 0 0 5px 0;">End Time</p>
+           <p style="color: #ffffff; font-size: 16px; font-weight: bold; margin: 0;">
+              ${car.auctionEndTime?.toLocaleString('en-US', { 
+                 year: 'numeric', 
+                 month: 'long', 
+                 day: 'numeric', 
+                 hour: '2-digit', 
+                 minute: '2-digit' 
+              })}
+           </p>
+        </div>
+     </div>
+     <p style="color: #C8C8C9; font-size: 14px; margin-top: 15px;">
+        Duration: ${car.auctionDuration} day${parseFloat(car.auctionDuration) !== 1 ? 's' : ''}
+     </p>
+  </div>
+
+  <!-- Car Details Section -->
+  <div style="background-color: #221F26; border-radius: 8px; padding: 20px; margin: 25px 0; border: 1px solid #7E69AB;">
+     <h3 style="color: #9b87f5; margin-top: 0; margin-bottom: 15px;">Car Details</h3>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Title:</div>
+        <div style="width: 60%; color: #ffffff; font-weight: bold;">${car.title}</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Make:</div>
+        <div style="width: 60%; color: #ffffff;">${car.make}</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Model:</div>
+        <div style="width: 60%; color: #ffffff;">${car.model}</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Year:</div>
+        <div style="width: 60%; color: #ffffff;">${car.year}</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Mileage:</div>
+        <div style="width: 60%; color: #ffffff;">${car.mileage.toLocaleString()} miles</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Body Type:</div>
+        <div style="width: 60%; color: #ffffff;">${car.bodyType}</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Fuel Type:</div>
+        <div style="width: 60%; color: #ffffff;">${car.fuel}</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Transmission:</div>
+        <div style="width: 60%; color: #ffffff;">${car.transmission}</div>
+     </div>
+     
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Location:</div>
+        <div style="width: 60%; color: #ffffff;">${car.location}</div>
+     </div>
+     
+     ${car.reservedPrice ? `
+     <div style="display: flex; margin-bottom: 10px;">
+        <div style="width: 40%; color: #8A898C;">Reserved Price:</div>
+        <div style="width: 60%; color: #ffffff;">$${car.reservedPrice.toLocaleString()}</div>
+     </div>
+     ` : ''}
+  </div>
+  
+  <p style="font-size: 16px; line-height: 1.5; margin: 20px 0; text-align: center; color: #C8C8C9;">
+     You can track bidding activity and auction progress in your dashboard. We'll notify you of significant bid activity and when the auction ends.
+  </p>
+
+  <!-- Support Section -->
+  <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #403E43; text-align: center;">
+     <p style="font-size: 14px; color: #9F9EA1;">
+        Need help? Contact our support team! 🚀<br>
+        📧 Email: <a href="mailto:support@autoauction.com" style="color: #9b87f5; text-decoration: none;">support@autoauction.com</a>
+     </p>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #8A898C;">
+     © ${new Date().getFullYear()} AUTO<span style="color: #9b87f5;">AUCTION</span>. All rights reserved.
+  </div>
 </div>`;

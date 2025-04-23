@@ -12,7 +12,7 @@ export class IsSellerUseCase implements IIsSellerUseCase {
         @inject("ISellerRepository") private sellerRepository: ISellerRepository
     ) {}
 
-    async execute(id: string): Promise<{ isSeller: boolean; sellerDetails?: any }> {
+    async execute(id: string): Promise<{ isSeller: boolean; sellerDetails?: any; isActive:boolean}> {
         const user = await this.clientRepository.findById(id);
         if (!user || !user.id) {
             throw new CustomError(
@@ -26,7 +26,8 @@ export class IsSellerUseCase implements IIsSellerUseCase {
             isSeller: seller?.approvalStatus === "approved" ? true : false,
             sellerDetails: seller ? {
                 approvalStatus: seller.approvalStatus,
-            } : null
+            } : null,
+            isActive:seller?.isActive ?? false, 
         };
     }
 }

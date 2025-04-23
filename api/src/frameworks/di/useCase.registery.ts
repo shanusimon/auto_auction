@@ -66,6 +66,14 @@ import { IGetAllCarsUseCase } from "../../entities/useCaseInterfaces/car/IGetAll
 import { GetAllCarsUseCase } from "../../useCases/car/GetAllCarsUseCase";
 import { IFindSellerDetailsUseCase } from "../../entities/useCaseInterfaces/seller/IFindSellerDetails";
 import { FindSellerDetailsUseCase } from "../../useCases/seller/FindSellerDetailsUseCase";
+import { IUpdateCarStatus } from "../../entities/useCaseInterfaces/car/IUpdateCarStatus";
+import { UpdateCarStatus } from "../../useCases/car/UpdateCarstatus";
+import { IGetCarsFilterUseCase } from "../../entities/useCaseInterfaces/car/IGetCarsFilterUseCase";
+import { GetCarsFilterUseCase } from "../../useCases/car/GetCarsFilterUseCase";
+import { IGetCarDetailsUseCase } from "../../entities/useCaseInterfaces/car/ICarDetailsUseCase";
+import { GetCarDetailsUseCase } from "../../useCases/car/CarDetailsUseCase";
+import { IUpdateSellerActiveStatusUseCase } from "../../entities/useCaseInterfaces/seller/IUpdateSellerActiveStatusUseCase";
+import { UpdateSellerActiveStatus } from "../../useCases/seller/UpdateSelllerActiveStatusUseCase";
 
 export class UseCaseRegistery {
   static registerUseCases(): void {
@@ -74,8 +82,20 @@ export class UseCaseRegistery {
       useClass: PasswordBcrypt,
     });
     //* ====== Register UseCases ====== *//
+    container.register<IGetCarDetailsUseCase>("IGetCarDetailsUseCase",{
+      useClass:GetCarDetailsUseCase
+    })
+    container.register<IUpdateSellerActiveStatusUseCase>("IUpdateSellerActiveStatusUseCase",{
+      useClass:UpdateSellerActiveStatus
+    })
     container.register<ICarRegisterUseCase>("ICarRegisterUseCase",{
       useClass:CarRegisterUseCase
+    })
+    container.register<IGetCarsFilterUseCase>("IGetCarsFilterUseCase",{
+      useClass:GetCarsFilterUseCase
+    })
+    container.register<IUpdateCarStatus>("IUpdateCarStatus",{
+      useClass:UpdateCarStatus
     })
     container.register<IRegisterUserUseCase>("IRegisterUserUseCase", {
       useClass: RegisterUserUseCase,

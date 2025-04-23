@@ -29,6 +29,14 @@ export class AdminRoutes extends BaseRoute {
       }
     );
     this.router.get(
+      "/admin/seller",
+      verifyAuth,
+      authorizeRole(["admin"]),
+      (req:Request,res:Response)=>{
+        sellerController.getAllApprovedSellers(req,res)
+      }
+    )
+    this.router.get(
       "/admin/get-allSellerRequests",
       verifyAuth,
       authorizeRole(["admin"]),
@@ -68,12 +76,28 @@ export class AdminRoutes extends BaseRoute {
       }
     )
     this.router.patch(
+      "/admin/seller-status/:sellerId",
+      verifyAuth,
+      authorizeRole(["admin"]),
+      (req:Request,res:Response)=>{
+        sellerController.updateSellerActiveStatus(req,res);
+      }
+    )
+    this.router.patch(
        "/admin/sellerRequest-update/:userId",
        verifyAuth,
        authorizeRole(["admin"]),
        (req:Request,res:Response)=>{
         sellerController.updateSellerStatus(req,res)
        }
+    )
+    this.router.patch(
+      "/admin/updateCarStatus/:carId",
+      verifyAuth,
+      authorizeRole(["admin"]),
+      (req:Request,res:Response)=>{
+        carController.updateCarStatus(req,res);
+      }
     )
   }
 }

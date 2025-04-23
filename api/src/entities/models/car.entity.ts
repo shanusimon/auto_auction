@@ -1,7 +1,6 @@
 import { ObjectId } from "mongoose";
 import { BodyType,FuelType } from "../../shared/types/car.types";
 
-
 export interface ICarEntity{
     _id?:string| ObjectId;
     sellerId:ObjectId;
@@ -21,4 +20,10 @@ export interface ICarEntity{
     auctionDuration: string;
     images:string[];
     approvalStatus:"pending" | "approved" | "rejected";
+    auctionStartTime?: Date;
+    auctionEndTime?: Date;
+    winnerId?: ObjectId;
+    highestBid?: number;
+    highestBidderId?: ObjectId;
 }
+

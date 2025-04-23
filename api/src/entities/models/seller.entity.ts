@@ -8,6 +8,7 @@ export interface ISellerEntity {
     approvalStatus: "pending" | "approved" | "rejected";
     address: string;
     identificationNumber: string;
+    isActive:boolean;
 
     isProfessionalDealer: boolean;
     businessDetails?: {

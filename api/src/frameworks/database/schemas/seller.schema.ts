@@ -10,6 +10,7 @@ export const SellerSchema = new Schema<ISellerEntity>(
         address: { type: String, required: true },
         identificationNumber: { type: String, required: true },
         isProfessionalDealer: { type: Boolean, default: false },
+        isActive:{type:Boolean,default:false},
         businessDetails: {
             businessName: { type: String },
             licenseNumber: { type: String },

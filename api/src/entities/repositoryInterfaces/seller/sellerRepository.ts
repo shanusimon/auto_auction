@@ -13,4 +13,6 @@ export interface ISellerRepository {
     count(filter:any):Promise<number>
     update(seller:ISellerEntity):Promise<ISellerEntity | null>
     findOne(_id:string):Promise<ISellerEntity | null>
+    findSellerDetails(_id:string):Promise<ISellerEntity | null>
+    findByIdAndUpdateStatus(id:string):Promise<void>
 }

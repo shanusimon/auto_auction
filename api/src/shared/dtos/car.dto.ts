@@ -1,4 +1,4 @@
-import { BodyType, FuelType } from '../../shared/types/car.types';
+import { BodyType, FuelType, TransmissionType } from '../../shared/types/car.types';
 
 export interface CreateCarDTO {
     title: string;
@@ -11,7 +11,7 @@ export interface CreateCarDTO {
     location: string;
     description: string;
     fuel: FuelType;
-    transmission: string;
+    transmission: TransmissionType;
     exteriorColor: string;
     interiorColor: string;
     auctionDuration: string;
@@ -22,4 +22,12 @@ export interface CreateCarDTO {
   export type carDTO = CreateCarDTO & {
     sellerId:string;
     approvalStatus: 'pending' 
+  }
+
+  export interface ICarFilter{
+    year?:number | string,
+    transmission?:TransmissionType,
+    bodyType?:BodyType,
+    fuel?:FuelType,
+    sort?:"ending-soon" | "newly-listed" | "no-reserve" 
   }
