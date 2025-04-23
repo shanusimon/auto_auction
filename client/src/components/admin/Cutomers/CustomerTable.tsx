@@ -37,7 +37,6 @@ const CustomerTable: React.FC<CustomerTableProps> = ({ customers, onBlockStatusC
 
   return (
     <>
-    
       <div className="w-full overflow-x-auto">
         <Table>
           <TableHeader className="bg-gray-50">

@@ -5,11 +5,41 @@ import {
   SellerRequestPayload,
   WalletTransactionsResponse,
 } from "@/types/Types";
+import { CarFilterReturn } from "@/types/CarFormTypes";
 
 export const logoutUser = async () => {
   const response = await userAxiosInstance.post("/_us/user/logout");
   return response.data;
 };
+
+export const carDetails = async (carId:string)=>{
+  const respone = await userAxiosInstance.get(`/_us/user/car/${carId}`);
+  return respone.data
+}
+
+export const getCars = async (
+  year?: number,
+  transmission?: string,
+  bodyType?: string,
+  fuel?: string,
+  sort: string = 'ending-soon',
+  page: number = 1,
+  limit: number = 20
+): Promise<CarFilterReturn[]> => {
+  const queryParams = new URLSearchParams({
+    ...(year && { year: year.toString() }),
+    ...(bodyType && { bodyType }),
+    ...(fuel && { fuel }),
+    ...(transmission && { transmission }),
+    sort,
+    page: page.toString(),
+    limit: limit.toString(),
+  }).toString();
+
+  const response = await userAxiosInstance.get(`/_us/user/cars?${queryParams}`);
+  return response.data.data; 
+};
+
 
 export const changePassword = async (data: ChangePasswordData) => {
   const response = await userAxiosInstance.patch(

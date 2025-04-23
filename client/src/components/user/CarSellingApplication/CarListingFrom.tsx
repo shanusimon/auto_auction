@@ -84,7 +84,7 @@ export const CarListingForm = () => {
       });
 
       form.reset();
-      resetImages(); // Trigger image reset
+      resetImages(); 
     } catch (error) {
       console.error("Error submitting car listing:", error);
       toast({

@@ -9,47 +9,90 @@ import { getAllCarRequests } from '@/services/admin/adminService';
 import { Search } from 'lucide-react';
 import { Pagination1 } from './Pagination1';
 import { debounce } from 'lodash';
+import { useToast } from '@/hooks/use-toast';
+import { useUpdateCarStatus} from '@/hooks/admin/useUpdateCarStatus';
 
 const CarApprovals: React.FC = () => {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch, setdebouncedSearch] = useState(searchQuery);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10;
+  const {mutate: updateCarStatus,isPending} = useUpdateCarStatus();
+  
   useEffect(() => {
-    const handler = debounce(() => setdebouncedSearch(searchQuery), 300);
+    const handler = debounce(() => setDebouncedSearch(searchQuery), 300);
     handler();
     return () => handler.cancel();
   }, [searchQuery]);
 
-  const { data, isLoading, isError } = useGetAllCarRequests(
+  const { data, isLoading, isError, refetch } = useGetAllCarRequests(
     getAllCarRequests,
     currentPage,
     limit,
     debouncedSearch
   );
-  console.log(data)
 
   const filteredCars = (data?.cars ?? []) as ICarEntity[];
   const totalPages = data?.total || 1;
 
-  const handleApprove = (carId: string) => {
-    console.log(carId)
-
+  const handleApprove = (carId: string, sellerEmail: string) => {
+    updateCarStatus(
+      { carId, status: "approved", sellerEmail },
+      {
+        onSuccess: () => {
+          toast({
+            title: "Success",
+            description: "Car has been approved and the seller has been notified.",
+          });
+          refetch();
+        },
+        onError: () => {
+          toast({
+            title: "Error",
+            description: "Failed to approve car request. Please try again.",
+            variant: "destructive",
+          });
+        },
+      }
+    );
   };
 
-  const handleReject = (carId: string) => {
-    console.log(carId)
+  const handleReject = (
+    carId: string,
+    sellerEmail: string,
+    reason: string
+  ) => {
+    updateCarStatus(
+      { carId, status: "rejected", sellerEmail, rejectionReason: reason },
+      {
+        onSuccess: () => {
+          toast({
+            title: "Success",
+            description: "Car has been rejected and the seller has been notified with the reason.",
+          });
+          refetch();
+        },
+        onError: () => {
+          toast({
+            title: "Error",
+            description: "Failed to reject car request. Please try again.",
+            variant: "destructive",
+          });
+        },
+      }
+    );
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
       <div className="flex-1 ml-[250px]">
-        <Header title="Car Approvals"  />
+        <Header title="Car Approvals" />
         <div
           style={{
             marginTop: "20px",
-            marginLeft:"25px",
+            marginLeft: "25px",
             position: "relative",
           }}
         >
@@ -65,7 +108,7 @@ const CarApprovals: React.FC = () => {
           />
           <input
             type="text"
-            placeholder="Search customers..."
+            placeholder="Search cars..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
@@ -85,12 +128,12 @@ const CarApprovals: React.FC = () => {
             </div>
             {isLoading ? (
               <div className="text-center py-8">
-                <p className="text-gray-500">Loading car request...</p>
+                <p className="text-gray-500">Loading car requests...</p>
               </div>
             ) : isError ? (
               <div className="text-center py-8">
                 <p className="text-gray-500">
-                  Failed to load car request...
+                  Failed to load car requests. Please try again.
                 </p>
               </div>
             ) :
@@ -118,8 +161,7 @@ const CarApprovals: React.FC = () => {
               }}
             >
               <span>
-                Showing {filteredCars.length + " "}
-                customers
+                Showing {filteredCars.length} cars
               </span>
 
               <div
@@ -128,12 +170,12 @@ const CarApprovals: React.FC = () => {
                   gap: "8px",
                 }}
               >
-                <div className="mt-6 flex justify-center items-center">
+                <div className="flex justify-center items-center">
                   <Pagination1
                     currentPage={currentPage}
                     totalPages={totalPages}
-                    onPageNext={() => setCurrentPage(currentPage + 1)}
-                    onPagePrev={() => setCurrentPage(currentPage - 1)}
+                    onPageNext={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    onPagePrev={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   />
                 </div>
               </div>

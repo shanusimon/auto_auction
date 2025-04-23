@@ -92,3 +92,18 @@ export interface ICarEntity{
   images:string[];
   approvalStatus:"pending" | "approved" | "rejected";
 }
+
+export interface CarFilterReturn {
+  id: string;
+  title: string;
+  year: number;
+  make: string;
+  model: string;
+  imageUrl: string;
+  currentBid: number;
+  timeRemaining: string;
+  bids: number;
+  location?: string;
+  noReserve?: boolean;
+  specs?: string[];
+}

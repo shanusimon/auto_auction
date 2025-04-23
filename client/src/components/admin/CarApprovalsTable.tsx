@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Check, X, Eye, Car, MapPin, Fuel, ChevronLeft, ChevronRight, X as CloseIcon, Mail, Phone, Calendar, } from 'lucide-react';
+import { Textarea } from '../ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Check, X, Eye, Car, MapPin, Fuel, ChevronLeft, ChevronRight, X as CloseIcon, Mail, Phone, Calendar } from 'lucide-react';
+import { Label } from '@radix-ui/react-label';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,8 +16,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 interface CarApprovalTableProps {
   cars: ICarEntity[];
-  onApprove: (carId: string) => void;
-  onReject: (carId: string) => void;
+  onApprove: (carId: string, sellerEmail: string) => void;
+  onReject: (carId: string, sellerEmail: string, reason: string) => void;
 }
 
 const CarApprovalTable: React.FC<CarApprovalTableProps> = ({ 
@@ -28,30 +30,55 @@ const CarApprovalTable: React.FC<CarApprovalTableProps> = ({
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
+  const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [isApproving, setIsApproving] = useState<string | null>(null);
 
   const { data: sellerDetails, isLoading: isLoadingSellerDetails } = useSellerDetails(
     selectedCar?.sellerId || ''
   );
- 
-
 
   const handleApprove = (carId: string) => {
-    onApprove(carId);
-    toast({
-      title: "Approved",
-      description: "Car Approved"
-    });
-    setDetailsOpen(false);
+    if (isLoadingSellerDetails) {
+      toast({
+        title: "Please Wait",
+        description: "Fetching seller details...",
+        variant: "default",
+      });
+      return;
+    }
+    if (sellerDetails?.userDetails.email) {
+      onApprove(carId, sellerDetails.userDetails.email);
+      setDetailsOpen(false);
+      setIsApproving(null);
+    } else {
+      toast({
+        title: "Error",
+        description: "Seller email not found",
+        variant: "destructive",
+      });
+      setIsApproving(null);
+    }
   };
 
-  const handleReject = (carId: string) => {
-    onReject(carId);
-    toast({
-      title: "Rejected",
-      description: "Car Rejected" 
-    });
-    setDetailsOpen(false);
+  const initiateApprove = (car: ICarEntity) => {
+    setSelectedCar(car);
+    setIsApproving(car._id || null);
+  };
+
+  const handleReject = () => {
+    if (selectedCar?._id && sellerDetails?.userDetails.email && rejectionReason.trim()) {
+      onReject(selectedCar._id, sellerDetails.userDetails.email, rejectionReason);
+      setRejectionModalOpen(false);
+      setDetailsOpen(false);
+      setRejectionReason('');
+    } else {
+      toast({
+        title: "Error",
+        description: "Please provide a reason for rejection or seller email not found",
+        variant: "destructive",
+      });
+    }
   };
 
   const viewDetails = (car: ICarEntity) => {
@@ -89,6 +116,12 @@ const CarApprovalTable: React.FC<CarApprovalTableProps> = ({
       currency: 'USD',
     }).format(price);
   };
+
+  useEffect(() => {
+    if (isApproving && selectedCar?._id && !isLoadingSellerDetails) {
+      handleApprove(isApproving);
+    }
+  }, [isApproving, selectedCar, isLoadingSellerDetails, sellerDetails]);
 
   const renderSellerSection = () => {
     if (!selectedCar?.sellerId) return null;
@@ -220,7 +253,8 @@ const CarApprovalTable: React.FC<CarApprovalTableProps> = ({
                       variant="outline" 
                       size="icon" 
                       className="h-8 w-8 border-green-500 text-green-500 hover:bg-green-50"
-                      onClick={() => car._id && handleApprove(car._id)}
+                      onClick={() => initiateApprove(car)}
+                      disabled={isApproving === car._id}
                     >
                       <Check className="h-4 w-4" />
                     </Button>
@@ -228,7 +262,10 @@ const CarApprovalTable: React.FC<CarApprovalTableProps> = ({
                       variant="outline" 
                       size="icon" 
                       className="h-8 w-8 border-red-500 text-red-500 hover:bg-red-50"
-                      onClick={() => car._id && handleReject(car._id)}
+                      onClick={() => {
+                        setSelectedCar(car);
+                        setRejectionModalOpen(true);
+                      }}
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -413,13 +450,14 @@ const CarApprovalTable: React.FC<CarApprovalTableProps> = ({
                   <Button 
                     variant="outline" 
                     className="border-red-500 text-red-500 hover:bg-red-50"
-                    onClick={() => selectedCar._id && handleReject(selectedCar._id)}
+                    onClick={() => setRejectionModalOpen(true)}
                   >
                     <X className="mr-2 h-4 w-4" /> Reject
                   </Button>
                   <Button 
                     className="bg-green-500 hover:bg-green-600 text-white"
                     onClick={() => selectedCar._id && handleApprove(selectedCar._id)}
+                    disabled={isApproving === selectedCar._id || isLoadingSellerDetails}
                   >
                     <Check className="mr-2 h-4 w-4" /> Approve
                   </Button>
@@ -430,9 +468,50 @@ const CarApprovalTable: React.FC<CarApprovalTableProps> = ({
         </DialogContent>
       </Dialog>
 
+      <Dialog open={rejectionModalOpen} onOpenChange={setRejectionModalOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Reject Car Submission</DialogTitle>
+            <DialogDescription>
+              Please provide a reason for rejecting this car submission. This will be sent to the seller.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <Label htmlFor="rejection-reason" className="mb-2 block">Rejection Reason</Label>
+            <Textarea 
+              id="rejection-reason"
+              placeholder="Enter detailed reason for rejection..."
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+              className="min-h-[120px]"
+            />
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setRejectionModalOpen(false);
+                setRejectionReason('');
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive"
+              onClick={handleReject}
+              disabled={!rejectionReason.trim() || isLoadingSellerDetails}
+            >
+              Confirm Rejection
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+          
       <Dialog open={imageViewerOpen} onOpenChange={setImageViewerOpen}>
         <DialogContent className="sm:max-w-[90vw] max-h-[90vh] p-0 bg-black border-none overflow-hidden">
-          {selectedCar && selectedCar.images.length > 0 && (
+          {selectedCar && selectedCar.images && selectedCar.images.length > 0 && (
             <div className="relative h-full">
               <div className="absolute top-4 right-4 z-10">
                 <Button 

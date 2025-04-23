@@ -294,12 +294,12 @@ export const CarDetailsForm = ({
                       <SelectValue placeholder="Select body type" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-[#333333] text-white">
-                      <SelectItem value="Sedan">Sedan</SelectItem>
-                      <SelectItem value="SUV">SUV</SelectItem>
-                      <SelectItem value="Coupe">Coupe</SelectItem>
-                      <SelectItem value="Convertible">Convertible</SelectItem>
-                      <SelectItem value="Wagon">Wagon</SelectItem>
-                      <SelectItem value="Limousine">Limousine</SelectItem>
+                      <SelectItem value="sedan">Sedan</SelectItem>
+                      <SelectItem value="suv">SUV</SelectItem>
+                      <SelectItem value="coupe">Coupe</SelectItem>
+                      <SelectItem value="convertible">Convertible</SelectItem>
+                      <SelectItem value="wagon">Wagon</SelectItem>
+                      <SelectItem value="limousine">Limousine</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>

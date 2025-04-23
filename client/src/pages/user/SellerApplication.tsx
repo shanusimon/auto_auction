@@ -5,13 +5,13 @@ import { SellerApplicationForm } from "@/components/user/SellerApplicationFrom";
 import { useGetIsSeller } from "@/hooks/user/useSeller";
 import { CarListingForm } from "@/components/user/CarSellingApplication/CarListingFrom";
 
-
 const SellerApplication = () => {
   const navigate = useNavigate();
   const { data, error, isPending } = useGetIsSeller();
   console.log(data)
 
   const isApprovedSeller = data?.data?.isSeller;
+  const isSellerBlocked = data?.data?.isActive === false; 
   const sellerDetails = data?.data?.sellerDetails; 
   const approvalStatus = sellerDetails?.approvalStatus;
 
@@ -42,6 +42,22 @@ const SellerApplication = () => {
                 className="bg-[#333333] text-white px-4 py-2 rounded-md hover:bg-[#444444]"
               >
                 Try Again
+              </button>
+            </div>
+          ) : isSellerBlocked ? (
+            <div className="text-center py-12">
+              <h1 className="text-3xl font-bold text-red-500 mb-3">Account Blocked</h1>
+              <p className="text-[#8E9196] max-w-lg mx-auto mb-4">
+                Due to some reason, you have been blocked from selling cars on our platform.
+              </p>
+              <p className="text-white">
+                Please contact our support team for more information and assistance.
+              </p>
+              <button 
+                onClick={() => navigate('/contact-support')} 
+                className="mt-6 bg-[#333333] text-white px-6 py-2 rounded-md hover:bg-[#444444]"
+              >
+                Contact Support
               </button>
             </div>
           ) : isApprovedSeller ? (

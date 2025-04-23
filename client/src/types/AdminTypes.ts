@@ -9,6 +9,7 @@ export interface ISellerEntity {
   address: string;
   identificationNumber: string;
   isProfessionalDealer: boolean;
+  isActive:boolean;
   businessDetails?: {
     businessName?: string;
     licenseNumber?: string;
@@ -42,12 +43,15 @@ export interface FetchCustomerParams {
 }
 
 export interface SellerDetailsDTO {
-  name: string;
-  email: string;
-  profileImage?: string;
-  phone?: string;
-  address: string;
-  joinedDate?: Date;
-  identificationNumber:string
-  isProfessionalDealer:boolean
+  userDetails: {
+    name: string;
+    email: string;
+    profileImage?: string;
+    phone?: string;
+    address: string;
+    joinedDate?: Date;
+    identificationNumber: string;
+    isProfessionalDealer: boolean;
+  }
 }
+

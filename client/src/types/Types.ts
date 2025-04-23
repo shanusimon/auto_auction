@@ -36,6 +36,26 @@ export interface SignupFormValues {
     joinedAt:Date
 }
 
+
+export interface ISellerEntity {
+  _id?: string;
+  userId: string | User;
+  address: string;
+  identificationNumber: string;
+  approvalStatus: "pending" | "approved" | "rejected";
+  sellerSince?: string | Date; 
+  isProfessionalDealer: boolean;
+  businessDetails?: {
+    businessName: string;
+    businessLicenseNumber?: string;
+    website?: string;
+  };
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+  isActive: boolean;
+}
+
+
 export interface IClient {
   _id:string,
   clientId:string,
@@ -45,6 +65,7 @@ export interface IClient {
   isBlocked:boolean,
   joinedAt:Date
 }
+
 
 export interface AuthResponse {
   success: boolean;

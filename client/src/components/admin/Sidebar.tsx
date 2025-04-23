@@ -24,6 +24,7 @@ const Sidebar: React.FC = () => {
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
     { icon: Users, label: 'Customers', path: '/admin/customers' },
     { icon: FolderInput, label: 'Seller Request', path: '/admin/seller-request' },
+    { icon: Users, label: 'Sellers', path: '/admin/sellers' },
     { icon: Car, label: 'Car Approvals', path: '/admin/car-approvals' },
     { icon: Settings, label: 'Settings', path: '/admin/settings' },
   ];

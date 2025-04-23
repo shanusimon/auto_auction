@@ -7,6 +7,7 @@ import Profile from "@/pages/user/UserDashboard";
 import UserProfile from "@/pages/user/Profile";
 import WalletPage from "@/pages/user/Wallet";
 import SellerApplication from "@/pages/user/SellerApplication";
+import CarDetailsPage from "@/pages/user/CarDetailsPage";
 
 export function UserRoutes(){
     return (
@@ -21,6 +22,10 @@ export function UserRoutes(){
           <Route 
             path="/unauthorized" 
             element={<UnauthorizedPage/>}
+          />
+          <Route
+          path="/user/cars/:carid"
+          element={<CarDetailsPage/>}
           />
           <Route
           path="/user/profile"
