@@ -1,5 +1,6 @@
-import { Server } from "socket.io";
+import { Server as SocketIOServer } from "socket.io";
 
-export interface IBidSocketController{
-    setupSocketEvents(io:Server):void;
+export interface IBidController {
+  initialize(io: SocketIOServer): void;
+  initializeSocketEvents(): void;
 }

@@ -7,4 +7,5 @@ export interface ISellerController {
     getSellerDetails(req:Request,res:Response):Promise<void>
     getAllApprovedSellers(req:Request,res:Response):Promise<void>
     updateSellerActiveStatus(req:Request,res:Response):Promise<void>;
+    getSellerStatistics(req:Request,res:Response):Promise<void>
 }

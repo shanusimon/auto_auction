@@ -7,6 +7,7 @@ export interface ICarEntity{
     title:string;
     make:string;
     model:string;
+    vehicleNumber:string;
     year:number;
     mileage:number;
     reservedPrice?:number;
@@ -19,11 +20,12 @@ export interface ICarEntity{
     interiorColor: string;
     auctionDuration: string;
     images:string[];
-    approvalStatus:"pending" | "approved" | "rejected";
+    approvalStatus:"pending" | "approved" | "rejected" | "sold";
     auctionStartTime?: Date;
     auctionEndTime?: Date;
     winnerId?: ObjectId;
-    highestBid?: number;
+    highestBid: number;
     highestBidderId?: ObjectId;
+    rejectionReason?:string
 }
 

@@ -74,7 +74,7 @@ export class CarController implements ICarController {
         rejectionReason?: string;
         sellerEmail: string;
       };
-      console.log(carId, status, rejectionReason, sellerEmail);
+
       if (!carId || typeof carId !== "string" || !sellerEmail) {
         throw new CustomError(
           ERROR_MESSAGES.CAR_UPDATE_CREDENTIALS_MISSING,
@@ -120,7 +120,7 @@ export class CarController implements ICarController {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 20;
 
-      console.log(req.query.sort)
+
 
       const cars:ICarEntity[] = await this.getCarsFilterUseCase.execute(
         filters,
@@ -141,7 +141,7 @@ export class CarController implements ICarController {
         noReserve: !car.reservedPrice,
         specs:[car.transmission,car.fuel,car.bodyType].filter(Boolean)
       }))
-      console.log(transformedCars);
+
       res
         .status(HTTP_STATUS.OK)
         .json({ message: SUCCESS_MESSAGES.DATA_RETRIEVED, data:transformedCars });
@@ -153,7 +153,7 @@ export class CarController implements ICarController {
 
       try {
         const {id} = req.params;
-        console.log("This is the ID",id)
+ 
         if(!id){
           throw new CustomError(ERROR_MESSAGES.INVALID_CREDENTIALS,HTTP_STATUS.BAD_REQUEST)
         }
@@ -164,7 +164,7 @@ export class CarController implements ICarController {
             ERROR_MESSAGES.CAR_NOT_FOUND,HTTP_STATUS.NOT_FOUND
           )
         }
-        console.log(car)
+
         res.status(HTTP_STATUS.OK).json({message:SUCCESS_MESSAGES.DATA_RETRIEVED,data:car,seller})
       } catch (error) {
         handleErrorResponse(res,error);

@@ -3,7 +3,8 @@ import { ObjectId } from "mongoose";
 export interface IWallet {
     _id:string | ObjectId,
     userId:string | ObjectId | null,
-    balance:number,
+    availableBalance:number,
+    reservedBalance:number,
     createdAt:Date,
     updatedAt:Date
 }

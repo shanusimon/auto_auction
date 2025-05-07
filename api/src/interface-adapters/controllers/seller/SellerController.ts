@@ -1,4 +1,4 @@
-import e, { Request, Response } from "express";
+import { Request, Response } from "express";
 import { ISellerController } from "../../../entities/controllerInterfaces/seller/ISellerController";
 import { inject, injectable } from "tsyringe";
 import { CustomRequest } from "../../middlewares/authMiddleware";
@@ -15,7 +15,7 @@ import { CustomError } from "../../../entities/utils/custom.error";
 import { IUpdateSellerStatusUseCase } from "../../../entities/useCaseInterfaces/seller/IUpdateSellerStatusUseCase";
 import { IFindSellerDetailsUseCase } from "../../../entities/useCaseInterfaces/seller/IFindSellerDetails";
 import { IUpdateSellerActiveStatusUseCase } from "../../../entities/useCaseInterfaces/seller/IUpdateSellerActiveStatusUseCase";
-
+import { IGetSellerStatisticsUseCase } from "../../../entities/useCaseInterfaces/seller/ISellerStatistics";
 @injectable()
 export class SellerController implements ISellerController {
   constructor(
@@ -28,7 +28,9 @@ export class SellerController implements ISellerController {
     @inject("IFindSellerDetailsUseCase")
     private findSellerDetailsUseCase:IFindSellerDetailsUseCase,
     @inject("IUpdateSellerActiveStatusUseCase")
-    private updateSellerActiveStatusUseCase:IUpdateSellerActiveStatusUseCase
+    private updateSellerActiveStatusUseCase:IUpdateSellerActiveStatusUseCase,
+    @inject("IGetSellerStatisticsUseCase")
+    private getSellerStatusUseCase:IGetSellerStatisticsUseCase
   ) {}
   async register(req: Request, res: Response): Promise<void> {
     try {
@@ -170,4 +172,22 @@ export class SellerController implements ISellerController {
         handleErrorResponse(res,error);
       }
   }
+  async getSellerStatistics(req: Request, res: Response): Promise<void> {
+    try {
+
+      const userId = (req as CustomRequest).user.id;
+
+      const data = await this.getSellerStatusUseCase.execute(userId);
+  
+      res.status(200).json({
+        success: true,
+        message:SUCCESS_MESSAGES.DATA_RETRIEVED,
+        data,
+      });
+    } catch (error) {
+
+      handleErrorResponse(res,error);
+    }
+  }
+  
 }

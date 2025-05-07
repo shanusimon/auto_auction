@@ -21,13 +21,8 @@ export interface CustomRequest extends Request{
 const extractToken = (req:Request):{access_token:string,refresh_token:string} | null=>{
     const pathSegment = req.path.split("/");
     const routeIndex = pathSegment.indexOf("");
-    console.log(req.path)
-    console.log(pathSegment)
-    console.log(routeIndex)
     if(routeIndex !== -1 && pathSegment[routeIndex + 1]){
      const userType = pathSegment[routeIndex + 1];
-        console.log("HELLO",userType)
-        console.log("access_token:",req.cookies[`${userType}_access_token`])
      return{
         access_token:req.cookies[`${userType}_access_token`],
         refresh_token:req.cookies[`${userType}_refresh_token`]
@@ -48,9 +43,7 @@ export const verifyAuth = async(
 )=>{
 try {
     const token = extractToken(req);
-    console.log("hello",token)
     if(!token){
-        console.log("There is no token");
         res.status(HTTP_STATUS.UNAUTHORIZED).json({message:ERROR_MESSAGES.UNAUTHORIZED_ACCESS})
         return
     }
@@ -62,9 +55,7 @@ try {
     const user = tokenService.verifyAccessToken(
         token.access_token,
     )as CustomJwtPayload;
-    console.log("hello ",user)
     if(!user || !user.id){
-        console.log("this 1 si triggering");
         res.status(HTTP_STATUS.UNAUTHORIZED).json({message:ERROR_MESSAGES.TOKEN_EXPIRED})
     return;
     }
@@ -75,7 +66,6 @@ try {
     };
     next();
 } catch (error:any) {
-    console.log("secodn is, ",error)
     if(error.name === "TokenExpiredError"){
     res
     .status(HTTP_STATUS.UNAUTHORIZED)
@@ -110,19 +100,15 @@ export const decodeToken = async(
 )=>{
     try {
         const token = extractToken(req);
-        console.log("Refresh Token Triggerd");
         if(!token){
-            console.log("no token")
             res.status(HTTP_STATUS.UNAUTHORIZED).json({message:ERROR_MESSAGES.UNAUTHORIZED_ACCESS})
             return;
         }
         if(await isBlacklisted(token.access_token)){
-            console.log("token is black listed");
             res.status(HTTP_STATUS.FORBIDDEN).json({message:"Token is blacklisted"});
             return
         }
         const user = tokenService.decodeAccessToken(token?.access_token);
-        console.log("decode",user);
         (req as CustomRequest).user = {
             id:user?.id,
             email: user?.email,

@@ -74,6 +74,28 @@ import { IGetCarDetailsUseCase } from "../../entities/useCaseInterfaces/car/ICar
 import { GetCarDetailsUseCase } from "../../useCases/car/CarDetailsUseCase";
 import { IUpdateSellerActiveStatusUseCase } from "../../entities/useCaseInterfaces/seller/IUpdateSellerActiveStatusUseCase";
 import { UpdateSellerActiveStatus } from "../../useCases/seller/UpdateSelllerActiveStatusUseCase";
+import { IPlaceBidUseCase } from "../../entities/useCaseInterfaces/bid/IBidUseCase";
+import { PlaceBidUseCase } from "../../useCases/bid/PlaceBidUseCase";
+import { ICreateCommentUseCase } from "../../entities/useCaseInterfaces/comments/ICreateCommentUseCase";
+import { CreateCommentUseCase } from "../../useCases/comments/CreateCommentUseCase";
+import { IGetAllCommentsAndBidsUseCase } from "../../entities/useCaseInterfaces/comments/IGetAllCommentsAndBidsUseCase";
+import { GetAllCommentsAndBidUseCase } from "../../useCases/comments/GetAllCommentsAndBidsUseCase";
+import { IGetConversationUseCase } from "../../entities/useCaseInterfaces/conversation/IGetConversationUseCase";
+import { GetConversationUseCase } from "../../useCases/conversation/GetConversationUseCase";
+import { IGetAllConversationUseCase } from "../../entities/useCaseInterfaces/conversation/IGetAllConversationsUseCase";
+import { GetAllConversationUseCase } from "../../useCases/conversation/GetAllConversationUseCase";
+import { IJoinConversationUseCase } from "../../entities/useCaseInterfaces/conversation/IJoinConversationUseCase";
+import { JoinConversationUseCase } from "../../useCases/conversation/JoinConversationUseCase";
+import { ICreateMessageUseCase } from "../../entities/useCaseInterfaces/message/ICreateMessageUseCase";
+import { CreateMessageUseCase } from "../../useCases/message/CreateMessageUseCase";
+import { IGetAllMessagesUseCase } from "../../entities/useCaseInterfaces/message/IGetallmessagesUseCase";
+import { GetAllMessagesUseCase } from "../../useCases/message/GetAllMessagesUseCase";
+import { IGetAllBidsUseCase } from "../../entities/useCaseInterfaces/bid/IGetAllBidsUseCase";
+import { GetAllBidsUseCase } from "../../useCases/bid/GetAllBidsUseCase";
+import { IGetSellerStatisticsUseCase } from "../../entities/useCaseInterfaces/seller/ISellerStatistics";
+import { GetSellerStatistics } from "../../useCases/seller/SellerStatisticsUseCase";
+import { IGetBidHistoryUseCase } from "../../entities/useCaseInterfaces/bid/IGetBidHistoryUseCase";
+import { getBidHistoryUseCase } from "../../useCases/bid/GetBidHistoryUseCase";
 
 export class UseCaseRegistery {
   static registerUseCases(): void {
@@ -84,6 +106,39 @@ export class UseCaseRegistery {
     //* ====== Register UseCases ====== *//
     container.register<IGetCarDetailsUseCase>("IGetCarDetailsUseCase",{
       useClass:GetCarDetailsUseCase
+    })
+    container.register<IGetBidHistoryUseCase>("IGetBidHistoryUseCase",{
+      useClass:getBidHistoryUseCase
+    })
+    container.register<IGetSellerStatisticsUseCase>("IGetSellerStatisticsUseCase",{
+      useClass:GetSellerStatistics
+    })
+    container.register<IGetAllBidsUseCase>("IGetAllBidsUseCase",{
+      useClass:GetAllBidsUseCase
+    })
+    container.register<IGetAllMessagesUseCase>("IGetAllMessagesUseCase",{
+      useClass:GetAllMessagesUseCase
+    })
+    container.register<IJoinConversationUseCase>("IJoinConversationUseCase",{
+      useClass:JoinConversationUseCase
+    })
+    container.register<ICreateMessageUseCase>("ICreateMessageUseCase",{
+      useClass:CreateMessageUseCase
+    })
+    container.register<IGetAllConversationUseCase>("IGetAllConversationUseCase",{
+      useClass:GetAllConversationUseCase
+    })
+    container.register<IGetConversationUseCase>("IGetConversationUseCase",{
+      useClass:GetConversationUseCase
+    })
+    container.register<IGetAllCommentsAndBidsUseCase>("IGetAllCommentsAndBidsUseCase",{
+      useClass:GetAllCommentsAndBidUseCase
+    })
+    container.register<ICreateCommentUseCase>("ICreateCommentUseCase",{
+      useClass:CreateCommentUseCase
+    })
+    container.register<IPlaceBidUseCase>("IPlaceBidUseCase",{
+      useClass:PlaceBidUseCase
     })
     container.register<IUpdateSellerActiveStatusUseCase>("IUpdateSellerActiveStatusUseCase",{
       useClass:UpdateSellerActiveStatus

@@ -20,8 +20,9 @@ export class IsSellerUseCase implements IIsSellerUseCase {
                 HTTP_STATUS.BAD_REQUEST
             );
         }
-
+        
         const seller = await this.sellerRepository.findByUserId(user.id);
+        console.log(seller);
         return {
             isSeller: seller?.approvalStatus === "approved" ? true : false,
             sellerDetails: seller ? {

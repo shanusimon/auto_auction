@@ -35,6 +35,7 @@ export class UpdateCarStatus implements IUpdateCarStatus{
                     HTTP_STATUS.BAD_REQUEST
                 )
             }
+            await this.carRepository.updateRejectionReason(carId,rejectionReason);
             await this.mailService.sendCarRejectEmail(sellerEmail,car,rejectionReason);
         }
         await this.carRepository.findByIdAndUpdate(carId,updateData as ICarEntity);

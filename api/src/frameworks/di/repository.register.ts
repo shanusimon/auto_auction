@@ -1,4 +1,4 @@
-//module import 
+//module import
 import { container } from "tsyringe";
 
 //respoitory imports
@@ -20,6 +20,14 @@ import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/se
 import { SellerRepository } from "../../interface-adapters/repositories/seller/SellerRepository";
 import { CarRepository } from "../../interface-adapters/repositories/car/car.repository";
 import { ICarRepository } from "../../entities/repositoryInterfaces/car/carRepository";
+import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
+import { BidRepository } from "../../interface-adapters/repositories/bid/bid.repository";
+import { ICarCommentRepository } from "../../entities/repositoryInterfaces/comments/ICarCommentRepository";
+import { CarCommentRepository } from "../../interface-adapters/repositories/comments/car.comment.repository";
+import { IConversationRepository } from "../../entities/repositoryInterfaces/conversation/IConversationRepository";
+import { ConversationRepository } from "../../interface-adapters/repositories/conversation/conversation.repository";
+import { IMessageRepository } from "../../entities/repositoryInterfaces/message/IMessageRepository";
+import { MessageRepository } from "../../interface-adapters/repositories/message/messaage.repository";
 //service imports
 import { IOtpService } from "../../entities/services/IOtpService";
 import { OtpService } from "../../interface-adapters/services/OtpService";
@@ -30,49 +38,64 @@ import { ITokenService } from "../../entities/services/ITokenService";
 import { StripeService } from "../../interface-adapters/services/StripeService";
 import { IPaymentService } from "../../entities/services/IStripeService";
 
-export class RepositoryRegistry{
-    static registerRepositories():void{
-        container.register<IClientRepository>("IClientRepository",{
-            useClass:ClientRepository
-        });
-        container.register<IUserExistenceService>("IUserExistenceService",{
-            useClass:UserExistenceService
-        });
-        container.register<ICarRepository>("ICarRepository",{
-            useClass:CarRepository
-        })
-        container.register<IRefreshTokenRepository>("IRefreshTokenRepository",{
-            useClass:RefreshTokenRepository
-        });
-        container.register<IWalletRepository>("IWalletRepository",{
-            useClass:WalletRepository
-        });
-        container.register<IOtpService>("IOtpService",{
-            useClass:OtpService
-        });
-        container.register<INodemailerService>("INodemailerService",{
-            useClass:NodemailerService
-        });
-        container.register<IRedisClient>("IRedisClient",{
-            useClass:RedisClient
-        });
-        container.register<ITokenService>("ITokenService",{
-            useClass:JWTService
-        });
-        container.register<IWalletTransactionRepository>("IWalletTransactionRepository",{
-            useClass:WalletTransactionRepository
-        })
-        container.register<IClientRepository>("IClientRepository",{
-            useClass:ClientRepository
-        });
-        container.register<IRedisTokenRepository>("IRedisTokenRepository",{
-            useClass:RedisTokenRepository
-        })
-        container.register<IPaymentService>("IPaymentService",{
-            useClass:StripeService
-        })
-        container.register<ISellerRepository>("ISellerRepository",{
-            useClass:SellerRepository
-        })
-    }
+export class RepositoryRegistry {
+  static registerRepositories(): void {
+    container.register<IClientRepository>("IClientRepository", {
+      useClass: ClientRepository,
+    });
+    container.register<IUserExistenceService>("IUserExistenceService", {
+      useClass: UserExistenceService,
+    });
+    container.register<ICarRepository>("ICarRepository", {
+      useClass: CarRepository,
+    });
+    container.register<IMessageRepository>("IMessageRepository",{
+      useClass:MessageRepository
+    })
+    container.register<IRefreshTokenRepository>("IRefreshTokenRepository", {
+      useClass: RefreshTokenRepository,
+    });
+    container.register<IBidRepository>("IBidRepository", {
+      useClass: BidRepository,
+    });
+    container.register<IWalletRepository>("IWalletRepository", {
+      useClass: WalletRepository,
+    });
+    container.register<IOtpService>("IOtpService", {
+      useClass: OtpService,
+    });
+    container.register<IConversationRepository>("IConversationRepository",{
+      useClass:ConversationRepository
+    })
+    container.register<INodemailerService>("INodemailerService", {
+      useClass: NodemailerService,
+    });
+    container.register<IRedisClient>("IRedisClient", {
+      useClass: RedisClient,
+    });
+    container.register<ITokenService>("ITokenService", {
+      useClass: JWTService,
+    });
+    container.register<IWalletTransactionRepository>(
+      "IWalletTransactionRepository",
+      {
+        useClass: WalletTransactionRepository,
+      }
+    );
+    container.register<IClientRepository>("IClientRepository", {
+      useClass: ClientRepository,
+    });
+    container.register<IRedisTokenRepository>("IRedisTokenRepository", {
+      useClass: RedisTokenRepository,
+    });
+    container.register<IPaymentService>("IPaymentService", {
+      useClass: StripeService,
+    });
+    container.register<ISellerRepository>("ISellerRepository", {
+      useClass: SellerRepository,
+    });
+    container.register<ICarCommentRepository>("ICarCommentRepository", {
+      useClass: CarCommentRepository,
+    });
+  }
 }

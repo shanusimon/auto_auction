@@ -6,7 +6,7 @@ import {
   
 } from "../../../interface-adapters/middlewares/authMiddleware";
 
-import { authController, transactionController, userController, walletController,sellerController, carController } from "../../di/resolver";
+import { authController, transactionController, userController, walletController,sellerController, carController,carCommentController, conversationController, bidHttpController } from "../../di/resolver";
 import { BaseRoute } from "../base.route";
 import { blockStatusMiddleware } from "../../di/resolver";
 
@@ -49,6 +49,17 @@ export class ClientRoutes extends BaseRoute {
         userController.saveFcmToken(req,res);
       }
     )
+
+    this.router.get(
+      "/user/bids",
+      verifyAuth,
+      authorizeRole(["user"]),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        bidHttpController.GetAllBids(req,res)
+      }
+    )
+
 
     //User password change 
     this.router.patch(
@@ -135,6 +146,37 @@ export class ClientRoutes extends BaseRoute {
         carController.getCarDetails(req,res);
       }
     )
+
+    this.router.post(
+      "/user/conversation",
+      verifyAuth,
+      authorizeRole(["user"]),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        conversationController.getConversation(req,res);
+      }   
+    )
+
+    //post car comment
+    this.router.post(
+      '/user/car-comment',
+      verifyAuth,
+      authorizeRole(["user"]),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        carCommentController.create(req,res);
+      }
+    )
+    //to get car comments 
+    this.router.get(
+      "/user/car-comments/:carid",
+      verifyAuth,
+      authorizeRole(["user"]),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        carCommentController.getCarCommentsAndBids(req,res)
+      }
+    )
     
     //token refresh
     this.router.post(
@@ -145,5 +187,27 @@ export class ClientRoutes extends BaseRoute {
         authController.refreshToken(req,res);
       }
     )  
+
+    //get bid history
+    this.router.get(
+      "/user/bid-history/:carId",
+      verifyAuth,
+      authorizeRole(["user"]),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        bidHttpController.getBidHistory(req,res)
+      }
+    )
+
+    //seller-status 
+    this.router.get(
+      "/user/seller-statistics",
+      verifyAuth,
+      authorizeRole(["user"]),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        sellerController.getSellerStatistics(req,res);
+      }
+    )
   }
 }

@@ -1,4 +1,3 @@
-import { query } from "express";
 import { ICarEntity } from "../../../entities/models/car.entity";
 import { ICarRepository } from "../../../entities/repositoryInterfaces/car/carRepository";
 import { CarModel } from "../../../frameworks/database/models/car.model";
@@ -48,5 +47,23 @@ export class CarRepository implements ICarRepository {
         query.skip((page - 1) * limit).limit(limit);
         
         return query.lean().exec();
+    }
+    async update(id: string, updateDate: Partial<ICarEntity>): Promise<ICarEntity | null> {
+        return await CarModel.findByIdAndUpdate(id,updateDate)
+    }
+    async findByVehicleNumber(vehicleNumber: string): Promise<ICarEntity | null> {
+        const car = await CarModel.findOne({ vehicleNumber: vehicleNumber });
+        return car
+    }
+    async findCount(sellerId: string): Promise<number> {
+        const count = await CarModel.countDocuments({sellerId});
+        return count
+    }
+    async findAllCarsBySellerId(sellerId: string): Promise<ICarEntity[]> {
+        const cars = await CarModel.find({sellerId});
+        return cars
+    }
+    async updateRejectionReason(carId: string, rejectionReason: string): Promise<void> {
+        await CarModel.findByIdAndUpdate(carId,{rejectionReason})
     }
 }

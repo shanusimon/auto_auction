@@ -2,10 +2,9 @@ import { IWalletController } from "../../../entities/controllerInterfaces/IWalle
 import { inject,injectable } from "tsyringe";
 import { IAddMoneyToWalletUseCase } from "../../../entities/useCaseInterfaces/wallet/IAddMoneyToWalletUseCase";
 import { Request, Response, NextFunction } from "express";
-import { ERROR_MESSAGES, HTTP_STATUS } from "../../../shared/constants";
+import {  HTTP_STATUS } from "../../../shared/constants";
 import { CustomRequest } from "../../middlewares/authMiddleware";
 import { IGetWalletDeatailsUseCase } from "../../../entities/useCaseInterfaces/wallet/IGetWalletDeatailsUseCase";
-
 import { handleErrorResponse } from "../../../shared/utils/errorHandler";
 
 
@@ -45,8 +44,9 @@ export class WalletController implements IWalletController{
     async getWalletBalance(req: Request, res: Response): Promise<void> {
         try {
             const userId = (req as CustomRequest).user.id;
-            const walletData = await this.getWalletDetailsUseCase.execute(userId);
-            res.status(HTTP_STATUS.OK).json({success:true,balance:walletData.balance})
+            const walletData = await this.getWalletDetailsUseCase.execute(userId)
+           
+            res.status(HTTP_STATUS.OK).json({walletData})
         } catch (error) {
            handleErrorResponse(res,error)
         }

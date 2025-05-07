@@ -50,7 +50,8 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
             try {
                 wallet = await this.walletRepository.create({
                     userId: null,
-                    balance: 0
+                    availableBalance: 0,
+                    reservedBalance:0
                 });
             } catch (error) {
                 throw new CustomError("Failed to create wallet", HTTP_STATUS.INTERNAL_SERVER_ERROR);

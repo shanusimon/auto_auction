@@ -142,6 +142,7 @@ export class UserController implements IUserController {
       const userId = (req as CustomRequest).user.id;
 
       const seller = await this.isSellerUseCase.execute(userId);
+      console.log(seller);
 
       res.status(HTTP_STATUS.OK).json({
         success: true,

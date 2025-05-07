@@ -14,4 +14,9 @@ export interface ICarRepository{
     findById(carId:string):Promise<ICarEntity | null>
     findByIdAndUpdate(id:string,data:ICarEntity):Promise<void>
     getFilteredCars(filter:ICarFilter,sort:string,page:number,limit:number):Promise<ICarEntity[]>
+    update(id:string,updateDate:Partial<ICarEntity>):Promise<ICarEntity | null>
+    findByVehicleNumber(vehicleNumber:string):Promise<ICarEntity | null>
+    findCount(sellerId:string):Promise<number>
+    findAllCarsBySellerId(sellerId:string):Promise<ICarEntity[]>  
+    updateRejectionReason(carId:string,rejectionReason:string):Promise<void>      
 } 

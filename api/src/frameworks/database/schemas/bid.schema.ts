@@ -10,13 +10,18 @@ export const bidSchema = new Schema<IBidEntity>(
     },
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Client",
       required: [true, "User ID is required"],
     },
     amount: {
       type: Number,
       required: [true, "Bid amount is required"],
       min: [1, "Bid amount must be greater than 0"],
+    },
+    depositHeld:{
+      type:Number,
+      required:true,
+      default:0
     },
     timestamp: {
       type: Date,
@@ -25,7 +30,7 @@ export const bidSchema = new Schema<IBidEntity>(
     },
     status: {
       type: String,
-      enum: ["active", "outbid", "won"],
+      enum: ["active", "outbid", "won","forfeited"],
       default: "active",
       required: true,
     },

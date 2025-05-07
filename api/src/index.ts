@@ -1,19 +1,18 @@
-//DI imports
 import "reflect-metadata";
-import "./frameworks/di/resolver"
+import "./frameworks/di/resolver";
 
-//module imports
+// Module imports
 import { Server } from "./frameworks/http/server";
 import { config } from "./shared/config";
 import { MongoConnect } from "./frameworks/database/mongoDB/mongoConnect";
 
-//instance creation
+// Instance creation
 const server = new Server();
 const mongoConnect = new MongoConnect();
 
-//database connection
+// Database connection
 mongoConnect.connectDB();
 
-server.getApp().listen(config.server.PORT,()=>{
-    console.log(`Server is running at port ${config.server.PORT}`)
-})
+// Start the server
+const port = Number(config.server.PORT) || 5003;
+server.start(port);

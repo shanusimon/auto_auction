@@ -19,6 +19,11 @@ export const carSchema = new Schema<ICarEntity>(
       required: [true, "Make is required"],
       minlength: [1, "Make cannot be empty"],
     },
+    vehicleNumber: {
+      type: String,
+      required: [true, "Vehicle number is required"],
+      minlength: [5, "Vehicle number must be exactly 5 digits"],
+    },
     model: {
       type: String,
       required: [true, "Model is required"],
@@ -100,6 +105,10 @@ export const carSchema = new Schema<ICarEntity>(
     winnerId: { type: Schema.Types.ObjectId, ref: "User" },
     highestBid: { type: Number, default: 0 }, 
     highestBidderId: { type: Schema.Types.ObjectId, ref: "User" }, 
+    rejectionReason:{
+      type: String,
+      default: ""
+    }
   },
   {
     timestamps: true,

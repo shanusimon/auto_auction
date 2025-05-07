@@ -43,7 +43,8 @@ export class ClientRegisterStrategy implements IRegisterStrategy{
         try {
             wallet = await this.walletRepository.create({
                 userId:null,
-                balance:0
+                availableBalance:0,
+                reservedBalance:0
             })
 
             const newUser = await this.clientRepository.save({

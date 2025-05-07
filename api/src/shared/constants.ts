@@ -46,6 +46,10 @@ export const ERROR_MESSAGES = {
    REJECTION_REASON_IS_NEEDED:"rejection reason is needed",
    CAR_UPDATE_CREDENTIALS_MISSING:"Car ID or SellerEmail is required and must be a string",
    REJECTION_REASON_IS_MISSING:"Rejection reason is required when rejecting a car",
+   INVALID_BID_PAYLOAD:"Invalid PayLoad.Please check UserId,Amount,CarId",
+   BID_AMOUNT_ERROR:"Bid Amount Should be Always greater than Current Highest Bid",
+   COMMENT_REQUIRED:"Comment is Required",
+   CAR_ALREADY_EXISTS:"Car with this Vehicle Number Already Exists",
 } as const;
 
 export const SUCCESS_MESSAGES = {

@@ -110,6 +110,7 @@ export class AuthController implements IAuthController {
         success: true,
         message: SUCCESS_MESSAGES.LOGIN_SUCCESS,
         user: {
+          id:user.id,
           name: user.name,
           email: user.email,
           role: user.role,
@@ -284,6 +285,7 @@ export class AuthController implements IAuthController {
           success:true,
           message:SUCCESS_MESSAGES.LOGIN_SUCCESS,
           user: {
+            id:user.id,
             name: user.name,
             email: user.email,
             role: user.role,
