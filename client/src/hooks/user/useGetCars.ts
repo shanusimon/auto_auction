@@ -25,6 +25,5 @@ export const useCars = ({
   return useQuery<CarFilterReturn[], Error>({
     queryKey: ['cars', { bodyType, fuel, transmission, sort, page, limit }],
     queryFn: () => getCars(year, transmission, bodyType, fuel, sort, page, limit),
-    staleTime: 5 * 60 * 1000,
   });
 };

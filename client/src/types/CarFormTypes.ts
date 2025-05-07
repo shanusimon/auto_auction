@@ -5,6 +5,11 @@ export const carFormSchema = z.object({
   title: z.string().min(5, { message: "Title must be at least 5 characters" }),
   make: z.string().min(1, { message: "Make is required" }),
   model: z.string().min(1, { message: "Model is required" }),
+  vehicleRegion: z.string()
+    .regex(/^[A-Z]{2}$/, { message: "Region must be 2 uppercase letters" }),
+  vehicleNumber: z
+    .string()
+    .regex(/^\d{5}$/, { message: "Vehicle number must be exactly 5 digits" }),
   year: z.preprocess(
     (val) => Number(val),
     z.number()
@@ -40,6 +45,7 @@ export interface CreateCarDTO {
   title: string;
   make: string;
   model: string;
+  vehicleNumber: string;
   year: number;
   mileage: number;
   reservedPrice?: number;
@@ -107,3 +113,28 @@ export interface CarFilterReturn {
   noReserve?: boolean;
   specs?: string[];
 }
+
+type CommentType = {
+  _id: string;
+  carId: string;
+  userId: { id: string; name?: string }; // adjust structure based on your real user object
+  content: string;
+  parentId: string | null;
+  likes: any[];
+  createdAt: string;
+  updatedAt: string;
+  type?: 'comment';
+};
+
+type BidType = {
+  _id: string;
+  carId: string;
+  userId: { id: string; name?: string }; // adjust structure
+  amount: number;
+  depositHeld: number;
+  timestamp: string;
+  status: string;
+  type?: 'bid';
+};
+
+export type CombinedItem = (CommentType | BidType) & { type: 'comment' | 'bid' };

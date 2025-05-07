@@ -97,7 +97,10 @@ export interface WalletTransactionsResponse {
   currentPage:number
 }
 export interface WalletBalanceResponse {
-  balance: number;
+  walletData:{
+    availableBalance:number,
+    reservedBalance:number
+  }
 }
 
 export const resetPasswordSchema = z.object({
@@ -155,6 +158,28 @@ export interface SellerRequestPayload {
   taxID?: string;
   website?: string;
   yearsInBusiness?: string;
+}
+
+
+export interface Car {
+  id: string
+  title: string;
+  year: number;
+  make: string;
+  model: string;
+  imageUrl: string;
+  currentBid: number;
+  auctionEndTime: string | null;
+  bids?: number;
+  location?: string;
+  noReserve?: boolean;
+  specs?: string[];
+}
+
+export interface CreateCommentDto {
+  carId:string;
+  content:string;
+  parentId?:string 
 }
 
 

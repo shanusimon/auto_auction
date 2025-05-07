@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { User, Package, FileText, Wallet} from 'lucide-react';
+import { User, Package, FileText, Wallet,PersonStanding} from 'lucide-react';
 
 const UserSidebar: React.FC = () => {
   const location = useLocation();
@@ -12,7 +12,7 @@ const UserSidebar: React.FC = () => {
       icon: User 
     },
     { 
-      path: '/user/seller', 
+      path: '/user/seller-dashboard', 
       name: 'Seller Dashboard', 
       icon: Package 
     },
@@ -20,6 +20,11 @@ const UserSidebar: React.FC = () => {
       path: '/user/bids', 
       name: 'My Bids', 
       icon: FileText 
+    },
+    { 
+      path: '/user/chats', 
+      name: 'Chats', 
+      icon:  PersonStanding
     },
     { 
       path: '/user/wallet', 

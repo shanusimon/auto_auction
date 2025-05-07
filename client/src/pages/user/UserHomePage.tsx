@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Header from '@/components/header/Header';
 import Footer from '@/components/footer/Footer';
-import FeaturedCar from '@/components/cars/featuredCars';
+import FeaturedCarCarousel from '@/components/cars/featuredCars';// Updated import
 import { Button } from '@/components/ui/button';
 import CarCard from '@/components/cars/Car';
 import CarFilters from '@/components/cars/CarFilter';
@@ -11,6 +11,19 @@ import { toast } from 'sonner';
 import { useCars } from '@/hooks/user/useGetCars';
 import CarCardSkeleton from '@/components/cars/CarCardSkeleton';
 import { useNavigate } from 'react-router-dom';
+import AuctionSocket from '@/services/webSocket/webSockeService';
+import { Car } from '@/types/Types';
+
+// Define the WebSocket payload type
+interface BidPayload {
+  success: boolean;
+  bid: {
+    carId: string;
+    amount: number;
+    auctionEndTime?: string;
+    userId?: string;
+  };
+}
 
 export default function UserHomePage() {
   const navigate = useNavigate();
@@ -24,7 +37,7 @@ export default function UserHomePage() {
   });
   
   const [page, setPage] = useState(1);
-  const [allCars, setAllCars] = useState([]);
+  const [allCars, setAllCars] = useState<Car[]>([]);
 
   const { data: cars, isLoading, error } = useCars({
     year: filters.year ? Number(filters.year) : undefined,
@@ -62,31 +75,59 @@ export default function UserHomePage() {
       if (page === 1) {
         setAllCars(cars);
       } else {
-        setAllCars((prev) => [...prev, ...cars]);
+        setAllCars((prev:any) => [...prev, ...cars]);
       }
     }
   }, [cars, page]);
 
-  const handleFilterChange = (newFilters:any) => {
+  useEffect(() => {
+    const handleNewBid = (data: BidPayload) => {
+      console.log('Received new bid:', data);
+      if (data.success && data.bid.carId) {
+        setAllCars((prevCars) =>
+          prevCars.map((car) => {
+            console.log(`Comparing car.id: ${car.id} (${typeof car.id}) with data.bid.carId: ${data.bid.carId} (${typeof data.bid.carId})`);
+            return car.id.toString() === data.bid.carId.toString()
+              ? {
+                  ...car,
+                  currentBid: data.bid.amount,
+                  auctionEndTime: data.bid.auctionEndTime || car.auctionEndTime,
+                }
+              : car;
+          })
+        );
+      } else {
+        console.warn('Invalid bid data:', data);
+      }
+    };
+
+    AuctionSocket.on('new-bid', handleNewBid);
+
+    return () => {
+      AuctionSocket.off('new-bid', handleNewBid);
+    };
+  }, []);
+
+  const handleFilterChange = (newFilters: Partial<typeof filters>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
-    setPage(1); 
+    setPage(1);
     setAllCars([]);
   };
 
-  const handleClick = (carId:string)=>{
-    navigate(`/user/cars/${carId}`)
-  }
+  const handleClick = (carId: string) => {
+    navigate(`/user/cars/${carId}`);
+  };
 
   const renderSkeletons = () => {
-    return Array(4).fill(0).map((_, index) => (
-      <CarCardSkeleton key={`skeleton-${index}`} />
-    ));
+    return Array(4)
+      .fill(0)
+      .map((_, index) => <CarCardSkeleton key={`skeleton-${index}`} />);
   };
 
   return (
     <div className="bg-black min-h-screen w-full">
       <Header />
-      <FeaturedCar />
+      <FeaturedCarCarousel /> {/* Updated component */}
       <CarFilters onFilterChange={handleFilterChange} filters={filters} />
       <div className="w-full bg-black px-6 py-8">
         <div className="max-w-7xl mx-auto">
@@ -100,16 +141,15 @@ export default function UserHomePage() {
               {isLoading && page === 1 ? (
                 renderSkeletons()
               ) : (
-                Array.isArray(allCars) && allCars.map((car) => (
-                  <div 
-                  key={car.id} 
-                  onClick={() => handleClick(car.id)}
-                  className="cursor-pointer transition-transform hover:scale-105"
-                >
-                  <CarCard
-                    {...car}
-                  />
-                </div>
+                Array.isArray(allCars) &&
+                allCars.map((car) => (
+                  <div
+                    key={car.id}
+                    onClick={() => handleClick(car.id)}
+                    className="cursor-pointer transition-transform hover:scale-105"
+                  >
+                    <CarCard {...car} />
+                  </div>
                 ))
               )}
             </div>

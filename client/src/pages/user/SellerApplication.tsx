@@ -8,17 +8,19 @@ import { CarListingForm } from "@/components/user/CarSellingApplication/CarListi
 const SellerApplication = () => {
   const navigate = useNavigate();
   const { data, error, isPending } = useGetIsSeller();
-  console.log(data)
+  console.log(data);
 
-  const isApprovedSeller = data?.data?.isSeller;
-  const isSellerBlocked = data?.data?.isActive === false; 
-  const sellerDetails = data?.data?.sellerDetails; 
+  const sellerData = data?.data;
+  const sellerDetails = sellerData?.sellerDetails;
+  const isApprovedSeller = sellerData?.isSeller;
+  const isApplicationSubmitted = !!sellerDetails;
+  const isSellerBlocked = isApprovedSeller && sellerData?.isActive === false;
   const approvalStatus = sellerDetails?.approvalStatus;
 
   return (
     <div className="min-h-screen bg-black">
       <Header />
-      
+
       <div className="container max-w-4xl mx-auto px-4 py-8 animate-fade-in">
         <button
           onClick={() => navigate(-1)}
@@ -27,7 +29,7 @@ const SellerApplication = () => {
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </button>
-        
+
         <div className="bg-[#121212] rounded-lg p-6 md:p-8 border border-[#333333]">
           {isPending ? (
             <div className="text-center py-12">
@@ -37,13 +39,23 @@ const SellerApplication = () => {
           ) : error ? (
             <div className="text-center py-12">
               <p className="text-red-500 mb-4">Error checking seller status</p>
-              <button 
-                onClick={() => window.location.reload()} 
+              <button
+                onClick={() => window.location.reload()}
                 className="bg-[#333333] text-white px-4 py-2 rounded-md hover:bg-[#444444]"
               >
                 Try Again
               </button>
             </div>
+          ) : !isApplicationSubmitted ? (
+            <>
+              <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold text-white mb-3">Seller Application</h1>
+                <p className="text-[#8E9196] max-w-lg mx-auto">
+                  To start selling cars on our platform, we need some information to verify your identity and set up your seller account.
+                </p>
+              </div>
+              <SellerApplicationForm />
+            </>
           ) : isSellerBlocked ? (
             <div className="text-center py-12">
               <h1 className="text-3xl font-bold text-red-500 mb-3">Account Blocked</h1>
@@ -53,18 +65,16 @@ const SellerApplication = () => {
               <p className="text-white">
                 Please contact our support team for more information and assistance.
               </p>
-              <button 
-                onClick={() => navigate('/contact-support')} 
+              <button
+                onClick={() => navigate('/contact-support')}
                 className="mt-6 bg-[#333333] text-white px-6 py-2 rounded-md hover:bg-[#444444]"
               >
                 Contact Support
               </button>
             </div>
           ) : isApprovedSeller ? (
-            <>
-              <CarListingForm/>
-            </>
-          ) : sellerDetails && approvalStatus === "pending" ? (
+            <CarListingForm />
+          ) : approvalStatus === "pending" ? (
             <div className="text-center py-12">
               <h1 className="text-3xl font-bold text-white mb-3">Application Under Review</h1>
               <p className="text-[#8E9196] max-w-lg mx-auto mb-4">
@@ -79,7 +89,7 @@ const SellerApplication = () => {
               <div className="text-center mb-8">
                 <h1 className="text-3xl font-bold text-white mb-3">Seller Application</h1>
                 <p className="text-[#8E9196] max-w-lg mx-auto">
-                  {sellerDetails && approvalStatus === "rejected" 
+                  {approvalStatus === "rejected"
                     ? "Your previous application was rejected. You may reapply below."
                     : "To start selling cars on our platform, we need some information to verify your identity and set up your seller account."
                   }

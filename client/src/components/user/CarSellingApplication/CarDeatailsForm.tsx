@@ -1,43 +1,42 @@
-import { UseFormReturn } from "react-hook-form";
-import { 
-  Calendar, 
-  Car, 
-  DollarSign, 
-  Fuel, 
-  Gauge, 
-  Info, 
+import {
+  UseFormReturn
+} from "react-hook-form";
+import {
+  Calendar,
+  Car,
+  DollarSign,
+  Fuel,
+  Gauge,
+  Info,
   MapPin,
-  LayoutGrid
+  LayoutGrid,
 } from "lucide-react";
-import { 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormControl, 
-  FormMessage, 
-  FormDescription 
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  FormDescription
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "@/components/ui/select";
 import { CreatableBrandCombobox } from "./BandsTable";
 import { CarFormValues } from "@/types/CarFormTypes";
 
 interface CarDetailsFormProps {
   form: UseFormReturn<CarFormValues>;
-  predictedPrice?: string | null;
-  onPredictPrice?: () => void;
 }
 
-export const CarDetailsForm = ({ 
-  form, 
-
+export const CarDetailsForm = ({
+  form
 }: CarDetailsFormProps) => {
   return (
     <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 shadow-md backdrop-blur-sm animate-fade-in">
@@ -47,7 +46,7 @@ export const CarDetailsForm = ({
           Car Details
         </h2>
       </div>
-    
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
         {/* Listing Title */}
         <FormField
@@ -63,7 +62,7 @@ export const CarDetailsForm = ({
                 <FormControl>
                   <Input
                     placeholder="e.g. 2020 BMW 3 Series, Low Mileage"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors"
+                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
                     {...field}
                   />
                 </FormControl>
@@ -104,7 +103,7 @@ export const CarDetailsForm = ({
                 <FormControl>
                   <Input
                     placeholder="e.g. 3 Series, Camry"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors"
+                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
                     {...field}
                   />
                 </FormControl>
@@ -113,6 +112,57 @@ export const CarDetailsForm = ({
             </FormItem>
           )}
         />
+
+        {/* Vehicle Number - NEW FIELD */}
+        <FormField
+          control={form.control}
+          name="vehicleRegion"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-white text-sm font-medium">Vehicle Number</FormLabel>
+              <div className="flex gap-2 mt-1">
+                {/* Region part */}
+                <FormControl>
+                  <Input
+                    placeholder="KL"
+                    maxLength={2}
+                    className="bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11 w-1/3"
+                    {...field}
+                  />
+                </FormControl>
+
+                {/* Number part */}
+                <FormField
+                  control={form.control}
+                  name="vehicleNumber"
+                  render={({ field }) => (
+                    <FormControl>
+                      <Input
+                        placeholder="12345"
+                        maxLength={5}
+                        inputMode="numeric"
+                        pattern="\d{5}"
+                        className="bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11 flex-1"
+                        {...field}
+                      />
+                    </FormControl>
+                  )}
+                />
+              </div>
+
+              {/* Validation messages */}
+              <div className="flex gap-2 mt-1">
+                <FormMessage name="vehicleRegion" className="text-red-500 w-1/3" />
+                <FormMessage name="vehicleNumber" className="text-red-500 flex-1" />
+              </div>
+
+              <FormDescription className="text-[#8E9196] text-xs mt-1">
+                Enter your vehicle registration code (e.g., KL 12345)
+              </FormDescription>
+            </FormItem>
+          )}
+        />
+
 
         {/* Year */}
         <FormField
@@ -127,25 +177,13 @@ export const CarDetailsForm = ({
                 </div>
                 <FormControl>
                   <Input
-                    type="number"
                     placeholder="e.g. 2020"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors"
+                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
                     {...field}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value);
-                      if (isNaN(value) || value <= 2025) {
-                        field.onChange(e);
-                      }
-                    }}
-                    min={1900}
-                    max={2025}
                   />
                 </FormControl>
               </div>
               <FormMessage className="text-red-500" />
-              <FormDescription className="text-[#8E9196] text-xs mt-1">
-                Year must be between 1900 and 2025
-              </FormDescription>
             </FormItem>
           )}
         />
@@ -163,28 +201,17 @@ export const CarDetailsForm = ({
                 </div>
                 <FormControl>
                   <Input
-                    type="number"
                     placeholder="e.g. 45000"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors"
+                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
                     {...field}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value);
-                      if (isNaN(value) || value >= 0) {
-                        field.onChange(e);
-                      }
-                    }}
-                    min={0}
                   />
                 </FormControl>
               </div>
               <FormMessage className="text-red-500" />
-              <FormDescription className="text-[#8E9196] text-xs mt-1">
-                Enter mileage in miles (numbers only)
-              </FormDescription>
             </FormItem>
           )}
         />
-        
+
         {/* Reserve Price - OPTIONAL */}
         <FormField
           control={form.control}
@@ -200,11 +227,9 @@ export const CarDetailsForm = ({
                 </div>
                 <FormControl>
                   <Input
-                    type="number"
                     placeholder="e.g. 22000"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors"
+                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
                     {...field}
-                    min={0}
                   />
                 </FormControl>
               </div>
@@ -230,7 +255,7 @@ export const CarDetailsForm = ({
                 <FormControl>
                   <Input
                     placeholder="e.g. Los Angeles, CA"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors"
+                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
                     {...field}
                   />
                 </FormControl>
@@ -256,7 +281,7 @@ export const CarDetailsForm = ({
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <SelectTrigger className="pl-10 bg-[#1A1A1A] border-[#333333] text-white">
+                    <SelectTrigger className="pl-10 bg-[#1A1A1A] border-[#333333] text-white h-11">
                       <SelectValue placeholder="Select fuel type" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-[#333333] text-white">
@@ -273,7 +298,7 @@ export const CarDetailsForm = ({
             </FormItem>
           )}
         />
-        
+
         {/* Body Type */}
         <FormField
           control={form.control}
@@ -290,7 +315,7 @@ export const CarDetailsForm = ({
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <SelectTrigger className="pl-10 bg-[#1A1A1A] border-[#333333] text-white">
+                    <SelectTrigger className="pl-10 bg-[#1A1A1A] border-[#333333] text-white h-11">
                       <SelectValue placeholder="Select body type" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-[#333333] text-white">
@@ -308,7 +333,7 @@ export const CarDetailsForm = ({
             </FormItem>
           )}
         />
-        
+
         {/* Transmission */}
         <FormField
           control={form.control}
@@ -325,7 +350,7 @@ export const CarDetailsForm = ({
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <SelectTrigger className="pl-10 bg-[#1A1A1A] border-[#333333] text-white">
+                    <SelectTrigger className="pl-10 bg-[#1A1A1A] border-[#333333] text-white h-11">
                       <SelectValue placeholder="Select transmission type" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-[#333333] text-white">
@@ -356,7 +381,7 @@ export const CarDetailsForm = ({
                 <FormControl>
                   <Input
                     placeholder="e.g. Black, White, Silver"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors"
+                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
                     {...field}
                   />
                 </FormControl>
@@ -365,7 +390,7 @@ export const CarDetailsForm = ({
             </FormItem>
           )}
         />
-        
+
         {/* Interior Color */}
         <FormField
           control={form.control}
@@ -380,7 +405,7 @@ export const CarDetailsForm = ({
                 <FormControl>
                   <Input
                     placeholder="e.g. Black, White, Beige"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors"
+                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
                     {...field}
                   />
                 </FormControl>
@@ -390,7 +415,7 @@ export const CarDetailsForm = ({
           )}
         />
       </div>
-      
+
       {/* Description */}
       <FormField
         control={form.control}
@@ -415,5 +440,3 @@ export const CarDetailsForm = ({
     </div>
   );
 };
-
-export default CarDetailsForm;

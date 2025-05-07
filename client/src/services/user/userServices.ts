@@ -2,6 +2,7 @@ import { userAxiosInstance } from "@/api/clientAxios";
 import { ChangePasswordData } from "@/hooks/user/userDashboard";
 import { CreateCarDTO } from "@/types/CarFormTypes";
 import {
+  CreateCommentDto,
   SellerRequestPayload,
   WalletTransactionsResponse,
 } from "@/types/Types";
@@ -89,3 +90,28 @@ export const carRegister = async (carDetails: CreateCarDTO) => {
   const response = await userAxiosInstance.post("/_us/user/register-car", carDetails);
   return response.data;
 };
+
+export const carComment = async (comment:CreateCommentDto) => {
+  const resposne = await userAxiosInstance.post("/_us/user/car-comment",comment);
+  return resposne.data
+}
+
+export const getCarComments = async(carId:string)=>{
+  const response = await userAxiosInstance.get(`/_us/user/car-comments/${carId}`);
+  return response.data
+}
+
+export const getAllBids = async()=>{
+  const repsonse = await userAxiosInstance.get(`/_us/user/bids`);
+  return repsonse.data
+}
+
+export const getSellerStatistics = async()=>{
+  const repsonse = await userAxiosInstance.get(`/_us/user/seller-statistics`);
+  return repsonse.data
+}
+
+export const getBidHistory = async(carId:string)=>{
+  const response = await userAxiosInstance.get(`/_us/user/bid-history/${carId}`);
+  return response.data
+}

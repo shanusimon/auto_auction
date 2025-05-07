@@ -25,6 +25,8 @@ export const CarListingForm = () => {
       title: "",
       make: "",
       model: "",
+      vehicleRegion: "",
+      vehicleNumber: "",
       year: new Date().getFullYear(),
       mileage: "" as any,
       reservePrice: undefined,
@@ -57,6 +59,7 @@ export const CarListingForm = () => {
       const uploadedImages = await Promise.all(
         carImages.map((file) => uploadCarImageCloudinary(file))
       );
+
       if (uploadedImages.some((url) => url === null)) {
         toast({
           title: "Failed to upload",
@@ -69,12 +72,15 @@ export const CarListingForm = () => {
 
       const payload: CreateCarDTO = {
         ...data,
+        vehicleNumber: `${data.vehicleRegion}-${data.vehicleNumber}`,
         mileage: Number(data.mileage),
         reservedPrice: Number(data.reservePrice),
         exteriorColor: data.ExteriorColor,
         interiorColor: data.InteriorColor,
         images: uploadedImages as string[],
       };
+
+      console.log(payload);
 
       await registerCar(payload);
 
@@ -84,18 +90,33 @@ export const CarListingForm = () => {
       });
 
       form.reset();
-      resetImages(); 
-    } catch (error) {
+      resetImages();
+    } catch (error: any) {
       console.error("Error submitting car listing:", error);
-      toast({
-        title: "Failed to list car",
-        description: "There was an error listing your car. Please try again.",
-        variant: "destructive",
-      });
+
+      if (error.response && error.response.data) {
+        const { message, errors } = error.response.data;
+
+        toast({
+          title: message || "Failed to list car",
+          description: errors
+            ? errors.map((err: { message: string }) => err.message).join(", ")
+            : "Please check your details and try again.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Failed to list car",
+          description:
+            error.message || "An unexpected error occurred. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   return (
     <div className="space-y-8">
