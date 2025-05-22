@@ -39,35 +39,37 @@ export const CarDetailsForm = ({
   form
 }: CarDetailsFormProps) => {
   return (
-    <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 shadow-md backdrop-blur-sm animate-fade-in">
-      <div className="flex justify-between items-center mb-6 border-b border-zinc-800 pb-4">
-        <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
-          <Car className="text-[#3BE188]" size={24} />
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-8 shadow-lg backdrop-blur-sm animate-fade-in">
+      <div className="flex justify-between items-center mb-8 border-b border-zinc-800 pb-6">
+        <h2 className="text-2xl font-semibold text-white flex items-center gap-3">
+          <Car className="text-[#3BE188]" size={28} />
           Car Details
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
         {/* Listing Title */}
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white text-sm font-medium">Listing Title</FormLabel>
-              <div className="relative mt-1">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                  <Info className="text-[#8E9196] h-4 w-4" />
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white text-sm font-medium flex items-center h-5">
+                Listing Title
+              </FormLabel>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+                  <Info className="text-zinc-400 h-4 w-4" />
                 </div>
                 <FormControl>
                   <Input
                     placeholder="e.g. 2020 BMW 3 Series, Low Mileage"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
+                    className="pl-10 pr-4 h-12 bg-zinc-950/80 border-zinc-700 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-[#3BE188]/20 focus:border-[#3BE188] transition-all duration-200"
                     {...field}
                   />
                 </FormControl>
               </div>
-              <FormMessage className="text-red-500" />
+              <FormMessage className="text-red-400 text-xs" />
             </FormItem>
           )}
         />
@@ -77,14 +79,16 @@ export const CarDetailsForm = ({
           control={form.control}
           name="make"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white text-sm font-medium">Make</FormLabel>
-              <div className="relative mt-1">
-                <FormControl>
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white text-sm font-medium flex items-center h-5">
+                Make
+              </FormLabel>
+              <FormControl>
+                <div className="h-12">
                   <CreatableBrandCombobox value={field.value} onChange={field.onChange} />
-                </FormControl>
-              </div>
-              <FormMessage className="text-red-500" />
+                </div>
+              </FormControl>
+              <FormMessage className="text-red-400 text-xs" />
             </FormItem>
           )}
         />
@@ -94,39 +98,43 @@ export const CarDetailsForm = ({
           control={form.control}
           name="model"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white text-sm font-medium">Model</FormLabel>
-              <div className="relative mt-1">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                  <Car className="text-[#8E9196] h-4 w-4" />
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white text-sm font-medium flex items-center h-5">
+                Model
+              </FormLabel>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+                  <Car className="text-zinc-400 h-4 w-4" />
                 </div>
                 <FormControl>
                   <Input
                     placeholder="e.g. 3 Series, Camry"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
+                    className="pl-10 pr-4 h-12 bg-zinc-950/80 border-zinc-700 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-[#3BE188]/20 focus:border-[#3BE188] transition-all duration-200"
                     {...field}
                   />
                 </FormControl>
               </div>
-              <FormMessage className="text-red-500" />
+              <FormMessage className="text-red-400 text-xs" />
             </FormItem>
           )}
         />
 
-        {/* Vehicle Number - NEW FIELD */}
+        {/* Vehicle Number */}
         <FormField
           control={form.control}
           name="vehicleRegion"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white text-sm font-medium">Vehicle Number</FormLabel>
-              <div className="flex gap-2 mt-1">
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white text-sm font-medium flex items-center h-5">
+                Vehicle Number
+              </FormLabel>
+              <div className="flex gap-3">
                 {/* Region part */}
                 <FormControl>
                   <Input
                     placeholder="KL"
                     maxLength={2}
-                    className="bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11 w-1/3"
+                    className="w-20 h-12 bg-zinc-950/80 border-zinc-700 text-white text-center placeholder:text-zinc-500 focus:ring-2 focus:ring-[#3BE188]/20 focus:border-[#3BE188] transition-all duration-200 uppercase"
                     {...field}
                   />
                 </FormControl>
@@ -142,48 +150,43 @@ export const CarDetailsForm = ({
                         maxLength={5}
                         inputMode="numeric"
                         pattern="\d{5}"
-                        className="bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11 flex-1"
+                        className="flex-1 h-12 bg-zinc-950/80 border-zinc-700 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-[#3BE188]/20 focus:border-[#3BE188] transition-all duration-200"
                         {...field}
                       />
                     </FormControl>
                   )}
                 />
               </div>
-
-              {/* Validation messages */}
-              <div className="flex gap-2 mt-1">
-                <FormMessage name="vehicleRegion" className="text-red-500 w-1/3" />
-                <FormMessage name="vehicleNumber" className="text-red-500 flex-1" />
-              </div>
-
-              <FormDescription className="text-[#8E9196] text-xs mt-1">
+              <FormDescription className="text-zinc-400 text-xs">
                 Enter your vehicle registration code (e.g., KL 12345)
               </FormDescription>
+              <FormMessage className="text-red-400 text-xs" />
             </FormItem>
           )}
         />
-
 
         {/* Year */}
         <FormField
           control={form.control}
           name="year"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white text-sm font-medium">Year</FormLabel>
-              <div className="relative mt-1">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                  <Calendar className="text-[#8E9196] h-4 w-4" />
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white text-sm font-medium flex items-center h-5">
+                Year
+              </FormLabel>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+                  <Calendar className="text-zinc-400 h-4 w-4" />
                 </div>
                 <FormControl>
                   <Input
                     placeholder="e.g. 2020"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
+                    className="pl-10 pr-4 h-12 bg-zinc-950/80 border-zinc-700 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-[#3BE188]/20 focus:border-[#3BE188] transition-all duration-200"
                     {...field}
                   />
                 </FormControl>
               </div>
-              <FormMessage className="text-red-500" />
+              <FormMessage className="text-red-400 text-xs" />
             </FormItem>
           )}
         />
@@ -193,50 +196,53 @@ export const CarDetailsForm = ({
           control={form.control}
           name="mileage"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white text-sm font-medium">Mileage</FormLabel>
-              <div className="relative mt-1">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                  <Gauge className="text-[#8E9196] h-4 w-4" />
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white text-sm font-medium flex items-center h-5">
+                Mileage
+              </FormLabel>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+                  <Gauge className="text-zinc-400 h-4 w-4" />
                 </div>
                 <FormControl>
                   <Input
                     placeholder="e.g. 45000"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
+                    className="pl-10 pr-4 h-12 bg-zinc-950/80 border-zinc-700 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-[#3BE188]/20 focus:border-[#3BE188] transition-all duration-200"
                     {...field}
                   />
                 </FormControl>
               </div>
-              <FormMessage className="text-red-500" />
+              <FormMessage className="text-red-400 text-xs" />
             </FormItem>
           )}
         />
 
-        {/* Reserve Price - OPTIONAL */}
+        {/* Reserve Price */}
         <FormField
           control={form.control}
           name="reservePrice"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white text-sm font-medium">
-                Reserve Price ($) <span className="text-[#8E9196] text-xs ml-1">(Optional)</span>
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white text-sm font-medium flex items-center h-5">
+                Reserve Price ($)
+                <span className="text-zinc-400 text-xs ml-2 font-normal">(Optional)</span>
               </FormLabel>
-              <div className="relative mt-1">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                  <DollarSign className="text-[#8E9196] h-4 w-4" />
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+                  <DollarSign className="text-zinc-400 h-4 w-4" />
                 </div>
                 <FormControl>
                   <Input
                     placeholder="e.g. 22000"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
+                    className="pl-10 pr-4 h-12 bg-zinc-950/80 border-zinc-700 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-[#3BE188]/20 focus:border-[#3BE188] transition-all duration-200"
                     {...field}
                   />
                 </FormControl>
               </div>
-              <FormDescription className="text-[#8E9196] text-xs mt-1">
+              <FormDescription className="text-zinc-400 text-xs">
                 Minimum amount you're willing to accept. Your listing won't sell below this price.
               </FormDescription>
-              <FormMessage className="text-red-500" />
+              <FormMessage className="text-red-400 text-xs" />
             </FormItem>
           )}
         />
@@ -246,21 +252,23 @@ export const CarDetailsForm = ({
           control={form.control}
           name="location"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white text-sm font-medium">Location</FormLabel>
-              <div className="relative mt-1">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                  <MapPin className="text-[#8E9196] h-4 w-4" />
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white text-sm font-medium flex items-center h-5">
+                Location
+              </FormLabel>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+                  <MapPin className="text-zinc-400 h-4 w-4" />
                 </div>
                 <FormControl>
                   <Input
                     placeholder="e.g. Los Angeles, CA"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
+                    className="pl-10 pr-4 h-12 bg-zinc-950/80 border-zinc-700 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-[#3BE188]/20 focus:border-[#3BE188] transition-all duration-200"
                     {...field}
                   />
                 </FormControl>
               </div>
-              <FormMessage className="text-red-500" />
+              <FormMessage className="text-red-400 text-xs" />
             </FormItem>
           )}
         />
@@ -270,31 +278,30 @@ export const CarDetailsForm = ({
           control={form.control}
           name="fuel"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white text-sm font-medium">Fuel Type</FormLabel>
-              <div className="relative mt-1">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none z-10">
-                  <Fuel className="text-[#8E9196] h-4 w-4" />
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white text-sm font-medium flex items-center h-5">
+                Fuel Type
+              </FormLabel>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-20">
+                  <Fuel className="text-zinc-400 h-4 w-4" />
                 </div>
                 <FormControl>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <SelectTrigger className="pl-10 bg-[#1A1A1A] border-[#333333] text-white h-11">
-                      <SelectValue placeholder="Select fuel type" />
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger className="pl-10 pr-4 h-12 bg-zinc-950/80 border-zinc-700 text-white focus:ring-2 focus:ring-[#3BE188]/20 focus:border-[#3BE188] transition-all duration-200">
+                      <SelectValue placeholder="Select fuel type" className="text-zinc-500" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1A1A1A] border-[#333333] text-white">
-                      <SelectItem value="gasoline">Gasoline</SelectItem>
-                      <SelectItem value="diesel">Diesel</SelectItem>
-                      <SelectItem value="electric">Electric</SelectItem>
-                      <SelectItem value="hybrid">Hybrid</SelectItem>
-                      <SelectItem value="plugin_hybrid">Plug-in Hybrid</SelectItem>
+                    <SelectContent className="bg-zinc-900 border-zinc-700">
+                      <SelectItem value="gasoline" className="text-white hover:bg-zinc-800">Gasoline</SelectItem>
+                      <SelectItem value="diesel" className="text-white hover:bg-zinc-800">Diesel</SelectItem>
+                      <SelectItem value="electric" className="text-white hover:bg-zinc-800">Electric</SelectItem>
+                      <SelectItem value="hybrid" className="text-white hover:bg-zinc-800">Hybrid</SelectItem>
+                      <SelectItem value="plugin_hybrid" className="text-white hover:bg-zinc-800">Plug-in Hybrid</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
               </div>
-              <FormMessage className="text-red-500" />
+              <FormMessage className="text-red-400 text-xs" />
             </FormItem>
           )}
         />
@@ -304,32 +311,31 @@ export const CarDetailsForm = ({
           control={form.control}
           name="bodyType"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white text-sm font-medium">Body Type</FormLabel>
-              <div className="relative mt-1">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none z-10">
-                  <LayoutGrid className="text-[#8E9196] h-4 w-4" />
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white text-sm font-medium flex items-center h-5">
+                Body Type
+              </FormLabel>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-20">
+                  <LayoutGrid className="text-zinc-400 h-4 w-4" />
                 </div>
                 <FormControl>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <SelectTrigger className="pl-10 bg-[#1A1A1A] border-[#333333] text-white h-11">
-                      <SelectValue placeholder="Select body type" />
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger className="pl-10 pr-4 h-12 bg-zinc-950/80 border-zinc-700 text-white focus:ring-2 focus:ring-[#3BE188]/20 focus:border-[#3BE188] transition-all duration-200">
+                      <SelectValue placeholder="Select body type" className="text-zinc-500" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1A1A1A] border-[#333333] text-white">
-                      <SelectItem value="sedan">Sedan</SelectItem>
-                      <SelectItem value="suv">SUV</SelectItem>
-                      <SelectItem value="coupe">Coupe</SelectItem>
-                      <SelectItem value="convertible">Convertible</SelectItem>
-                      <SelectItem value="wagon">Wagon</SelectItem>
-                      <SelectItem value="limousine">Limousine</SelectItem>
+                    <SelectContent className="bg-zinc-900 border-zinc-700">
+                      <SelectItem value="sedan" className="text-white hover:bg-zinc-800">Sedan</SelectItem>
+                      <SelectItem value="suv" className="text-white hover:bg-zinc-800">SUV</SelectItem>
+                      <SelectItem value="coupe" className="text-white hover:bg-zinc-800">Coupe</SelectItem>
+                      <SelectItem value="convertible" className="text-white hover:bg-zinc-800">Convertible</SelectItem>
+                      <SelectItem value="wagon" className="text-white hover:bg-zinc-800">Wagon</SelectItem>
+                      <SelectItem value="limousine" className="text-white hover:bg-zinc-800">Limousine</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
               </div>
-              <FormMessage className="text-red-500" />
+              <FormMessage className="text-red-400 text-xs" />
             </FormItem>
           )}
         />
@@ -339,30 +345,29 @@ export const CarDetailsForm = ({
           control={form.control}
           name="transmission"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white text-sm font-medium">Transmission</FormLabel>
-              <div className="relative mt-1">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none z-10">
-                  <Car className="text-[#8E9196] h-4 w-4" />
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white text-sm font-medium flex items-center h-5">
+                Transmission
+              </FormLabel>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-20">
+                  <Car className="text-zinc-400 h-4 w-4" />
                 </div>
                 <FormControl>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <SelectTrigger className="pl-10 bg-[#1A1A1A] border-[#333333] text-white h-11">
-                      <SelectValue placeholder="Select transmission type" />
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger className="pl-10 pr-4 h-12 bg-zinc-950/80 border-zinc-700 text-white focus:ring-2 focus:ring-[#3BE188]/20 focus:border-[#3BE188] transition-all duration-200">
+                      <SelectValue placeholder="Select transmission type" className="text-zinc-500" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1A1A1A] border-[#333333] text-white">
-                      <SelectItem value="automatic">Automatic</SelectItem>
-                      <SelectItem value="manual">Manual</SelectItem>
-                      <SelectItem value="semi_automatic">Semi-Automatic</SelectItem>
-                      <SelectItem value="cvt">CVT</SelectItem>
+                    <SelectContent className="bg-zinc-900 border-zinc-700">
+                      <SelectItem value="automatic" className="text-white hover:bg-zinc-800">Automatic</SelectItem>
+                      <SelectItem value="manual" className="text-white hover:bg-zinc-800">Manual</SelectItem>
+                      <SelectItem value="semi_automatic" className="text-white hover:bg-zinc-800">Semi-Automatic</SelectItem>
+                      <SelectItem value="cvt" className="text-white hover:bg-zinc-800">CVT</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
               </div>
-              <FormMessage className="text-red-500" />
+              <FormMessage className="text-red-400 text-xs" />
             </FormItem>
           )}
         />
@@ -372,21 +377,23 @@ export const CarDetailsForm = ({
           control={form.control}
           name="ExteriorColor"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white text-sm font-medium">Exterior Color</FormLabel>
-              <div className="relative mt-1">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                  <Info className="text-[#8E9196] h-4 w-4" />
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white text-sm font-medium flex items-center h-5">
+                Exterior Color
+              </FormLabel>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+                  <div className="w-4 h-4 rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 border border-zinc-600"></div>
                 </div>
                 <FormControl>
                   <Input
                     placeholder="e.g. Black, White, Silver"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
+                    className="pl-10 pr-4 h-12 bg-zinc-950/80 border-zinc-700 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-[#3BE188]/20 focus:border-[#3BE188] transition-all duration-200"
                     {...field}
                   />
                 </FormControl>
               </div>
-              <FormMessage className="text-red-500" />
+              <FormMessage className="text-red-400 text-xs" />
             </FormItem>
           )}
         />
@@ -396,47 +403,53 @@ export const CarDetailsForm = ({
           control={form.control}
           name="InteriorColor"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white text-sm font-medium">Interior Color</FormLabel>
-              <div className="relative mt-1">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                  <Info className="text-[#8E9196] h-4 w-4" />
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white text-sm font-medium flex items-center h-5">
+                Interior Color
+              </FormLabel>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+                  <div className="w-4 h-4 rounded-full bg-gradient-to-r from-amber-600 to-amber-800 border border-zinc-600"></div>
                 </div>
                 <FormControl>
                   <Input
                     placeholder="e.g. Black, White, Beige"
-                    className="pl-10 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors h-11"
+                    className="pl-10 pr-4 h-12 bg-zinc-950/80 border-zinc-700 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-[#3BE188]/20 focus:border-[#3BE188] transition-all duration-200"
                     {...field}
                   />
                 </FormControl>
               </div>
-              <FormMessage className="text-red-500" />
+              <FormMessage className="text-red-400 text-xs" />
             </FormItem>
           )}
         />
       </div>
 
-      {/* Description */}
-      <FormField
-        control={form.control}
-        name="description"
-        render={({ field }) => (
-          <FormItem className="mt-8">
-            <FormLabel className="text-white text-sm font-medium">Description</FormLabel>
-            <FormControl>
-              <Textarea
-                placeholder="Provide a detailed description of your car including its condition, features, history, etc."
-                className="min-h-32 bg-[#1A1A1A] border-[#333333] text-white focus:ring-[#3BE188] focus:border-[#3BE188] transition-colors mt-1"
-                {...field}
-              />
-            </FormControl>
-            <FormDescription className="text-[#8E9196] text-xs mt-1">
-              Minimum 30 characters. A good description increases your chances of selling quickly.
-            </FormDescription>
-            <FormMessage className="text-red-500" />
-          </FormItem>
-        )}
-      />
+      {/* Description - Full Width */}
+      <div className="mt-8 pt-6 border-t border-zinc-800">
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white text-sm font-medium flex items-center h-5">
+                Description
+              </FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Provide a detailed description of your car including its condition, features, history, etc."
+                  className="min-h-32 resize-none bg-zinc-950/80 border-zinc-700 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-[#3BE188]/20 focus:border-[#3BE188] transition-all duration-200"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription className="text-zinc-400 text-xs">
+                Minimum 30 characters. A good description increases your chances of selling quickly.
+              </FormDescription>
+              <FormMessage className="text-red-400 text-xs" />
+            </FormItem>
+          )}
+        />
+      </div>
     </div>
   );
 };

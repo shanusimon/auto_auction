@@ -7,6 +7,7 @@ import {
   WalletTransactionsResponse,
 } from "@/types/Types";
 import { CarFilterReturn } from "@/types/CarFormTypes";
+import { Post } from "@/types/Post.Types";
 
 export const logoutUser = async () => {
   const response = await userAxiosInstance.post("/_us/user/logout");
@@ -14,8 +15,8 @@ export const logoutUser = async () => {
 };
 
 export const carDetails = async (carId:string)=>{
-  const respone = await userAxiosInstance.get(`/_us/user/car/${carId}`);
-  return respone.data
+  const response = await userAxiosInstance.get(`/_us/user/car/${carId}`);
+  return response.data
 }
 
 export const getCars = async (
@@ -92,8 +93,8 @@ export const carRegister = async (carDetails: CreateCarDTO) => {
 };
 
 export const carComment = async (comment:CreateCommentDto) => {
-  const resposne = await userAxiosInstance.post("/_us/user/car-comment",comment);
-  return resposne.data
+  const response = await userAxiosInstance.post("/_us/user/car-comment",comment);
+  return response.data
 }
 
 export const getCarComments = async(carId:string)=>{
@@ -102,16 +103,41 @@ export const getCarComments = async(carId:string)=>{
 }
 
 export const getAllBids = async()=>{
-  const repsonse = await userAxiosInstance.get(`/_us/user/bids`);
-  return repsonse.data
+  const response = await userAxiosInstance.get(`/_us/user/bids`);
+  return response.data
 }
 
 export const getSellerStatistics = async()=>{
-  const repsonse = await userAxiosInstance.get(`/_us/user/seller-statistics`);
-  return repsonse.data
+  const response = await userAxiosInstance.get(`/_us/user/seller-statistics`);
+  return response.data
 }
 
 export const getBidHistory = async(carId:string)=>{
   const response = await userAxiosInstance.get(`/_us/user/bid-history/${carId}`);
+  return response.data
+}
+
+export const createPost = async(post:Post)=>{
+  const response = await userAxiosInstance.post(`/_us/user/create-post`,post);
+  return response.data
+}
+
+export const getAllposts = async()=>{
+  const response = await userAxiosInstance.get(`/_us/user/posts`);
+  return response.data
+}
+
+export const addOrRemoveLike = async (postId: string) => {
+  const response = await userAxiosInstance.patch(`/_us/user/like/${postId}`);
+  return response.data;
+};
+
+export const getNotifications = async()=>{
+  const response = await userAxiosInstance.get(`/_us/user/notification`);
+  return response.data
+}
+
+export const updateNotification = async (payload:{id?:string,all?:boolean})=>{
+  const response = await userAxiosInstance.patch(`/_us/user/notification`,payload);
   return response.data
 }

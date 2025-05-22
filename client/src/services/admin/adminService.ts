@@ -129,15 +129,24 @@ export const getAllSellerRequest = async({
 }
 
 
-export const updateSellerRequestStatus = async(userId:string,status:string)=>{
+export const updateSellerRequestStatus = async (
+    userId: string,
+    status: string,
+    reason?: string
+) => {
     try {
-        console.log("userId in seller request service",userId)
-        const response = await adminAxiosInstance.patch(`/_ad/admin/sellerRequest-update/${userId}`,
-            {status}
-        )
-        return response.data
-    } catch (error:any) {
+        const payload: any = { status };
+        if (status === "rejected" && reason) {
+            payload.reason = reason;
+        }
+
+        const response = await adminAxiosInstance.patch(
+            `/_ad/admin/sellerRequest-update/${userId}`,
+            payload
+        );
+
+        return response.data;
+    } catch (error: any) {
         throw new Error(error.response?.data?.message || "Failed to update status");
     }
-
-}
+};

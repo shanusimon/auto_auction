@@ -19,14 +19,12 @@ interface CarCardProps {
 
 const CarCard: React.FC<CarCardProps> = ({
   id,
-  title,
   year,
   make,
   model,
   imageUrl,
   currentBid,
   auctionEndTime,
-  bids,
   location,
   noReserve,
   specs,

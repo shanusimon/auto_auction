@@ -36,7 +36,6 @@ const AdminSellers: React.FC = () => {
     const { mutate: updateStatus, isPending } = useUpdateSellerStatus(currentPage, limit, debouncedSearch);
 
     const handleApproveRequest = (sellerId: string) => {
-        console.log("This is seller id in seller request",sellerId);
         updateStatus(
             { sellerId, status: "approved" },
             {
@@ -51,9 +50,10 @@ const AdminSellers: React.FC = () => {
         );
     };
 
-    const handleRejectRequest = (sellerId: string) => {
+
+    const handleRejectRequest = (sellerId: string, reason: string) => {
         updateStatus(
-            { sellerId, status: "rejected" },
+            { sellerId, status: "rejected", reason },
             {
                 onSuccess: () => {
                     toast({
@@ -65,6 +65,7 @@ const AdminSellers: React.FC = () => {
             }
         );
     };
+
     const filteredRequests = (data?.sellers ?? []) as ISellerEntity[];
     const totalPages = data?.totalPage || 1;
 

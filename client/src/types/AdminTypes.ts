@@ -32,7 +32,7 @@ interface IUser {
 export interface SellerRequestTableProps {
   sellerRequests: ISellerEntity[];
   onApprove: (requestId: string) => void;
-  onReject: (requestId: string) => void;
+  onReject: (requestId: string,reason:string) => void;
   isPending:boolean
 }
 

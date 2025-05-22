@@ -11,6 +11,7 @@ import CarDetailsPage from "@/pages/user/CarDetailsPage";
 import ChatPage from "@/pages/user/Chat";
 import MyBids from "@/pages/user/MyBids";
 import SellerDashboard from "@/pages/user/SellerDashboard";
+import Community from "@/pages/user/Community";
 
 export function UserRoutes() {
   return (
@@ -36,6 +37,9 @@ export function UserRoutes() {
        <Route
         path="/user/bids"
         element={<ProtectedRoutes allowedRoles={["user"]} element={<MyBids />} />} />
+           <Route
+        path="/user/community"
+        element={<ProtectedRoutes allowedRoles={["user"]} element={<Community />} />} />
         <Route
         path="/user/seller-dashboard"
         element={<ProtectedRoutes allowedRoles={["user"]} element={<SellerDashboard />} />} />

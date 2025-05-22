@@ -7,8 +7,8 @@ export const useUpdateSellerStatus = (currentPage: number, limit: number, search
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ sellerId, status }: { sellerId: string; status: "approved" | "rejected" }) =>
-            updateSellerRequestStatus(sellerId, status),
+        mutationFn: ({ sellerId, status,reason }: { sellerId: string; status: "approved" | "rejected" ,reason?:string}) =>
+            updateSellerRequestStatus(sellerId, status,reason),
         onSuccess: (data) => {
             successToast(data.message); 
             queryClient.invalidateQueries({ queryKey: ["sellerRequest", currentPage, limit, search] });

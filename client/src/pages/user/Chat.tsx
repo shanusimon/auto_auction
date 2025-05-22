@@ -14,9 +14,13 @@ import {
   ChevronLeft,
   MessageCircle,
   MoreVertical,
+  Image as ImageIcon,
+  Loader2,
+  X
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { uploadProfileImageCloudinary } from "@/utils/cloudinaryImageUpload";
 
 interface Conversation {
   id: string;
@@ -26,6 +30,8 @@ interface Conversation {
   time: string;
   unread: number;
   isOnline: boolean;
+  user1Id: string; 
+  user2Id: string; 
 }
 
 interface Message {
@@ -36,6 +42,7 @@ interface Message {
   sendAt: string;
   isRead: boolean;
   type: string;
+  imageUrl?: string;
 }
 
 class ChatErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
@@ -76,6 +83,11 @@ const ChatPage: React.FC = () => {
   const [messageInput, setMessageInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
 
   useEffect(() => {
     if (!currentUserId) {
@@ -85,13 +97,25 @@ const ChatPage: React.FC = () => {
     }
   }, [currentUserId, navigate]);
 
-  // Socket.IO event listeners
+
   useEffect(() => {
     if (!currentUserId) return;
 
     connectSocket();
 
-    console.log("Emitting getConversations for userId:", currentUserId);
+
+    AuctionSocket.emit("authenticate", { userId: currentUserId });
+
+
+    const pingInterval = setInterval(() => {
+      AuctionSocket.emit("ping");
+    }, 30000); 
+
+    AuctionSocket.on("pong", () => {
+      console.log("Pong received from server");
+    });
+
+
     AuctionSocket.emit("getConversations", { userId: currentUserId });
 
     AuctionSocket.on("conversationsList", ({ conversations }) => {
@@ -101,9 +125,11 @@ const ChatPage: React.FC = () => {
         validConversations.map((conv: any) => {
           const user1 = conv.user1Id;
           const user2 = conv.user2Id;
-
           const isUser1CurrentUser = user1._id === currentUserId;
           const otherUser = isUser1CurrentUser ? user2 : user1;
+
+
+          AuctionSocket.emit("checkUserStatus", { userId: otherUser._id });
 
           return {
             id: conv.id || "",
@@ -112,11 +138,27 @@ const ChatPage: React.FC = () => {
             lastMessage: conv.lastMessage?.content || "",
             time: conv.lastMessage?.sendAt || conv.createdAt || new Date().toISOString(),
             unread: conv.unread || 0,
-            isOnline: false,
+            isOnline: false, // Initialize as false, updated by userStatus
+            user1Id: user1._id, // Store for status updates
+            user2Id: user2._id, // Store for status updates
           };
         })
       );
       setIsLoadingConversations(false);
+    });
+
+    // Listen for user status updates
+    AuctionSocket.on("userStatus", ({ userId, isOnline }: { userId: string; isOnline: boolean }) => {
+      console.log(`Received userStatus: ${userId} is ${isOnline ? "online" : "offline"}`);
+      setConversations((prev) =>
+        prev.map((conv) => {
+          const otherUserId = conv.user1Id === currentUserId ? conv.user2Id : conv.user1Id;
+          if (otherUserId === userId) {
+            return { ...conv, isOnline };
+          }
+          return conv;
+        })
+      );
     });
 
     AuctionSocket.on("conversationStarted", ({ conversationId }) => {
@@ -136,29 +178,21 @@ const ChatPage: React.FC = () => {
 
     AuctionSocket.on("newMessage", ({ message }) => {
       console.log("Received newMessage:", message);
-      
-
       if (!message || !message.content) {
         console.error("Received invalid message in newMessage event:", message);
         return;
       }
-      
-
       if (!message.sendAt) {
         message.sendAt = new Date().toISOString();
       }
-      
-
       if (message.senderId !== currentUserId) {
         setMessages((prev) => {
-
-          const messageExists = prev.some(m => m.id === message.id);
+          const messageExists = prev.some((m) => m.id === message.id);
           if (!messageExists) {
             return [...prev, message];
           }
           return prev;
         });
-        
         setConversations((prev) =>
           prev.map((conv) =>
             conv.id === message.conversationId
@@ -171,47 +205,38 @@ const ChatPage: React.FC = () => {
 
     AuctionSocket.on("messageSent", ({ success, message }) => {
       console.log("Received messageSent:", { success, message });
-      
       if (success && message) {
-
         if (!message.sendAt) {
           message.sendAt = new Date().toISOString();
         }
-
         setMessages((prev) => {
-
-          const tempMessage = prev.find(m => 
-            m.id.startsWith('temp-') && 
-            m.content === message.content && 
-            m.senderId === currentUserId
+          const tempMessage = prev.find(
+            (m) =>
+              m.id.startsWith("temp-") &&
+              ((m.type === "text" && m.content === message.content) ||
+               (m.type === "image" && m.imageUrl === message.imageUrl)) &&
+              m.senderId === currentUserId
           );
-          
-  
           if (tempMessage) {
-
-            return prev.map(m => 
-              m.id === tempMessage.id ? message : m
-            );
+            return prev.map((m) => (m.id === tempMessage.id ? message : m));
           } else {
-
-            const messageExists = prev.some(m => m.id === message.id);
+            const messageExists = prev.some((m) => m.id === message.id);
             if (!messageExists) {
               return [...prev, message];
             }
             return prev;
           }
         });
-        
-
+        const displayContent = message.type === "image" ? "Sent an image" : message.content;
         setConversations((prev) =>
           prev.map((conv) =>
             conv.id === message.conversationId
-              ? { ...conv, lastMessage: message.content, time: message.sendAt }
+              ? { ...conv, lastMessage: displayContent, time: message.sendAt }
               : conv
           )
         );
       } else {
-        setMessages(prev => prev.filter(m => !m.id.startsWith('temp-')));
+        setMessages((prev) => prev.filter((m) => !m.id.startsWith("temp-")));
         toast.error("Failed to send message. Please try again.");
       }
     });
@@ -225,12 +250,22 @@ const ChatPage: React.FC = () => {
       }
     });
 
+    // Cleanup socket listeners and disconnect
     return () => {
+      AuctionSocket.off("conversationsList");
+      AuctionSocket.off("conversationStarted");
+      AuctionSocket.off("joinedConversation");
+      AuctionSocket.off("newMessage");
+      AuctionSocket.off("messageSent");
+      AuctionSocket.off("error");
+      AuctionSocket.off("userStatus");
+      AuctionSocket.off("pong");
+      clearInterval(pingInterval);
       disconnectSocket();
     };
   }, [currentUserId, navigate]);
 
-
+  // Join conversation based on URL or state
   useEffect(() => {
     if (!currentUserId) return;
 
@@ -239,56 +274,175 @@ const ChatPage: React.FC = () => {
       if (convId && convId !== activeChatId) {
         console.log("Emitting joinConversation for conversationId:", convId);
         AuctionSocket.emit("joinConversation", { userId: currentUserId, conversationId: convId });
+        // Query status for the other user in the conversation
+        const conversation = conversations.find((c) => c.id === convId);
+        if (conversation) {
+          const otherUserId = conversation.user1Id === currentUserId ? conversation.user2Id : conversation.user1Id;
+          AuctionSocket.emit("checkUserStatus", { userId: otherUserId });
+        }
         setActiveChatId(convId);
       }
     };
 
     joinConversation();
-  }, [stateConversationId, urlConversationId, currentUserId, activeChatId]);
+  }, [stateConversationId, urlConversationId, currentUserId, activeChatId, conversations]);
 
-
+  // Refresh conversations if none exist
   useEffect(() => {
     if (!currentUserId || conversations.length > 0) return;
     console.log("Refreshing conversations due to activeChatId change:", activeChatId);
     AuctionSocket.emit("getConversations", { userId: currentUserId });
   }, [activeChatId, currentUserId, conversations.length]);
 
+  // Scroll to latest message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSendMessage = () => {
-    if (messageInput.trim() === "" || !activeChatId || !currentUserId) return;
-    
+    if (messageInput.trim() === "" && !selectedFile && !imagePreview) return;
+    if (!activeChatId || !currentUserId) return;
 
     const tempId = `temp-${Date.now()}`;
-
     const now = new Date();
     const formattedDate = now.toISOString();
-    
 
-    const optimisticMessage = {
-      id: tempId,
-      conversationId: activeChatId,
-      senderId: currentUserId,
-      content: messageInput,
-      sendAt: formattedDate,
-      isRead: false,
-      type: "text"
-    };
+    if (selectedFile && imagePreview) {
+      handleSendImage();
+    } else {
+      const optimisticMessage = {
+        id: tempId,
+        conversationId: activeChatId,
+        senderId: currentUserId,
+        content: messageInput,
+        sendAt: formattedDate,
+        isRead: false,
+        type: "text"
+      };
 
-    setMessages(prev => [...prev, optimisticMessage]);
-    
-    console.log("Sending text message:", messageInput);
-    AuctionSocket.emit("sendMessage", {
-      userId: currentUserId,
-      conversationId: activeChatId,
-      content: messageInput,
-      senderId: currentUserId,
-      type: "text",
-    });
-    
-    setMessageInput("");
+      setMessages((prev) => [...prev, optimisticMessage]);
+
+      console.log("Sending text message:", messageInput);
+      AuctionSocket.emit("sendMessage", {
+        userId: currentUserId,
+        conversationId: activeChatId,
+        content: messageInput,
+        senderId: currentUserId,
+        type: "text",
+      });
+
+      setMessageInput("");
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+    if (!validImageTypes.includes(file.type)) {
+      toast.error("Please select a valid image file (JPEG, PNG, GIF, WEBP, SVG)");
+      e.target.value = '';
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      e.target.value = '';
+      return;
+    }
+
+    setSelectedFile(file);
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+  };
+
+  const handleCancelImage = () => {
+    setSelectedFile(null);
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+      setImagePreview(null);
+    }
+  };
+
+  const handleSendImage = async () => {
+    if (!selectedFile || !activeChatId || !currentUserId) {
+      toast.error("Missing required information for sending image");
+      return;
+    }
+
+    setIsUploading(true);
+    const tempId = `temp-${Date.now()}`;
+    const now = new Date();
+    const formattedDate = now.toISOString();
+
+    try {
+      const optimisticMessage = {
+        id: tempId,
+        conversationId: activeChatId,
+        senderId: currentUserId,
+        content: "Sending image...",
+        imageUrl: imagePreview || "",
+        sendAt: formattedDate,
+        isRead: false,
+        type: "image"
+      };
+
+      setMessages((prev) => [...prev, optimisticMessage]);
+
+      let imageData;
+      try {
+        imageData = await uploadProfileImageCloudinary(selectedFile);
+        console.log("Cloudinary response:", imageData);
+      } catch (uploadError) {
+        console.error("Cloudinary upload error:", uploadError);
+        throw new Error("Failed to upload image to cloud storage");
+      }
+
+      let imageUrl;
+      if (typeof imageData === 'string') {
+        imageUrl = imageData;
+      } else if (typeof imageData === 'object' && imageData !== null) {
+        imageUrl = imageData.secure_url;
+      } else {
+        console.error("Invalid response from image upload:", imageData);
+        throw new Error("Invalid response from image upload service");
+      }
+
+      if (!imageUrl || typeof imageUrl !== 'string') {
+        console.error("Invalid image URL:", imageUrl);
+        throw new Error("Invalid image URL received from upload service");
+      }
+
+      console.log("Image uploaded successfully:", imageUrl);
+
+      if (!AuctionSocket.connected) {
+        console.log("Socket disconnected, attempting to reconnect");
+        connectSocket();
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        if (!AuctionSocket.connected) {
+          throw new Error("Could not connect to messaging service");
+        }
+      }
+
+      AuctionSocket.emit("sendMessage", {
+        userId: currentUserId,
+        conversationId: activeChatId,
+        content: "Sent an image",
+        imageUrl: imageUrl,
+        senderId: currentUserId,
+        type: "image",
+      });
+
+      handleCancelImage();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error during image upload";
+      console.error("Error uploading image:", error);
+      toast.error(`Failed to upload image: ${errorMessage}`);
+      setMessages((prev) => prev.filter((m) => m.id !== tempId));
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -310,6 +464,9 @@ const ChatPage: React.FC = () => {
       userId: currentUserId,
       conversationId: conversation.id,
     });
+    // Query status for the other user
+    const otherUserId = conversation.user1Id === currentUserId ? conversation.user2Id : conversation.user1Id;
+    AuctionSocket.emit("checkUserStatus", { userId: otherUserId });
     navigate(`/user/chats/conversation/${conversation.id}`, {
       state: { conversationId: conversation.id },
     });
@@ -476,29 +633,70 @@ const ChatPage: React.FC = () => {
                               : "bg-zinc-800 text-white"
                           } shadow-lg`}
                         >
-                          <div className="px-4 py-2">
-                            <div>{message.content}</div>
-                            <div
-                              className={`text-xs mt-1 ${
-                                message.senderId === currentUserId ? "text-black/60" : "text-zinc-400"
-                              }`}
-                            >
-                              {message && message.sendAt ? (
-                                new Date(message.sendAt).toString() !== "Invalid Date" ? 
-                                  new Date(message.sendAt).toLocaleTimeString([], {
+                          {message.type === "image" ? (
+                            <div className="max-w-sm">
+                              {message.id.startsWith('temp-') && !message.imageUrl ? (
+                                <div className="bg-zinc-700 h-48 w-64 flex items-center justify-center">
+                                  <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+                                </div>
+                              ) : (
+                                <img 
+                                  src={message.imageUrl || ""} 
+                                  alt="Chat image" 
+                                  className="w-full h-auto max-h-64 object-contain"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = "/placeholder-image.jpg";
+                                  }}
+                                />
+                              )}
+                              <div className="px-3 py-2">
+                                <div
+                                  className={`text-xs ${
+                                    message.senderId === currentUserId ? "text-black/60" : "text-zinc-400"
+                                  }`}
+                                >
+                                  {message && message.sendAt ? (
+                                    new Date(message.sendAt).toString() !== "Invalid Date" ? 
+                                      new Date(message.sendAt).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      }) : 
+                                      new Date().toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })
+                                  ) : new Date().toLocaleTimeString([], {
                                     hour: "2-digit",
                                     minute: "2-digit",
-                                  }) : 
-                                  new Date().toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })
-                              ) : new Date().toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
+                                  })}
+                                </div>
+                              </div>
                             </div>
-                          </div>
+                          ) : (
+                            <div className="px-4 py-2">
+                              <div>{message.content}</div>
+                              <div
+                                className={`text-xs mt-1 ${
+                                  message.senderId === currentUserId ? "text-black/60" : "text-zinc-400"
+                                }`}
+                              >
+                                {message && message.sendAt ? (
+                                  new Date(message.sendAt).toString() !== "Invalid Date" ? 
+                                    new Date(message.sendAt).toLocaleTimeString([], {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    }) : 
+                                    new Date().toLocaleTimeString([], {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })
+                                ) : new Date().toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )) : (
@@ -510,16 +708,56 @@ const ChatPage: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Image preview */}
+                {imagePreview && (
+                  <div className="p-3 bg-zinc-800 border-t border-zinc-700">
+                    <div className="relative inline-block">
+                      <img 
+                        src={imagePreview} 
+                        alt="Selected image" 
+                        className="h-24 w-auto rounded-md object-cover border border-zinc-600"
+                      />
+                      <button 
+                        onClick={handleCancelImage}
+                        className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 hover:bg-red-600 transition-colors"
+                        disabled={isUploading}
+                      >
+                        <X className="h-4 w-4 text-white" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Message input */}
                 <div className="p-4 bg-zinc-900 border-t border-zinc-800">
                   <div className="flex flex-col">
                     <div className="flex items-end">
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                      <Button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="mr-2 bg-zinc-800 hover:bg-zinc-700 text-white h-[40px] w-[40px] p-2 transition-all rounded-lg flex-shrink-0"
+                        disabled={isUploading || !!imagePreview}
+                      >
+                        {isUploading ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <ImageIcon className="h-5 w-5" />
+                        )}
+                      </Button>
+                      
                       {messageInput.length > 50 ? (
                         <Textarea
                           placeholder="Type a message"
                           value={messageInput}
                           onChange={(e) => setMessageInput(e.target.value)}
                           onKeyDown={handleKeyDown}
+                          disabled={isUploading}
                           className="flex-1 bg-zinc-800 border-zinc-700 text-white min-h-[80px] rounded-r-none transition-all focus:ring-1 focus:ring-[#3BE188]"
                         />
                       ) : (
@@ -528,15 +766,20 @@ const ChatPage: React.FC = () => {
                           value={messageInput}
                           onChange={(e) => setMessageInput(e.target.value)}
                           onKeyDown={handleKeyDown}
+                          disabled={isUploading}
                           className="flex-1 bg-zinc-800 border-zinc-700 text-white rounded-r-none transition-all focus:ring-1 focus:ring-[#3BE188]"
                         />
                       )}
                       <Button
                         onClick={handleSendMessage}
-                        disabled={messageInput.trim() === ""} 
+                        disabled={(messageInput.trim() === "" && !imagePreview) || isUploading}
                         className="ml-0 bg-[#3BE188] hover:bg-[#32BA72] text-black rounded-l-none h-[40px] px-4 transition-all hover:translate-x-1"
                       >
-                        <Send className="h-5 w-5" />
+                        {isUploading ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <Send className="h-5 w-5" />
+                        )}
                       </Button>
                     </div>
                   </div>

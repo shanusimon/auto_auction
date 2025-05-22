@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"; // Add useEffect import
+import { useState, useEffect } from "react";
 import { Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ImageCropper } from "./ImageCropper";
@@ -15,12 +15,52 @@ export const CarImagesSection = ({ carImages, setCarImages }: CarImagesSectionPr
   const [currentImage, setCurrentImage] = useState<File | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState<number | null>(null);
 
+  const allowedImageTypes = [
+    'image/jpeg',
+    'image/jpg', 
+    'image/png',
+    'image/webp',
+    'image/gif',
+    'image/bmp',
+    'image/svg+xml'
+  ];
+
+  const maxFileSize = 10 * 1024 * 1024; 
+
   useEffect(() => {
     if (carImages.length === 0) {
       imagePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
       setImagePreviewUrls([]);
     }
   }, [carImages, imagePreviewUrls]);
+
+  const validateImageFile = (file: File): { isValid: boolean; error?: string } => {
+    if (!allowedImageTypes.includes(file.type)) {
+      return {
+        isValid: false,
+        error: `Invalid file format. Please upload only image files (JPEG, PNG, WebP, GIF, BMP, SVG). Selected file is: ${file.type || 'unknown format'}`
+      };
+    }
+    if (file.size > maxFileSize) {
+      return {
+        isValid: false,
+        error: `File size too large. Please upload images smaller than 10MB. Selected file is: ${(file.size / (1024 * 1024)).toFixed(1)}MB`
+      };
+    }
+
+    const fileName = file.name.toLowerCase();
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.bmp', '.svg'];
+    const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+    
+    if (!hasValidExtension) {
+      return {
+        isValid: false,
+        error: 'Invalid file extension. Please upload files with valid image extensions (.jpg, .jpeg, .png, .webp, .gif, .bmp, .svg)'
+      };
+    }
+
+    return { isValid: true };
+  };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -40,6 +80,20 @@ export const CarImagesSection = ({ carImages, setCarImages }: CarImagesSectionPr
     }
 
     const file = files[0];
+    
+
+    const validation = validateImageFile(file);
+    
+    if (!validation.isValid) {
+      toast({
+        title: "Invalid file",
+        description: validation.error,
+        variant: "destructive",
+      });
+      event.target.value = '';
+      return;
+    }
+
     setCurrentImage(file);
     setCropperOpen(true);
   };
@@ -129,7 +183,7 @@ export const CarImagesSection = ({ carImages, setCarImages }: CarImagesSectionPr
             <span className="text-[#8E9196]">Add Image</span>
             <input
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/jpg,image/png,image/webp,image/gif,image/bmp,image/svg+xml"
               className="hidden"
               onChange={handleImageUpload}
             />
@@ -137,9 +191,14 @@ export const CarImagesSection = ({ carImages, setCarImages }: CarImagesSectionPr
         )}
       </div>
 
-      <p className="text-[#8E9196] text-sm">
-        {carImages.length}/5 images uploaded. {5 - carImages.length} slots remaining.
-      </p>
+      <div className="space-y-2">
+        <p className="text-[#8E9196] text-sm">
+          {carImages.length}/5 images uploaded. {5 - carImages.length} slots remaining.
+        </p>
+        <p className="text-[#8E9196] text-xs">
+          Accepted formats: JPEG, PNG, WebP, GIF, BMP, SVG. Maximum file size: 10MB per image.
+        </p>
+      </div>
 
       {cropperOpen && currentImage && (
         <ImageCropper

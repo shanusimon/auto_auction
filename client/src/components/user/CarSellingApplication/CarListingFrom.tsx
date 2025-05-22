@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -18,6 +18,7 @@ export const CarListingForm = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [carImages, setCarImages] = useState<File[]>([]);
+  const navigate = useNavigate()
 
   const form = useForm<CarFormValues>({
     resolver: zodResolver(carFormSchema),
@@ -91,6 +92,7 @@ export const CarListingForm = () => {
 
       form.reset();
       resetImages();
+      navigate('/');
     } catch (error: any) {
       console.error("Error submitting car listing:", error);
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Header from '@/components/header/Header';
 import Footer from '@/components/footer/Footer';
-import FeaturedCarCarousel from '@/components/cars/featuredCars';// Updated import
+import FeaturedCarCarousel from '@/components/cars/featuredCars';
 import { Button } from '@/components/ui/button';
 import CarCard from '@/components/cars/Car';
 import CarFilters from '@/components/cars/CarFilter';
@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import AuctionSocket from '@/services/webSocket/webSockeService';
 import { Car } from '@/types/Types';
 
-// Define the WebSocket payload type
+
 interface BidPayload {
   success: boolean;
   bid: {

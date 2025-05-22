@@ -30,7 +30,7 @@ import { useNavigate } from "react-router-dom";
 const CarDetailsPage = () => {
   const { carid } = useParams();
   const { data: carData, isLoading: carLoading, isError: carError, error: carErrorData } = useGetCarDetails(carid);
-  const { mutate: getOrCreateConversation, data: conversation, error, isPending } = useConversation();
+  const { mutate: getOrCreateConversation} = useConversation();
   const [mainImgIdx, setMainImgIdx] = useState(0);
   const [activeTab, setActiveTab] = useState("newest");
   const [commentInput, setCommentInput] = useState("");
@@ -144,7 +144,7 @@ const CarDetailsPage = () => {
   useEffect(() => {
     if (!carid || !socketConnected) return;
 
-    // Handle bid placement response
+    // bid placement response
     const handleBidPlaced = (data) => {
       setIsBidding(false);
       if (data.success) {
@@ -157,7 +157,6 @@ const CarDetailsPage = () => {
       }
     };
 
-    // Handle new bids from other users
     const handleNewBid = (data) => {
       if (data.success) {
         setHighestBid(data.bid.amount);
@@ -180,7 +179,6 @@ const CarDetailsPage = () => {
     };
   }, [carid, refetchCommentsAndBids, socketConnected]);
 
-  // Add a reconnection function that can be called manually if needed
   const reconnectSocket = () => {
     console.log('Manual socket reconnection triggered');
     if (!AuctionSocket.connected) {
@@ -188,13 +186,11 @@ const CarDetailsPage = () => {
       
       if (carid) {
         setTimeout(() => {
-          // Give it a moment to connect before joining
           AuctionSocket.emit("join-auction", { carId: carid });
           toast.success("Reconnected to auction");
         }, 500);
       }
     } else if (carid) {
-      // If already connected but need to rejoin the auction
       AuctionSocket.emit("join-auction", { carId: carid });
       toast.success("Reconnected to auction");
     }
@@ -228,7 +224,7 @@ const CarDetailsPage = () => {
     return () => clearInterval(timerId);
   }, [auctionEndTime]);
 
-  // Image navigation
+ 
   const handleKeyDown = useCallback(
     (e) => {
       if (!showImageModal) return;
@@ -255,7 +251,7 @@ const CarDetailsPage = () => {
         });
         toast.success("Comment posted successfully");
         setCommentInput("");
-        refetchCommentsAndBids(); // Refresh comments after posting
+        refetchCommentsAndBids();
       } catch (error) {
         console.error("Error posting comment:", error);
         toast.error("Failed to post comment");
@@ -265,10 +261,9 @@ const CarDetailsPage = () => {
 
   const handleLikeComment = async (commentId) => {
     try {
-      // Implement like functionality here
-      // You'll need to create a hook for this
+
       toast.success("Comment liked");
-      refetchCommentsAndBids(); // Refresh after liking
+      refetchCommentsAndBids(); 
     } catch (error) {
       console.error("Error liking comment:", error);
       toast.error("Failed to like comment");
@@ -276,13 +271,12 @@ const CarDetailsPage = () => {
   };
 
   const handleReplyComment = (commentId) => {
-    // Implement reply functionality - could be setting up a state for reply mode
-    // For now just acknowledge with toast
+
     toast.info("Reply functionality coming soon");
   };
 
   const handleFlagComment = (commentId) => {
-    // Implement flag functionality
+
     toast.info("Comment flagged for review");
   };
 
@@ -818,7 +812,7 @@ const CarDetailsPage = () => {
 
                     {item.type === "bid" ? (
                       <div className="mt-2 text-base text-zinc-200">
-                        <span className="font-bold text-[#3BE188]">Bid: ₹{item.amount.toLocaleString()}</span>
+                        <span className="font-bold text-[#3BE188]">Bid: ${item.amount.toLocaleString()}</span>
                       </div>
                     ) : (
                       <div className="mt-2 text-base text-zinc-200">{item.content}</div>
@@ -1000,11 +994,11 @@ const CarDetailsPage = () => {
                   value={bidAmount}
                   onChange={(e) => setBidAmount(e.target.value)}
                   className="w-full bg-zinc-800 border border-zinc-700 rounded-md px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#3BE188]"
-                  placeholder={`Enter amount higher than ₹${highestBid.toLocaleString()}`}
+                  placeholder={`Enter amount higher than $${highestBid.toLocaleString()}`}
                 />
                 {bidAmount && parseFloat(bidAmount) <= highestBid && (
                   <p className="text-red-500 text-sm mt-1">
-                    Bid must be higher than ₹{highestBid.toLocaleString()}
+                    Bid must be higher than ${highestBid.toLocaleString()}
                   </p>
                 )}
               </div>

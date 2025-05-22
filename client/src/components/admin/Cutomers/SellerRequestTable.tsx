@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Check, X, Eye } from 'lucide-react';
 import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,20 +13,46 @@ import { SellerRequestTableProps } from '@/types/AdminTypes';
 const SellerRequestTable: React.FC<SellerRequestTableProps> = ({ 
   sellerRequests, 
   onApprove, 
-  onReject ,
+  onReject,
   isPending
 }) => {
   const [selectedRequest, setSelectedRequest] = useState<ISellerEntity | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
-      console.log(selectedRequest);
+  const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [requestToReject, setRequestToReject] = useState<string | null>(null);
+
+  console.log(selectedRequest);
+
   const handleApprove = (requestId: string) => {
     onApprove(requestId);
     setDetailsOpen(false);
   };
 
-  const handleReject = (requestId: string) => {
-    onReject(requestId);
+  const handleReject = (requestId: string, reason: string) => {
+    onReject(requestId, reason);
     setDetailsOpen(false);
+    setRejectionModalOpen(false);
+    setRejectionReason('');
+    setRequestToReject(null);
+  };
+
+  const openRejectionModal = (requestId: string) => {
+    setRequestToReject(requestId);
+    setRejectionModalOpen(true);
+    setRejectionReason('');
+  };
+
+  const confirmRejection = () => {
+    if (requestToReject && rejectionReason.trim()) {
+      handleReject(requestToReject, rejectionReason.trim());
+    }
+  };
+
+  const closeRejectionModal = () => {
+    setRejectionModalOpen(false);
+    setRejectionReason('');
+    setRequestToReject(null);
   };
 
   const viewDetails = (request: ISellerEntity) => {
@@ -98,7 +126,7 @@ const SellerRequestTable: React.FC<SellerRequestTableProps> = ({
                       variant="outline" 
                       size="sm" 
                       className="border-red-500 text-red-500 hover:bg-red-50"
-                      onClick={() => request._id && handleReject(request._id)}
+                      onClick={() => request._id && openRejectionModal(request._id)}
                       disabled={isPending}
                     >
                       <X className="h-4 w-4" />
@@ -111,6 +139,7 @@ const SellerRequestTable: React.FC<SellerRequestTableProps> = ({
         </Table>
       </div>
 
+      {/* Details Modal */}
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
@@ -214,7 +243,7 @@ const SellerRequestTable: React.FC<SellerRequestTableProps> = ({
                 <Button 
                   variant="outline" 
                   className="border-red-500 text-red-500 hover:bg-red-50"
-                  onClick={() => selectedRequest._id && handleReject(selectedRequest._id)}
+                  onClick={() => selectedRequest._id && openRejectionModal(selectedRequest._id)}
                   disabled={isPending}
                 >
                   <X className="mr-2 h-4 w-4" /> Reject
@@ -229,6 +258,53 @@ const SellerRequestTable: React.FC<SellerRequestTableProps> = ({
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Rejection Reason Modal */}
+      <Dialog open={rejectionModalOpen} onOpenChange={closeRejectionModal}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Reject Seller Request</DialogTitle>
+            <DialogDescription>
+              Please provide a reason for rejecting this seller request. This will help the applicant understand why their request was not approved.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <Label htmlFor="rejection-reason">Rejection Reason *</Label>
+              <Textarea
+                id="rejection-reason"
+                placeholder="Please explain why this seller request is being rejected..."
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                rows={4}
+                className="resize-none"
+              />
+              <p className="text-sm text-gray-500">
+                Minimum 10 characters required
+              </p>
+            </div>
+
+            <div className="flex justify-end space-x-4 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={closeRejectionModal}
+                disabled={isPending}
+              >
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive"
+                onClick={confirmRejection}
+                disabled={isPending || rejectionReason.trim().length < 10}
+              >
+                <X className="mr-2 h-4 w-4" /> 
+                {isPending ? 'Rejecting...' : 'Reject Request'}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </>
