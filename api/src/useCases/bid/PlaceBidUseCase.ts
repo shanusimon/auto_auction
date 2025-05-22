@@ -7,7 +7,8 @@ import { ICarRepository } from "../../entities/repositoryInterfaces/car/carRepos
 import { ERROR_MESSAGES } from "../../shared/constants";
 import { ICarEntity } from "../../entities/models/car.entity";
 import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/sellerRepository";
-
+import { INotificationRepository } from "../../entities/repositoryInterfaces/notification/INotificationRepository";
+import { NotificationType } from "../../shared/types/notification.Types";
 
 @injectable()
 export class PlaceBidUseCase implements IPlaceBidUseCase {
@@ -17,7 +18,8 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
     @inject("IWalletTransactionRepository")
     private walletTransactionRepository: IWalletTransactionRepository,
     @inject("ICarRepository") private carRepository: ICarRepository,
-    @inject("ISellerRepository") private sellerRepository:ISellerRepository
+    @inject("ISellerRepository") private sellerRepository:ISellerRepository,
+    @inject("INotificationRepository") private notificationRepository:INotificationRepository
   ) {}
 
   async execute(
@@ -36,7 +38,7 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
     }
 
     const seller = await this.sellerRepository.findByUserId(userId);
-    console.log("is this same",seller?._id,car.sellerId)
+    console.log("is this same",seller?._id,car.sellerId);
     if(car.sellerId.toString() === seller?._id?.toString()){
       throw new Error("You cannot place a bid on a car that you have listed.");
     }
@@ -116,6 +118,14 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
             amount: previousBid.depositHeld,
             status: "completed",
           });
+
+          await this.notificationRepository.create(
+            userId,
+            NotificationType.BID_OUTBID,
+            `Your Bid On Car ${car.title} Has Been OutBid By ${amount}`,
+            "OutBid"
+          );
+
         }
       }
     }

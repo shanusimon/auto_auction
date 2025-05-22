@@ -158,11 +158,11 @@ export class UserController implements IUserController {
 
   async saveFcmToken(req: Request, res: Response): Promise<void> {
     try {
-        console.log("Hello")
+      console.log("Hello");
       const userId = (req as CustomRequest).user.id;
 
       const { token } = req.body;
-        console.log(token)
+      console.log(token);
       if (!token || typeof token !== "string") {
         throw new CustomError(
           ERROR_MESSAGES.INVALID_TOKEN,

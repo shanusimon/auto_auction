@@ -13,7 +13,10 @@ export const MessageSchema = new Schema<IMessageModel>({
     required: true,
   },
   type:{
-    type:String,required:true,default:"text"
+    type:String,required:true,enum:["text","image"]
+  },
+  imageUrl:{
+    type:String
   },
   content: { type: String, required: true },
   sendAt: { type: Date, default: Date.now },

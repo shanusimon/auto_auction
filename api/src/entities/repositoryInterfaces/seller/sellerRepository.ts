@@ -15,4 +15,5 @@ export interface ISellerRepository {
     findOne(_id:string):Promise<ISellerEntity | null>
     findSellerDetails(_id:string):Promise<ISellerEntity | null>
     findByIdAndUpdateStatus(id:string):Promise<void>
+    delete(id:string):Promise<void>
 }

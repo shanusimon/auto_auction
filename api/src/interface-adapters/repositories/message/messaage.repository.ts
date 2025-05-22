@@ -8,12 +8,13 @@ export class MessageRepository implements IMessageRepository{
         const messages = await MessageModel.find({ conversationId }).lean();
         return messages.map((msg) => this.mapToEntity(msg));
     }    
-    async create(conversationId: string, senderId: string, type: string, content: string): Promise<IMessage> {
+    async create(conversationId: string, senderId: string, type: string, content: string,imageUrl?:string): Promise<IMessage> {
         const message = await MessageModel.create({
             conversationId,
             senderId,
             content,
             type,
+            imageUrl:imageUrl || null,
             sendAt:new Date(),
             isRead:false
         })
@@ -26,6 +27,7 @@ export class MessageRepository implements IMessageRepository{
             senderId: message.senderId.toString(),
             content: message.content,
             type:message.type,
+            imageUrl: message.imageUrl || null,
             sendAt: message.sendAt,
             isRead: message.isRead,
         };

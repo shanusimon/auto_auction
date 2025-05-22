@@ -16,6 +16,7 @@ import { IUpdateSellerStatusUseCase } from "../../../entities/useCaseInterfaces/
 import { IFindSellerDetailsUseCase } from "../../../entities/useCaseInterfaces/seller/IFindSellerDetails";
 import { IUpdateSellerActiveStatusUseCase } from "../../../entities/useCaseInterfaces/seller/IUpdateSellerActiveStatusUseCase";
 import { IGetSellerStatisticsUseCase } from "../../../entities/useCaseInterfaces/seller/ISellerStatistics";
+
 @injectable()
 export class SellerController implements ISellerController {
   constructor(
@@ -26,11 +27,11 @@ export class SellerController implements ISellerController {
     @inject("IUpdateSellerStatusUseCase")
     private updateSellerStatusUseCase: IUpdateSellerStatusUseCase,
     @inject("IFindSellerDetailsUseCase")
-    private findSellerDetailsUseCase:IFindSellerDetailsUseCase,
+    private findSellerDetailsUseCase: IFindSellerDetailsUseCase,
     @inject("IUpdateSellerActiveStatusUseCase")
-    private updateSellerActiveStatusUseCase:IUpdateSellerActiveStatusUseCase,
+    private updateSellerActiveStatusUseCase: IUpdateSellerActiveStatusUseCase,
     @inject("IGetSellerStatisticsUseCase")
-    private getSellerStatusUseCase:IGetSellerStatisticsUseCase
+    private getSellerStatusUseCase: IGetSellerStatisticsUseCase
   ) {}
   async register(req: Request, res: Response): Promise<void> {
     try {
@@ -98,16 +99,40 @@ export class SellerController implements ISellerController {
   }
   async updateSellerStatus(req: Request, res: Response): Promise<void> {
     try {
-      const { userId } = req.params as { userId?: string }; 
-      const { status } = req.body as { status?: string }; 
-      console.log(userId,status)
+      const { userId } = req.params as { userId?: string };
+      const { status, reason } = req.body as {
+        status?: string;
+        reason?: string;
+      };
+
+      console.log("UserID:", userId, "Status:", status, "Reason:", reason);
+
       if (!userId || typeof userId !== "string") {
-        throw new CustomError("User ID is required and must be a string", HTTP_STATUS.BAD_REQUEST);
-    }
-    if (!status || !["approved", "rejected"].includes(status)) {
-        throw new CustomError(ERROR_MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.BAD_REQUEST);
-    }
-      await this.updateSellerStatusUseCase.execute(String(userId), status as "approved" | "rejected");
+        throw new CustomError(
+          "User ID is required and must be a string",
+          HTTP_STATUS.BAD_REQUEST
+        );
+      }
+
+      if (!status || !["approved", "rejected"].includes(status)) {
+        throw new CustomError(
+          ERROR_MESSAGES.INVALID_CREDENTIALS,
+          HTTP_STATUS.BAD_REQUEST
+        );
+      }
+
+      if (status === "rejected" && (!reason || reason.trim() === "")) {
+        throw new CustomError(
+          "Rejection reason is required when status is rejected",
+          HTTP_STATUS.BAD_REQUEST
+        );
+      }
+
+      await this.updateSellerStatusUseCase.execute(
+        userId,
+        status as "approved" | "rejected",
+        reason
+      );
 
       res
         .status(HTTP_STATUS.OK)
@@ -116,78 +141,74 @@ export class SellerController implements ISellerController {
       handleErrorResponse(res, error);
     }
   }
-  
+
   async getSellerDetails(req: Request, res: Response): Promise<void> {
-      try {
-        const {sellerId} = req.params as {sellerId?:string};
-        if(!sellerId){
-          throw new CustomError(ERROR_MESSAGES.INVALID_CREDENTIALS,HTTP_STATUS.BAD_REQUEST);
-        }
-
-        const userDetails = await this.findSellerDetailsUseCase.execute(sellerId);
-        console.log(userDetails);
-        
-
-        res.status(HTTP_STATUS.OK).json({userDetails})
-       
-      } catch (error) {
-        handleErrorResponse(res,error);
+    try {
+      const { sellerId } = req.params as { sellerId?: string };
+      if (!sellerId) {
+        throw new CustomError(
+          ERROR_MESSAGES.INVALID_CREDENTIALS,
+          HTTP_STATUS.BAD_REQUEST
+        );
       }
+
+      const userDetails = await this.findSellerDetailsUseCase.execute(sellerId);
+      console.log(userDetails);
+
+      res.status(HTTP_STATUS.OK).json({ userDetails });
+    } catch (error) {
+      handleErrorResponse(res, error);
+    }
   }
   async getAllApprovedSellers(req: Request, res: Response): Promise<void> {
-      try {
-        const { page = 1, limit = 10, search = "" } = req.query;
-        const pageNum = Math.max(1, parseInt(page as string) || 1);
-        const pageSize = Math.max(1, parseInt(limit as string) || 10);
-        const searchTermString = typeof search === "string" ? search : "";
-        const { sellers, total } = await this.getAllSellerRequestUseCase.execute(
-          pageNum,
-          pageSize,
-          searchTermString,
-          false
-        );
-        res.status(HTTP_STATUS.OK).json({
-          success: true,
-          sellers,
-          totalPages: total,
-          currentPage: pageNum,
-        });
-
-      } catch (error) {
-        handleErrorResponse(res,error)
-      }
+    try {
+      const { page = 1, limit = 10, search = "" } = req.query;
+      const pageNum = Math.max(1, parseInt(page as string) || 1);
+      const pageSize = Math.max(1, parseInt(limit as string) || 10);
+      const searchTermString = typeof search === "string" ? search : "";
+      const { sellers, total } = await this.getAllSellerRequestUseCase.execute(
+        pageNum,
+        pageSize,
+        searchTermString,
+        false
+      );
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        sellers,
+        totalPages: total,
+        currentPage: pageNum,
+      });
+    } catch (error) {
+      handleErrorResponse(res, error);
+    }
   }
   async updateSellerActiveStatus(req: Request, res: Response): Promise<void> {
-      try {
-        const {sellerId} = req.params;
-        if(!sellerId){
-          throw new CustomError(
-            ERROR_MESSAGES.INVALID_CREDENTIALS,
-            HTTP_STATUS.BAD_REQUEST
-          )
-        }
-        await this.updateSellerActiveStatusUseCase.execute(sellerId);
-
-      } catch (error) {
-        handleErrorResponse(res,error);
+    try {
+      const { sellerId } = req.params;
+      if (!sellerId) {
+        throw new CustomError(
+          ERROR_MESSAGES.INVALID_CREDENTIALS,
+          HTTP_STATUS.BAD_REQUEST
+        );
       }
+      await this.updateSellerActiveStatusUseCase.execute(sellerId);
+    } catch (error) {
+      handleErrorResponse(res, error);
+    }
   }
   async getSellerStatistics(req: Request, res: Response): Promise<void> {
     try {
-
       const userId = (req as CustomRequest).user.id;
 
       const data = await this.getSellerStatusUseCase.execute(userId);
-  
+
       res.status(200).json({
         success: true,
-        message:SUCCESS_MESSAGES.DATA_RETRIEVED,
+        message: SUCCESS_MESSAGES.DATA_RETRIEVED,
         data,
       });
     } catch (error) {
-
-      handleErrorResponse(res,error);
+      handleErrorResponse(res, error);
     }
   }
-  
 }

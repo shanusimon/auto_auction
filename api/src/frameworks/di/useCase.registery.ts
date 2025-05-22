@@ -96,6 +96,18 @@ import { IGetSellerStatisticsUseCase } from "../../entities/useCaseInterfaces/se
 import { GetSellerStatistics } from "../../useCases/seller/SellerStatisticsUseCase";
 import { IGetBidHistoryUseCase } from "../../entities/useCaseInterfaces/bid/IGetBidHistoryUseCase";
 import { getBidHistoryUseCase } from "../../useCases/bid/GetBidHistoryUseCase";
+import { ICreatePostUseCase } from "../../entities/useCaseInterfaces/post/ICreatePostUseCase";
+import { CreatePostUseCase } from "../../useCases/post/createPostUseCase";
+import { IGetPagenatedPostsUseCase } from "../../entities/useCaseInterfaces/post/IGetPagnatedPosts";
+import { getPagenatedPosts } from "../../useCases/post/getPagenatedPosts";
+import { IPostLikeUseCase } from "../../entities/useCaseInterfaces/post/IAddLikeToPostUseCase";
+import { AddLikeToPostUseCase } from "../../useCases/post/addLikeToPostUseCase";
+import { ISendNotificationUseCase } from "../../entities/useCaseInterfaces/message/ISendNotificationUseCase";
+import { SendNotificationUseCase } from "../../useCases/message/SendNotificationUseCase";
+import { IGetAllNotificationUseCase } from "../../entities/useCaseInterfaces/notifications/IGetAllNotificationsUseCase";
+import { GetAllNotificationUseCase } from "../../useCases/notification/GetAllNotificationUseCase";
+import { IUpdateNotificationUseCase } from "../../entities/useCaseInterfaces/notifications/IUpdateNotificationUseCase";
+import { UpdateNotificationUseCase } from "../../useCases/notification/UpdateNotificationUseCase,";
 
 export class UseCaseRegistery {
   static registerUseCases(): void {
@@ -104,8 +116,26 @@ export class UseCaseRegistery {
       useClass: PasswordBcrypt,
     });
     //* ====== Register UseCases ====== *//
+    container.register<IPostLikeUseCase>("IPostLikeUseCase",{
+      useClass:AddLikeToPostUseCase
+    })
+    container.register<IGetAllNotificationUseCase>("IGetAllNotificationUseCase",{
+      useClass:GetAllNotificationUseCase
+    })
+    container.register<IUpdateNotificationUseCase>("IUpdateNotificationUseCase",{
+      useClass:UpdateNotificationUseCase
+    })
+    container.register<ISendNotificationUseCase>("ISendNotificationUseCase",{
+      useClass:SendNotificationUseCase
+    })
     container.register<IGetCarDetailsUseCase>("IGetCarDetailsUseCase",{
       useClass:GetCarDetailsUseCase
+    })
+    container.register<IGetPagenatedPostsUseCase>("IGetPagenatedPostsUseCase",{
+      useClass:getPagenatedPosts
+    })
+    container.register<ICreatePostUseCase>("ICreatePostUseCase",{
+      useClass:CreatePostUseCase
     })
     container.register<IGetBidHistoryUseCase>("IGetBidHistoryUseCase",{
       useClass:getBidHistoryUseCase

@@ -28,6 +28,11 @@ import { IConversationRepository } from "../../entities/repositoryInterfaces/con
 import { ConversationRepository } from "../../interface-adapters/repositories/conversation/conversation.repository";
 import { IMessageRepository } from "../../entities/repositoryInterfaces/message/IMessageRepository";
 import { MessageRepository } from "../../interface-adapters/repositories/message/messaage.repository";
+import { IPostRepository } from "../../entities/repositoryInterfaces/post/IPostRepository";
+import { PostRepository } from "../../interface-adapters/repositories/post/post.repository";
+import { INotificationRepository } from "../../entities/repositoryInterfaces/notification/INotificationRepository";
+import { NotificationRepository } from "../../interface-adapters/repositories/notification/notification.repository";
+
 //service imports
 import { IOtpService } from "../../entities/services/IOtpService";
 import { OtpService } from "../../interface-adapters/services/OtpService";
@@ -51,6 +56,12 @@ export class RepositoryRegistry {
     });
     container.register<IMessageRepository>("IMessageRepository",{
       useClass:MessageRepository
+    })
+    container.register<INotificationRepository>("INotificationRepository",{
+      useClass:NotificationRepository
+    })
+    container.register<IPostRepository>("IPostRepository",{
+      useClass:PostRepository
     })
     container.register<IRefreshTokenRepository>("IRefreshTokenRepository", {
       useClass: RefreshTokenRepository,

@@ -48,4 +48,7 @@ export class SellerRepository implements ISellerRepository{
         seller.isActive = !seller.isActive;
         await seller.save();
     }
+    async delete(id: string ): Promise<void> {
+        await SellerModel.findByIdAndDelete(id);
+        }
 }

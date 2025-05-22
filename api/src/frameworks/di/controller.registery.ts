@@ -16,6 +16,7 @@ import { BidController } from "../../interface-adapters/controllers/bid/BidContr
 import { CarCommentController } from "../../interface-adapters/controllers/carComments/carCommentsController";
 import { ChatController } from "../../interface-adapters/controllers/chat/ChatController";
 import { BidHttpController } from "../../interface-adapters/controllers/bid/BIdHttpController";
+import { PostController } from "../../interface-adapters/controllers/post/PostController";
 
 export class controllerRegistery{
     static registerControllers():void{
@@ -54,6 +55,9 @@ export class controllerRegistery{
         })
         container.register("ChatController",{
             useClass:ChatController
+        })
+        container.register("PostController",{
+            useClass:PostController
         })
     }
 }

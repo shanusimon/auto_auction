@@ -10,8 +10,8 @@ export class CreateMessageUseCase implements ICreateMessageUseCase{
         @inject("IMessageRepository") private messageRepository:IMessageRepository,
         @inject("IConversationRepository") private conversationRepository:IConversationRepository
     ){}
-    async execute(conversationId: string, senderId: string, content: string, type: string): Promise<IMessage> {
-        const message = await this.messageRepository.create(conversationId, senderId, type, content);
+    async execute(conversationId: string, senderId: string, content: string, type: string,imageUrl?:string): Promise<IMessage> {
+        const message = await this.messageRepository.create(conversationId, senderId, type, content,imageUrl);
         await this.conversationRepository.updateLastMessage(conversationId, content, senderId);
         return message;
       }
