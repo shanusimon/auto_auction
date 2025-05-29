@@ -59,4 +59,11 @@ export class BidRepository implements IBidRepository {
       const bidsCount = await BidModel.countDocuments({carId});
       return bidsCount
   }
+  async findTopBidByCarId(carId: string): Promise<IBidEntity | null> {
+      const bid = await BidModel.findOne({carId}).sort({amount:-1}).limit(1).exec();
+      return bid
+  }
+  async findById(id:string):Promise<IBidEntity | null>{
+    return BidModel.findById(id);
+  }
 }

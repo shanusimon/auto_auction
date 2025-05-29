@@ -2,17 +2,20 @@ import { IGetAllCarsUseCase } from "../../entities/useCaseInterfaces/car/IGetAll
 import { inject, injectable } from "tsyringe";
 import { ICarRepository } from "../../entities/repositoryInterfaces/car/carRepository";
 import { PagenateCars } from "../../entities/models/pageinated-users.entity";
+import { IEndAuctionUseCase } from "../../entities/useCaseInterfaces/auction/IEndAuctionUseCase";
 
 @injectable()
 export class GetAllCarsUseCase implements IGetAllCarsUseCase {
   constructor(
-    @inject("ICarRepository") private carRepository: ICarRepository
+    @inject("ICarRepository") private carRepository: ICarRepository,
+    @inject("IEndAuctionUseCase") private endAuctionCarUseCase:IEndAuctionUseCase
   ) {}
   async execute(
     page: number,
     pageSize: number,
     searchTerm: string
   ): Promise<PagenateCars> {
+    await this.processEndedAuctions()
     const validPageNumber = Math.max(1, page || 1);
     const validPageSize = Math.max(1, pageSize || 10);
     const skip = (validPageNumber - 1) * validPageSize;
@@ -33,9 +36,27 @@ export class GetAllCarsUseCase implements IGetAllCarsUseCase {
         this.carRepository.find(filter,skip,validPageSize),
         this.carRepository.count(filter)
     ])
+    
 
     return {
         cars,total
     }
   }
+ private async processEndedAuctions(){
+  try {
+    const endedAuction = await this.carRepository.findEndedAuction();
+    for(const auction of endedAuction){
+      try {
+        if(auction._id){
+           await this.endAuctionCarUseCase.execute(auction._id.toString());
+           console.log(`Processed ended auction ${auction._id}`);
+        }
+      } catch (error:any) {
+        console.error(`Error processing auction ${auction._id}:`, error.message);
+      }
+    }
+  } catch (error:any) {
+     console.error(`Error processing auction`, error.message);
+  }
+ }
 }

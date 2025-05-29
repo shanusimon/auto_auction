@@ -19,4 +19,9 @@ export interface ICarRepository{
     findCount(sellerId:string):Promise<number>
     findAllCarsBySellerId(sellerId:string):Promise<ICarEntity[]>  
     updateRejectionReason(carId:string,rejectionReason:string):Promise<void>      
-} 
+    findEndedAuction():Promise<ICarEntity[]>
+    findSoldCars():Promise<ICarEntity[]>
+  findOneAndUpdate(query: any, update: any, options?: any):Promise<ICarEntity | null>
+ auctionAnalytics(): Promise<{ name: string; value: number; count: number }[]>
+
+}

@@ -3,7 +3,7 @@ import {
   decodeToken,
   verifyAuth,
 } from "../../../interface-adapters/middlewares/authMiddleware";
-import { authController, sellerController, userController,carController } from "../../di/resolver";
+import { authController, sellerController, userController,carController, revenueController } from "../../di/resolver";
 import { BaseRoute } from "../base.route";
 import { Request, Response } from "express";
 
@@ -97,6 +97,22 @@ export class AdminRoutes extends BaseRoute {
       authorizeRole(["admin"]),
       (req:Request,res:Response)=>{
         carController.updateCarStatus(req,res);
+      }
+    )
+    this.router.get(
+      "/admin/revenue",
+      verifyAuth,
+      authorizeRole(["admin"]),
+      (req:Request,res:Response)=>{
+        revenueController.getChartData(req,res)
+      }
+    )
+    this.router.get(
+      '/admin/dashboard',
+      verifyAuth,
+      authorizeRole(["admin"]),
+      (req:Request,res:Response)=>{
+        revenueController.getAdminDashboard(req,res);
       }
     )
   }

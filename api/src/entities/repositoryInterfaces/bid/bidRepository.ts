@@ -9,4 +9,6 @@ export interface IBidRepository{
     findByUserId(userId:string):Promise<IBidEntity[]>
     countBidsForSeller(userId:string):Promise<number>
     countBidsForCar(carId:string):Promise<number>
+    findTopBidByCarId(carId:string):Promise<IBidEntity | null>
+    findById(id:string):Promise<IBidEntity | null>
 }

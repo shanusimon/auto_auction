@@ -105,5 +105,8 @@ export class ClientRepository implements IClientRepository{
             throw new CustomError(ERROR_MESSAGES.USER_NOT_FOUND, HTTP_STATUS.BAD_REQUEST);
           }
     }
+    async findCount(): Promise<Number> {
+        return await ClientModel.countDocuments();
+    }
 
 }

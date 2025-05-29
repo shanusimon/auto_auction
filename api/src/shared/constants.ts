@@ -16,6 +16,7 @@ export const HTTP_STATUS = {
 } as const;
 
 export const ERROR_MESSAGES = {
+   PAYMENT_DONE:"Payment Already Done",
 	WRONG_ID: "Wrong ID",
 	TOKEN_EXPIRED: "Token Expired",
 	EMAIL_NOT_FOUND: "Email Not Found",
@@ -50,6 +51,7 @@ export const ERROR_MESSAGES = {
    BID_AMOUNT_ERROR:"Bid Amount Should be Always greater than Current Highest Bid",
    COMMENT_REQUIRED:"Comment is Required",
    CAR_ALREADY_EXISTS:"Car with this Vehicle Number Already Exists",
+   CAR_DOES_NOT_MEET_THE_RESERVE_PRICE:"Car Does not meet the reserve price"
 } as const;
 
 export const SUCCESS_MESSAGES = {

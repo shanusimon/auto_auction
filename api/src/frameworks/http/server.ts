@@ -78,7 +78,6 @@ export class Server {
   }
 
   private configureSockets(): void {
-    // Pass the Socket.IO instance to controllers instead of the HTTP server
     bidController.initialize(this._io);
     chatController.initialize(this._io);
   }

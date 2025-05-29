@@ -20,7 +20,7 @@ export interface ICarEntity{
     interiorColor: string;
     auctionDuration: string;
     images:string[];
-    approvalStatus:"pending" | "approved" | "rejected" | "sold";
+    approvalStatus:"pending" | "approved" | "rejected" | "sold" | "ended";
     auctionStartTime?: Date;
     auctionEndTime?: Date;
     winnerId?: ObjectId;

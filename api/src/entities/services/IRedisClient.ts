@@ -3,4 +3,6 @@ export interface IRedisClient {
     setex(key: string, seconds: number, value: string): Promise<"OK">;
     get(key: string): Promise<string | null>;
     del(key: string): Promise<number>; 
+    acquireLock(key:string,ttlMs?:number):Promise<boolean>
+    releaseLock(key:string):Promise<number>
 }

@@ -108,6 +108,20 @@ import { IGetAllNotificationUseCase } from "../../entities/useCaseInterfaces/not
 import { GetAllNotificationUseCase } from "../../useCases/notification/GetAllNotificationUseCase";
 import { IUpdateNotificationUseCase } from "../../entities/useCaseInterfaces/notifications/IUpdateNotificationUseCase";
 import { UpdateNotificationUseCase } from "../../useCases/notification/UpdateNotificationUseCase,";
+import { IEndAuctionUseCase } from "../../entities/useCaseInterfaces/auction/IEndAuctionUseCase";
+import { EndAuctionUseCase } from "../../useCases/auction/EndAuctionUseCase";
+import { IGetSoldCarsUseCase } from "../../entities/useCaseInterfaces/car/IGetSoldCarsUseCase";
+import { getSoldCarsUseCase } from "../../useCases/car/GetSoldCarsUseCase";
+import { IGetWonAuctionUseCase } from "../../entities/useCaseInterfaces/auction/IGetWonAuctionUseCase";
+import { GetWonAuctionUseCase } from "../../useCases/auction/GetWonAuctionUseCase";
+import { CreateCheckOutSessionUseCase } from "../../useCases/auction/CreateCheckOutSessionUseCase";
+import { ICreateCheckOutSessionUseCase } from "../../entities/useCaseInterfaces/auction/ICreateCheckOutSessionUseCase";
+import { IVerifyPaymentUseCase } from "../../entities/useCaseInterfaces/auction/IVerifyPaymentUseCase";
+import { VerifyPaymentUseCase } from "../../useCases/auction/VerifyPaymentUseCase";
+import { IGetDashboardRevenueUseCase } from "../../entities/useCaseInterfaces/admin/IGetDashboardRevenue";
+import { getDashBoardRevenueUseCase } from "../../useCases/admin/GetDashboardRevenue";
+import { IGetAdminDashBoardUseCase } from "../../entities/useCaseInterfaces/admin/IGetAdminDashboardUseCase";
+import { getAdminDashboadUseCase } from "../../useCases/admin/AdminDashBoardUseCase";
 
 export class UseCaseRegistery {
   static registerUseCases(): void {
@@ -118,6 +132,27 @@ export class UseCaseRegistery {
     //* ====== Register UseCases ====== *//
     container.register<IPostLikeUseCase>("IPostLikeUseCase",{
       useClass:AddLikeToPostUseCase
+    })
+    container.register<IGetAdminDashBoardUseCase>("IGetAdminDashBoardUseCase",{
+      useClass:getAdminDashboadUseCase
+    })
+    container.register<IGetDashboardRevenueUseCase>("IGetDashboardRevenueUseCase",{
+      useClass:getDashBoardRevenueUseCase
+    })
+    container.register<IVerifyPaymentUseCase>("IVerifyPaymentUseCase",{
+      useClass:VerifyPaymentUseCase
+    })
+    container.register<ICreateCheckOutSessionUseCase>("ICreateCheckOutSessionUseCase",{
+      useClass:CreateCheckOutSessionUseCase
+    })
+    container.register<IGetWonAuctionUseCase>("IGetWonAuctionUseCase",{
+      useClass:GetWonAuctionUseCase
+    })
+    container.register<IGetSoldCarsUseCase>("IGetSoldCarsUseCase",{
+      useClass:getSoldCarsUseCase
+    })
+    container.register<IEndAuctionUseCase>("IEndAuctionUseCase",{
+      useClass:EndAuctionUseCase
     })
     container.register<IGetAllNotificationUseCase>("IGetAllNotificationUseCase",{
       useClass:GetAllNotificationUseCase

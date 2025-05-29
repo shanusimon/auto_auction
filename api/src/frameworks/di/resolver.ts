@@ -21,6 +21,8 @@ import { ConversationController } from "../../interface-adapters/controllers/con
 import { BidHttpController } from "../../interface-adapters/controllers/bid/BIdHttpController";
 import { PostController } from "../../interface-adapters/controllers/post/PostController";
 import { NotificationController } from "../../interface-adapters/controllers/notification/NotificationController";
+import { AuctionController } from "../../interface-adapters/controllers/Auction/AuctionContorller";
+import { RevenueController } from "../../interface-adapters/controllers/revenue/RevenueController";
 // Registering all registries using a single class
 
 DependencyInjection.registerAll();
@@ -43,3 +45,5 @@ export const conversationController = container.resolve(ConversationController)
 export const bidHttpController = container.resolve(BidHttpController)
 export const postController = container.resolve(PostController)
 export const notificationController = container.resolve(NotificationController);
+export const auctionController = container.resolve(AuctionController)
+export const revenueController = container.resolve(RevenueController)

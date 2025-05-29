@@ -32,7 +32,10 @@ import { IPostRepository } from "../../entities/repositoryInterfaces/post/IPostR
 import { PostRepository } from "../../interface-adapters/repositories/post/post.repository";
 import { INotificationRepository } from "../../entities/repositoryInterfaces/notification/INotificationRepository";
 import { NotificationRepository } from "../../interface-adapters/repositories/notification/notification.repository";
-
+import { AuctionWonRepositoryInterface } from "../../entities/repositoryInterfaces/auctionwon/IAuctionWonRepositoryInterface";
+import { AuctionWonRepository } from "../../interface-adapters/repositories/auctionwon/AuctionWonRepository";
+import { IAdminWalletRepository } from "../../entities/repositoryInterfaces/adminWallet/IAdminWalletRepository";
+import { adminWalletRepository } from "../../interface-adapters/repositories/adminWallet/adminWalletRepository";
 //service imports
 import { IOtpService } from "../../entities/services/IOtpService";
 import { OtpService } from "../../interface-adapters/services/OtpService";
@@ -48,6 +51,12 @@ export class RepositoryRegistry {
     container.register<IClientRepository>("IClientRepository", {
       useClass: ClientRepository,
     });
+    container.register<AuctionWonRepositoryInterface>("AuctionWonRepositoryInterface",{
+      useClass:AuctionWonRepository
+    })
+    container.register<IAdminWalletRepository>("IAdminWalletRepository",{
+      useClass:adminWalletRepository
+    })
     container.register<IUserExistenceService>("IUserExistenceService", {
       useClass: UserExistenceService,
     });

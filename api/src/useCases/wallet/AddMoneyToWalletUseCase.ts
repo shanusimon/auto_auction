@@ -14,8 +14,7 @@ export class AddMoneyToWalletUseCase implements IAddMoneyToWalletUseCase{
     async execute(userId: string, amount: number): Promise<{ clientSecret: string; }> {
         
         const wallet = await this.walletRepository.findWalletByUserId(userId);
-        console.log(wallet);
-        const paymentIntent = await this.stripeService.createPaymentIntent(amount,"usd");
+        const paymentIntent = await this.stripeService.createPaymentIntent(amount,"usd",{ type: "wallet_fund", userId });
         const amountInDollars = amount / 100;
         await this.walletTransaction.create({
             walletId:wallet?._id,

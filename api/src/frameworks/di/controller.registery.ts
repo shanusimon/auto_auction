@@ -17,6 +17,7 @@ import { CarCommentController } from "../../interface-adapters/controllers/carCo
 import { ChatController } from "../../interface-adapters/controllers/chat/ChatController";
 import { BidHttpController } from "../../interface-adapters/controllers/bid/BIdHttpController";
 import { PostController } from "../../interface-adapters/controllers/post/PostController";
+import { RevenueController } from "../../interface-adapters/controllers/revenue/RevenueController";
 
 export class controllerRegistery{
     static registerControllers():void{
@@ -40,6 +41,9 @@ export class controllerRegistery{
         })
         container.register("WalletController",{
             useClass:WalletController
+        })
+        container.register("RevenueController",{
+            useClass:RevenueController
         })
         container.register("HandleWebHookController",{
             useClass:HandleWebHookController

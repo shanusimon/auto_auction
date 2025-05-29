@@ -17,4 +17,5 @@ export interface IClientRepository{
     findBySearchTerm(searchTerm:string):Promise<String[]>;
     updateFcmToken(id:string,fcmToken:string):Promise<void>;
     revokeFcmToken(id:string):Promise<void>
+    findCount():Promise<Number>
 }

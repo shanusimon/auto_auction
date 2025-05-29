@@ -6,7 +6,7 @@ export const WalletTransactionSchema = new Schema<IWalletTransactionModel>({
     walletId:{type:Schema.Types.ObjectId,ref:"Wallet",required:true},
     type: {
         type: String,
-        enum: ["deposit", "bid", "outbid", "transfer"],
+        enum: ["deposit", "bid", "outbid", "transfer","deposit_release"],
         required: true,
     },
     amount: { type: Number, required: true },

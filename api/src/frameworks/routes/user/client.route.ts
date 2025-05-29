@@ -17,6 +17,7 @@ import {
   bidHttpController,
   postController,
   notificationController,
+  auctionController
 } from "../../di/resolver";
 
 import { BaseRoute } from "../base.route";
@@ -157,6 +158,17 @@ export class ClientRoutes extends BaseRoute {
       }
     );
 
+    //auction-ending
+    this.router.post(
+      "/user/:id/end",
+      verifyAuth,
+      authorizeRole(['user']),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        auctionController.endAuction(req,res);
+      }
+    )
+
     
     this.router.post(
       "/user/conversation",
@@ -243,6 +255,16 @@ export class ClientRoutes extends BaseRoute {
       }
     )
 
+    this.router.get(
+      '/user/soldcars',
+      verifyAuth,
+      authorizeRole(['user']),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        carController.getSoldCars(req,res);
+      }
+    )
+
     // get all notification 
     this.router.get(
       '/user/notification',
@@ -262,6 +284,17 @@ export class ClientRoutes extends BaseRoute {
       blockStatusMiddleware.checkStatus as RequestHandler,
       (req:Request,res:Response)=>{
         notificationController.updateNotification(req,res);
+      }
+     )
+
+     //
+     this.router.get(
+      "/user/auction/won",
+      verifyAuth,
+      authorizeRole(['user']),
+      blockStatusMiddleware.checkStatus as RequestHandler,
+      (req:Request,res:Response)=>{
+        auctionController.getWonAuction(req,res)
       }
      )
 

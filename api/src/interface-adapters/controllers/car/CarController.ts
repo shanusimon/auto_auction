@@ -17,7 +17,7 @@ import { IGetCarsFilterUseCase } from "../../../entities/useCaseInterfaces/car/I
 import { ICarEntity } from "../../../entities/models/car.entity";
 import { BodyType, FuelType, TransmissionType } from "../../../shared/types/car.types";
 import { IGetCarDetailsUseCase } from "../../../entities/useCaseInterfaces/car/ICarDetailsUseCase";
-
+import { IGetSoldCarsUseCase } from "../../../entities/useCaseInterfaces/car/IGetSoldCarsUseCase";
 
 @injectable()
 export class CarController implements ICarController {
@@ -31,7 +31,9 @@ export class CarController implements ICarController {
     @inject("IGetCarsFilterUseCase")
     private getCarsFilterUseCase: IGetCarsFilterUseCase,
     @inject("IGetCarDetailsUseCase")
-    private getCarDetailsUseCase:IGetCarDetailsUseCase
+    private getCarDetailsUseCase:IGetCarDetailsUseCase,
+    @inject("IGetSoldCarsUseCase")
+    private getSoldCarUseCase:IGetSoldCarsUseCase
   ) {}
   async register(req: Request, res: Response): Promise<void> {
     try {
@@ -60,6 +62,8 @@ export class CarController implements ICarController {
         pageSize,
         searchTermString
       );
+
+
 
       res.status(HTTP_STATUS.OK).json({ cars, total, page: pageNum, pageSize });
     } catch (error) {
@@ -139,6 +143,7 @@ export class CarController implements ICarController {
         location:car.location,
         auctionEndTime: car.auctionEndTime ? car.auctionEndTime.toISOString() : null,
         noReserve: !car.reservedPrice,
+        approvalStatus:car.approvalStatus,
         specs:[car.transmission,car.fuel,car.bodyType].filter(Boolean)
       }))
 
@@ -168,6 +173,17 @@ export class CarController implements ICarController {
         res.status(HTTP_STATUS.OK).json({message:SUCCESS_MESSAGES.DATA_RETRIEVED,data:car,seller})
       } catch (error) {
         handleErrorResponse(res,error);
+      }
+  }
+  async getSoldCars(req: Request, res: Response): Promise<void> {
+      try {
+        console.log("hello")
+        const soldCars = await this.getSoldCarUseCase.execute();
+        console.log("this is sold car",soldCars);
+        
+        res.status(HTTP_STATUS.OK).json({data:soldCars})
+      } catch (error) {
+        handleErrorResponse(res,error)
       }
   }
 
