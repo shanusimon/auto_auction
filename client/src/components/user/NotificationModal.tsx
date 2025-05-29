@@ -29,6 +29,12 @@ export const NotificationCenter = ({ open, onOpenChange }: NotificationCenterPro
   const [notifications, setNotifications] = useState<NotificationItemProps[]>([]);
 
   useEffect(() => {
+    if (open) {
+      refetch();
+    }
+  }, [open, refetch]);
+
+  useEffect(() => {
     if (notificationsData?.data) {
       const formatted = notificationsData.data.map((n: any) => ({
         id: n._id,
@@ -45,7 +51,6 @@ export const NotificationCenter = ({ open, onOpenChange }: NotificationCenterPro
   const unreadCount = notifications.filter((notification) => !notification.read).length;
 
   const markAsRead = async (id: string) => {
-    // Optimistic update
     const previousNotifications = notifications;
     setNotifications((prev) =>
       prev.map((notification) =>
@@ -64,17 +69,16 @@ export const NotificationCenter = ({ open, onOpenChange }: NotificationCenterPro
   };
 
   const markAllAsRead = async () => {
-    // Optimistic update
     const previousNotifications = notifications;
     setNotifications((prev) => prev.map((notification) => ({ ...notification, read: true })));
 
     try {
       await updateReadStatus.mutateAsync({ all: true });
-      toast.success('All notifications marked as read'); // Optional
+      toast.success('All notifications marked as read');
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
-      setNotifications(previousNotifications); // Revert on failure
-      refetch(); // Refetch to sync with backend
+      setNotifications(previousNotifications); 
+      refetch(); 
       toast.error('Failed to mark all notifications as read');
     }
   };

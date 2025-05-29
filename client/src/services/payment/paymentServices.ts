@@ -13,3 +13,14 @@ export const addMoneyToWallet = async(data:AddMoneyData)=>{
     }
 }
 
+export const createCheckOut = async (auctionId:string)=>{
+  const response = await userAxiosInstance.post(`/_pmt/user/createSession/${auctionId}`);
+  return response.data
+}
+
+export const verify_payment =async(sessionId:string)=>{
+    const resposne = await userAxiosInstance.post(`/_pmt/user/verify/payment`,{
+        sessionId
+});
+    return resposne.data
+}

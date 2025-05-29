@@ -8,22 +8,21 @@ interface LogoProps {
 
 const Logo: React.FC<LogoProps> = ({ className = "", isAdmin = false }) => {
   return (
-    <Link to="/" className={`flex items-center cursor-pointer ${className}`}>
+    <Link
+      to="/"
+      className={`relative z-[100] flex items-center cursor-pointer ${className}`}
+    >
       <div 
-        className={`${isAdmin ? 'bg-[#9b87f5]' : 'bg-black'} rounded-full p-1 mr-2 flex items-center justify-center`}
-        style={isAdmin ? { backgroundColor: '#9b87f5 !important' } : {}}
+        className={`rounded-full p-1 mr-2 flex items-center justify-center ${isAdmin ? 'bg-[#9b87f5]' : 'bg-black'}`}
       >
         {isAdmin ? (
-          <ShieldCheck size={20} className="text-white" style={{ color: 'white !important' }} />
+          <ShieldCheck size={20} className="text-white" />
         ) : (
           <CarFront size={20} className="text-[#3BE188]" />
         )}
       </div>
-      <span className="text-white font-bold" style={{ color: 'white !important', fontWeight: 'bold !important' }}>AUTO</span>
-      <span 
-        className={`font-bold ${isAdmin ? 'text-[#9b87f5]' : 'text-[#3BE188]'}`}
-        style={isAdmin ? { color: '#9b87f5 !important', fontWeight: 'bold !important' } : {}}
-      >
+      <span className="text-white font-bold">AUTO</span>
+      <span className={`font-bold ${isAdmin ? 'text-[#9b87f5]' : 'text-[#3BE188]'}`}>
         {isAdmin ? 'ADMIN' : 'AUCTION'}
       </span>
     </Link>

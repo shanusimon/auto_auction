@@ -277,7 +277,8 @@ const WalletPage: React.FC = () => {
                                                 </TableRow>
                                             ) : transactions.length > 0 ? (
                                                 transactions.map((transaction: any, index: number) => {
-                                                    const addsToWallet = ["deposit", "outbid"].includes(transaction.type);
+                                                    // Updated logic to include deposit_release as a type that adds to wallet
+                                                    const addsToWallet = ["deposit", "outbid", "deposit_release"].includes(transaction.type);
                                                     const typeStyle =
                                                         transaction.status === "completed"
                                                             ? addsToWallet
@@ -294,6 +295,14 @@ const WalletPage: React.FC = () => {
                                                             : transaction.status === "pending"
                                                                 ? "text-yellow-500"
                                                                 : "text-gray-500";
+
+                                                    // Format the transaction type display text
+                                                    const formatTransactionType = (type: string) => {
+                                                        return type
+                                                            .split('_')
+                                                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                                            .join(' ');
+                                                    };
 
                                                     return (
                                                         <motion.tr
@@ -323,7 +332,7 @@ const WalletPage: React.FC = () => {
                                                                 <span
                                                                     className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${typeStyle}`}
                                                                 >
-                                                                    {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
+                                                                    {formatTransactionType(transaction.type)}
                                                                 </span>
                                                             </TableCell>
                                                             <TableCell className={`text-right font-medium ${amountStyle}`}>

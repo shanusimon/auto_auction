@@ -1,9 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
-import { User, Package, FileText, Wallet,PersonStanding} from 'lucide-react';
+import { User, Package, FileText, Wallet, PersonStanding } from 'lucide-react';
 
 const UserSidebar: React.FC = () => {
   const location = useLocation();
-
 
   const navItems = [
     { 
@@ -24,7 +23,7 @@ const UserSidebar: React.FC = () => {
     { 
       path: '/user/chats', 
       name: 'Chats', 
-      icon:  PersonStanding
+      icon: PersonStanding
     },
     { 
       path: '/user/wallet', 
@@ -38,8 +37,8 @@ const UserSidebar: React.FC = () => {
   };
 
   return (
-    <div className="w-64 bg-black border-r border-zinc-800 h-screen flex flex-col">
-      <div className="flex-1 overflow-y-auto py-6 px-4">
+    <div className="w-64 bg-black border-r border-zinc-800 min-h-screen flex flex-col">
+      <div className="flex-1 py-6 px-4">
         <nav className="space-y-2">
           {navItems.map((item) => (
             <Link

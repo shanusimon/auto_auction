@@ -141,3 +141,18 @@ export const updateNotification = async (payload:{id?:string,all?:boolean})=>{
   const response = await userAxiosInstance.patch(`/_us/user/notification`,payload);
   return response.data
 }
+
+export const auctionEnd = async(carId:string)=>{
+  const response = await userAxiosInstance.post(`/_us/user/${carId}/end`)
+  return response.data
+}
+
+export const soldCars = async () => {
+  const response = await userAxiosInstance.get(`/_us/user/soldcars`)
+  return response.data
+}
+
+export const wonAuction = async ()=>{
+  const response = await userAxiosInstance.get(`/_us/user/auction/won`)
+  return response.data
+}

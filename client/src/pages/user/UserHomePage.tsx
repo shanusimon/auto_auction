@@ -1,19 +1,20 @@
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import Header from '@/components/header/Header';
 import Footer from '@/components/footer/Footer';
 import FeaturedCarCarousel from '@/components/cars/featuredCars';
 import { Button } from '@/components/ui/button';
 import CarCard from '@/components/cars/Car';
+import EndedCarCard from '@/components/cars/EndCarCard';
 import CarFilters from '@/components/cars/CarFilter';
 import { requestNotificationPresmission, listenForForegroundMessages } from '@/services/firebase/messaging';
 import { useStoreFCMToken } from '@/hooks/user/userDashboard';
-import { toast } from 'sonner';
 import { useCars } from '@/hooks/user/useGetCars';
+import { useAuctionEnd } from '@/hooks/user/useAuctionEnd';
 import CarCardSkeleton from '@/components/cars/CarCardSkeleton';
-import { useNavigate } from 'react-router-dom';
 import AuctionSocket from '@/services/webSocket/webSockeService';
 import { Car } from '@/types/Types';
-
+import { useGetSoldCars } from '@/hooks/user/useGetSoldCars';
 
 interface BidPayload {
   success: boolean;
@@ -25,9 +26,15 @@ interface BidPayload {
   };
 }
 
+interface AuctionEndedPayload {
+  success: boolean;
+  carId: string;
+  status: 'sold' | 'ended';
+}
+
 export default function UserHomePage() {
-  const navigate = useNavigate();
-  const { mutate } = useStoreFCMToken();
+  const { mutate: storeFCMToken } = useStoreFCMToken();
+  const { mutate: endAuction } = useAuctionEnd();
   const [filters, setFilters] = useState({
     year: '',
     bodyType: '',
@@ -35,9 +42,9 @@ export default function UserHomePage() {
     transmission: '',
     sort: 'ending-soon',
   });
-  
   const [page, setPage] = useState(1);
   const [allCars, setAllCars] = useState<Car[]>([]);
+  const [hasMore, setHasMore] = useState(true);
 
   const { data: cars, isLoading, error } = useCars({
     year: filters.year ? Number(filters.year) : undefined,
@@ -49,12 +56,20 @@ export default function UserHomePage() {
     limit: 20,
   });
 
+
+  const { 
+    data: soldCars, 
+    isLoading: soldCarsLoading, 
+    error: soldCarsError 
+  } = useGetSoldCars();
+
+
   useEffect(() => {
     const setupFCM = async () => {
       const cachedToken = localStorage.getItem('fcmToken');
       const token = await requestNotificationPresmission();
       if (token && token !== cachedToken) {
-        mutate(token, {
+        storeFCMToken(token, {
           onSuccess: () => {
             localStorage.setItem('fcmToken', token);
             toast.success('Notifications enabled');
@@ -68,7 +83,7 @@ export default function UserHomePage() {
       listenForForegroundMessages();
     };
     setupFCM();
-  }, [mutate]);
+  }, [storeFCMToken]);
 
   useEffect(() => {
     if (cars && Array.isArray(cars)) {
@@ -77,34 +92,50 @@ export default function UserHomePage() {
       } else {
         setAllCars((prev:any) => [...prev, ...cars]);
       }
+      setHasMore(cars.length === 20);
     }
   }, [cars, page]);
 
   useEffect(() => {
     const handleNewBid = (data: BidPayload) => {
-      console.log('Received new bid:', data);
       if (data.success && data.bid.carId) {
         setAllCars((prevCars) =>
-          prevCars.map((car) => {
-            console.log(`Comparing car.id: ${car.id} (${typeof car.id}) with data.bid.carId: ${data.bid.carId} (${typeof data.bid.carId})`);
-            return car.id.toString() === data.bid.carId.toString()
+          prevCars.map((car) =>
+            car.id.toString() === data.bid.carId.toString()
               ? {
                   ...car,
                   currentBid: data.bid.amount,
                   auctionEndTime: data.bid.auctionEndTime || car.auctionEndTime,
                 }
-              : car;
-          })
+              : car
+          )
         );
-      } else {
-        console.warn('Invalid bid data:', data);
+      }
+    };
+
+    const handleAuctionEnded = (data: AuctionEndedPayload) => {
+      if (data.success && data.carId) {
+        setAllCars((prevCars) =>
+          prevCars.map((car) =>
+            car.id.toString() === data.carId.toString()
+              ? {
+                  ...car,
+                  approvalStatus: data.status,
+                  auctionEndTime: null,
+                }
+              : car
+          )
+        );
+        toast.info(`Auction for car ${data.carId} has ended`);
       }
     };
 
     AuctionSocket.on('new-bid', handleNewBid);
+    AuctionSocket.on('auction-ended', handleAuctionEnded);
 
     return () => {
       AuctionSocket.off('new-bid', handleNewBid);
+      AuctionSocket.off('auction-ended', handleAuctionEnded);
     };
   }, []);
 
@@ -114,8 +145,10 @@ export default function UserHomePage() {
     setAllCars([]);
   };
 
-  const handleClick = (carId: string) => {
-    navigate(`/user/cars/${carId}`);
+  const handleLoadMore = () => {
+    if (hasMore && !isLoading) {
+      setPage((prev) => prev + 1);
+    }
   };
 
   const renderSkeletons = () => {
@@ -124,38 +157,100 @@ export default function UserHomePage() {
       .map((_, index) => <CarCardSkeleton key={`skeleton-${index}`} />);
   };
 
+  const renderSoldCarSkeletons = () => {
+    return Array(4)
+      .fill(0)
+      .map((_, index) => <CarCardSkeleton key={`sold-skeleton-${index}`} />);
+  };
+
+  // Transform sold cars data for EndedCarCard component
+  const recentSoldCars = soldCars?.data ? soldCars.data.slice(0, 4).map((car: any) => ({
+    id: car._id || car.id,
+    title: car.title || `${car.year} ${car.make} ${car.model}`,
+    year: car.year || 0,
+    make: car.make || 'Unknown',
+    model: car.model || 'Unknown',
+    imageUrl: car.imageUrl || car.images?.[0] || car.image || car.photos?.[0] || '/placeholder-car.jpg',
+    winningBid: car.highestBid || car.currentBid || car.finalBid || 0,
+    totalBids: car.bids || car.bidCount || car.totalBids || 0,
+    location: car.location || '',
+    noReserve: car.noReserve || false,
+    specs: car.specs || [],
+    approvalStatus: car.approvalStatus || 'sold',
+    soldDate: car.soldDate || car.auctionEndDate || car.updatedAt,
+  })) : [];
+
   return (
     <div className="bg-black min-h-screen w-full">
       <Header />
-      <FeaturedCarCarousel /> {/* Updated component */}
+      <FeaturedCarCarousel />
       <CarFilters onFilterChange={handleFilterChange} filters={filters} />
       <div className="w-full bg-black px-6 py-8">
         <div className="max-w-7xl mx-auto">
+          {/* Current Auctions Section */}
           <section className="mb-12">
             <h2 className="text-2xl font-bold mb-6 text-white">Current Auctions</h2>
             {error && <p className="text-red-500">Error: {error.message}</p>}
             {!isLoading && allCars.length === 0 && !error && (
               <p className="text-white">No cars found.</p>
             )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {isLoading && page === 1 ? (
                 renderSkeletons()
               ) : (
-                Array.isArray(allCars) &&
-                allCars.map((car) => (
-                  <div
-                    key={car.id}
-                    onClick={() => handleClick(car.id)}
-                    className="cursor-pointer transition-transform hover:scale-105"
-                  >
-                    <CarCard {...car} />
-                  </div>
-                ))
+                allCars
+                  .filter((car) => car.approvalStatus === 'approved')
+                  .map((car) => (
+                    <CarCard key={car.id} {...car} endAuction={endAuction} />
+                  ))
               )}
             </div>
+            {hasMore && (
+              <div className="flex justify-center mt-8">
+                <Button
+                  onClick={handleLoadMore}
+                  disabled={isLoading}
+                  className="bg-[#3BE188] hover:bg-[#2dd077] text-black font-semibold px-8 py-3 rounded-full"
+                >
+                  {isLoading ? 'Loading...' : 'Load More'}
+                </Button>
+              </div>
+            )}
+          </section>
+
+          {/* Recent Sold Cars Section - Now using EndedCarCard */}
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold mb-6 text-white">Recently Sold</h2>
+            
+            {soldCarsError && (
+              <p className="text-red-500">Error loading sold cars: {soldCarsError.message}</p>
+            )}
+            
+            {soldCarsLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {renderSoldCarSkeletons()}
+              </div>
+            ) : recentSoldCars.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {recentSoldCars.map((car) => (
+                  <EndedCarCard 
+                    key={car.id} 
+                    {...car}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex justify-center py-12">
+                <div className="text-center">
+                  <p className="text-gray-400 text-lg">No recently sold cars available.</p>
+                </div>
+              </div>
+            )}
           </section>
         </div>
       </div>
+
+      {/* Why Choose Auto Auction Section */}
       <div className="w-full bg-black">
         <section className="py-16 px-6 w-full">
           <div className="max-w-7xl mx-auto text-center">
@@ -192,6 +287,8 @@ export default function UserHomePage() {
           </div>
         </section>
       </div>
+
+      {/* Call to Action Section */}
       <div className="w-full bg-gradient-to-r from-zinc-900 to-black">
         <section className="py-20 px-6 w-full">
           <div className="max-w-7xl mx-auto text-center">
@@ -199,11 +296,13 @@ export default function UserHomePage() {
             <p className="text-xl text-gray-400 mb-10 max-w-3xl mx-auto">
               List your vehicle on Auto Auction and reach thousands of passionate car enthusiasts.
             </p>
-            <Button
-              className="bg-[#3BE188] hover:bg-[#2dd077] text-black font-semibold px-8 py-6 text-lg rounded-full"
-            >
-              Start Selling Today
-            </Button>
+            <div className="flex justify-center">
+              <Button
+                className="bg-[#3BE188] hover:bg-[#2dd077] text-black font-semibold px-8 py-6 text-lg rounded-full"
+              >
+                Start Selling Today
+              </Button>
+            </div>
           </div>
         </section>
       </div>

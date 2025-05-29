@@ -12,6 +12,8 @@ import ChatPage from "@/pages/user/Chat";
 import MyBids from "@/pages/user/MyBids";
 import SellerDashboard from "@/pages/user/SellerDashboard";
 import Community from "@/pages/user/Community";
+import PaymentSuccess from "@/components/user/PaymentSuccess";
+import PaymentCancel from "@/components/user/PaymentCancel";
 
 export function UserRoutes() {
   return (
@@ -30,6 +32,14 @@ export function UserRoutes() {
       <Route
         path="/user/cars/:carid"
         element={<CarDetailsPage />}
+      />
+      <Route
+      path="/user/payment/success"
+      element={<PaymentSuccess/>}
+      />
+      <Route
+      path="/user/payment/cancel"
+      element={<PaymentCancel/>}
       />
       <Route
         path="/user/profile"

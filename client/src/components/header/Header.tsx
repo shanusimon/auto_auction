@@ -88,7 +88,7 @@ const Header: React.FC = () => {
                 to="/bids"
                 className="text-gray-300 hover:text-white px-2 py-1 text-sm font-medium rounded-md transition-colors duration-200"
               >
-                What's AutoBid?
+                What's AutoAuction?
               </Link>
             </nav>
           </div>

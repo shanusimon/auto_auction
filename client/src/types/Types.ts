@@ -171,6 +171,7 @@ export interface Car {
   currentBid: number;
   auctionEndTime: string | null;
   bids?: number;
+  approvalStatus: 'pending' | 'approved' | 'rejected' | 'sold' | 'ended';
   location?: string;
   noReserve?: boolean;
   specs?: string[];

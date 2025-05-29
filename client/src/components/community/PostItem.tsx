@@ -54,10 +54,7 @@ const handleLike = () => {
 };
 
 
-    const handleComment = () => {
-      toast.info('Commenting feature coming soon!');
-    };
-
+   
     const handleShare = () => {
       toast.success('Link copied to clipboard!');
     };
@@ -149,14 +146,6 @@ const handleLike = () => {
               >
                 <Heart size={18} className={hasLiked ? 'fill-green-400' : ''} />
                 <span>{likes}</span>
-              </button>
-
-              <button
-                className="flex items-center space-x-1 text-zinc-400 hover:text-white"
-                onClick={handleComment}
-              >
-                <MessageSquare size={18} />
-                <span>{post.comments}</span>
               </button>
 
               <button

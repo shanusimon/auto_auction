@@ -109,13 +109,13 @@ const CarDetailsPage = () => {
       }
     };
 
-    // initialize socket only one time
+
     if (!socketInitialized.current && carid) {
       initializeSocket();
       socketInitialized.current = true;
     }
 
-    // Handle page visibility changes to manage socket connection
+
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         console.log('Page is visible, checking socket connection');
@@ -126,7 +126,7 @@ const CarDetailsPage = () => {
       }
     };
 
-    // Event listeners for visibility and focus
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('focus', handleVisibilityChange);
 
@@ -144,7 +144,7 @@ const CarDetailsPage = () => {
   useEffect(() => {
     if (!carid || !socketConnected) return;
 
-    // bid placement response
+ 
     const handleBidPlaced = (data) => {
       setIsBidding(false);
       if (data.success) {
@@ -268,16 +268,6 @@ const CarDetailsPage = () => {
       console.error("Error liking comment:", error);
       toast.error("Failed to like comment");
     }
-  };
-
-  const handleReplyComment = (commentId) => {
-
-    toast.info("Reply functionality coming soon");
-  };
-
-  const handleFlagComment = (commentId) => {
-
-    toast.info("Comment flagged for review");
   };
 
   useEffect(() => {
@@ -831,20 +821,6 @@ const CarDetailsPage = () => {
                         >
                           <ThumbsUp className="w-4 h-4" />
                           Like
-                        </button>
-                        <button
-                          onClick={() => handleReplyComment(item.id)}
-                          className="flex items-center gap-1 cursor-pointer hover:text-white"
-                        >
-                          <MessageCircle className="w-4 h-4" />
-                          Reply
-                        </button>
-                        <button
-                          onClick={() => handleFlagComment(item.id)}
-                          className="flex items-center gap-1 cursor-pointer hover:text-white"
-                        >
-                          <Flag className="w-4 h-4" />
-                          Flag
                         </button>
                       </div>
                     )}
