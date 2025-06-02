@@ -30,8 +30,8 @@ interface Conversation {
   time: string;
   unread: number;
   isOnline: boolean;
-  user1Id: string; 
-  user2Id: string; 
+  user1Id: string;
+  user2Id: string;
 }
 
 interface Message {
@@ -80,6 +80,7 @@ const ChatPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
+  const [isJoiningConversation, setIsJoiningConversation] = useState(false);
   const [messageInput, setMessageInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -87,7 +88,6 @@ const ChatPage: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
 
   useEffect(() => {
     if (!currentUserId) {
@@ -97,24 +97,35 @@ const ChatPage: React.FC = () => {
     }
   }, [currentUserId, navigate]);
 
-
   useEffect(() => {
     if (!currentUserId) return;
 
     connectSocket();
 
+    AuctionSocket.on("connect", () => {
+      console.log("Socket connected, authenticating...");
+      AuctionSocket.emit("authenticate", { userId: currentUserId });
+      if (activeChatId) {
+        AuctionSocket.emit("joinConversation", {
+          userId: currentUserId,
+          conversationId: activeChatId,
+        });
+      }
+    });
+
+    AuctionSocket.on("disconnect", () => {
+      console.log("Socket disconnected, attempting to reconnect...");
+    });
 
     AuctionSocket.emit("authenticate", { userId: currentUserId });
 
-
     const pingInterval = setInterval(() => {
       AuctionSocket.emit("ping");
-    }, 30000); 
+    }, 30000);
 
     AuctionSocket.on("pong", () => {
       console.log("Pong received from server");
     });
-
 
     AuctionSocket.emit("getConversations", { userId: currentUserId });
 
@@ -128,7 +139,6 @@ const ChatPage: React.FC = () => {
           const isUser1CurrentUser = user1._id === currentUserId;
           const otherUser = isUser1CurrentUser ? user2 : user1;
 
-
           AuctionSocket.emit("checkUserStatus", { userId: otherUser._id });
 
           return {
@@ -138,16 +148,15 @@ const ChatPage: React.FC = () => {
             lastMessage: conv.lastMessage?.content || "",
             time: conv.lastMessage?.sendAt || conv.createdAt || new Date().toISOString(),
             unread: conv.unread || 0,
-            isOnline: false, // Initialize as false, updated by userStatus
-            user1Id: user1._id, // Store for status updates
-            user2Id: user2._id, // Store for status updates
+            isOnline: false,
+            user1Id: user1._id,
+            user2Id: user2._id,
           };
         })
       );
       setIsLoadingConversations(false);
     });
 
-    // Listen for user status updates
     AuctionSocket.on("userStatus", ({ userId, isOnline }: { userId: string; isOnline: boolean }) => {
       console.log(`Received userStatus: ${userId} is ${isOnline ? "online" : "offline"}`);
       setConversations((prev) =>
@@ -174,6 +183,7 @@ const ChatPage: React.FC = () => {
       console.log("Received joinedConversation:", { conversationId, messages });
       setActiveChatId(conversationId);
       setMessages(Array.isArray(messages) ? messages : []);
+      setIsJoiningConversation(false);
     });
 
     AuctionSocket.on("newMessage", ({ message }) => {
@@ -245,13 +255,15 @@ const ChatPage: React.FC = () => {
       console.error("Socket error:", message, { userId: currentUserId, conversationId: activeChatId });
       toast.error(message);
       setIsLoadingConversations(false);
+      setIsJoiningConversation(false);
       if (message.includes("Unauthorized")) {
         navigate("/login");
       }
     });
 
-    // Cleanup socket listeners and disconnect
     return () => {
+      AuctionSocket.off("connect");
+      AuctionSocket.off("disconnect");
       AuctionSocket.off("conversationsList");
       AuctionSocket.off("conversationStarted");
       AuctionSocket.off("joinedConversation");
@@ -265,7 +277,6 @@ const ChatPage: React.FC = () => {
     };
   }, [currentUserId, navigate]);
 
-  // Join conversation based on URL or state
   useEffect(() => {
     if (!currentUserId) return;
 
@@ -273,8 +284,8 @@ const ChatPage: React.FC = () => {
       let convId = stateConversationId || urlConversationId;
       if (convId && convId !== activeChatId) {
         console.log("Emitting joinConversation for conversationId:", convId);
+        setIsJoiningConversation(true);
         AuctionSocket.emit("joinConversation", { userId: currentUserId, conversationId: convId });
-        // Query status for the other user in the conversation
         const conversation = conversations.find((c) => c.id === convId);
         if (conversation) {
           const otherUserId = conversation.user1Id === currentUserId ? conversation.user2Id : conversation.user1Id;
@@ -285,16 +296,14 @@ const ChatPage: React.FC = () => {
     };
 
     joinConversation();
-  }, [stateConversationId, urlConversationId, currentUserId, activeChatId, conversations]);
+  }, [stateConversationId, urlConversationId, currentUserId, conversations]);
 
-  // Refresh conversations if none exist
   useEffect(() => {
     if (!currentUserId || conversations.length > 0) return;
     console.log("Refreshing conversations due to activeChatId change:", activeChatId);
     AuctionSocket.emit("getConversations", { userId: currentUserId });
   }, [activeChatId, currentUserId, conversations.length]);
 
-  // Scroll to latest message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -458,13 +467,17 @@ const ChatPage: React.FC = () => {
   };
 
   const handleSelectConversation = (conversation: Conversation) => {
+    if (conversation.id === activeChatId) {
+      console.log("Already in conversation:", conversation.id);
+      return;
+    }
     setActiveChatId(conversation.id);
     console.log("Joining conversation:", conversation.id);
+    setIsJoiningConversation(true);
     AuctionSocket.emit("joinConversation", {
       userId: currentUserId,
       conversationId: conversation.id,
     });
-    // Query status for the other user
     const otherUserId = conversation.user1Id === currentUserId ? conversation.user2Id : conversation.user1Id;
     AuctionSocket.emit("checkUserStatus", { userId: otherUserId });
     navigate(`/user/chats/conversation/${conversation.id}`, {
@@ -486,7 +499,6 @@ const ChatPage: React.FC = () => {
       <div className="h-screen flex flex-col bg-black text-white">
         <Header />
         <div className="flex-1 flex overflow-hidden">
-          {/* Left sidebar - Conversations */}
           <div
             className={`w-full md:w-1/3 lg:w-1/4 bg-zinc-900 border-r border-zinc-800 flex flex-col
                        transition-all duration-300 ease-in-out
@@ -576,214 +588,218 @@ const ChatPage: React.FC = () => {
             </ScrollArea>
           </div>
 
-          {/* Right side - Chat messages */}
           <div className={`flex-1 flex flex-col h-full ${!activeChatId ? "hidden md:flex" : ""}`}>
             {activeChatId ? (
               <div className="flex flex-col h-full">
-                {/* Chat header */}
-                <div className="bg-zinc-900 p-4 border-b border-zinc-800 flex items-center">
-                  <button
-                    onClick={handleBackToList}
-                    className="md:hidden mr-2 text-zinc-400 hover:text-white transition-colors"
-                  >
-                    <ChevronLeft className="h-6 w-6" />
-                  </button>
-                  <Avatar className="h-10 w-10 mr-3 border border-zinc-700">
-                    <AvatarImage src={activeChat?.avatar || undefined} />
-                    <AvatarFallback className="bg-gradient-to-br from-zinc-700 to-zinc-800 text-zinc-300">
-                      {activeChat?.name ? activeChat.name.substring(0, 2).toUpperCase() : "UN"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="font-medium">{activeChat?.name}</div>
-                    <div className="text-xs text-zinc-400">
-                      {activeChat?.isOnline ? (
-                        <span className="flex items-center gap-1">
-                          <span className="h-2 w-2 bg-green-500 rounded-full"></span>
-                          Online
-                        </span>
-                      ) : (
-                        "Offline"
-                      )}
-                    </div>
+                {isJoiningConversation ? (
+                  <div className="flex justify-center items-center h-full text-zinc-400">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                    <span className="ml-2">Loading conversation...</span>
                   </div>
-                  <div className="flex gap-4">
-                    <button className="text-zinc-400 hover:text-white transition-all duration-200 hover:scale-110">
-                      <MoreVertical className="h-5 w-5" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Messages container */}
-                <div
-                  className="flex-1 p-4 bg-gradient-to-b from-black to-zinc-900 overflow-y-auto"
-                >
-                  <div className="flex flex-col gap-4 pb-2">
-                    {messages.length > 0 ? messages.map((message) => (
-                      <div
-                        key={message.id}
-                        className={`flex ${
-                          message.senderId === currentUserId ? "justify-end" : "justify-start"
-                        }`}
+                ) : (
+                  <>
+                    <div className="bg-zinc-900 p-4 border-b border-zinc-800 flex items-center">
+                      <button
+                        onClick={handleBackToList}
+                        className="md:hidden mr-2 text-zinc-400 hover:text-white transition-colors"
                       >
-                        <div
-                          className={`max-w-[80%] rounded-lg overflow-hidden ${
-                            message.senderId === currentUserId
-                              ? "bg-[#3BE188] text-black"
-                              : "bg-zinc-800 text-white"
-                          } shadow-lg`}
-                        >
-                          {message.type === "image" ? (
-                            <div className="max-w-sm">
-                              {message.id.startsWith('temp-') && !message.imageUrl ? (
-                                <div className="bg-zinc-700 h-48 w-64 flex items-center justify-center">
-                                  <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
-                                </div>
-                              ) : (
-                                <img 
-                                  src={message.imageUrl || ""} 
-                                  alt="Chat image" 
-                                  className="w-full h-auto max-h-64 object-contain"
-                                  onError={(e) => {
-                                    (e.target as HTMLImageElement).src = "/placeholder-image.jpg";
-                                  }}
-                                />
-                              )}
-                              <div className="px-3 py-2">
-                                <div
-                                  className={`text-xs ${
-                                    message.senderId === currentUserId ? "text-black/60" : "text-zinc-400"
-                                  }`}
-                                >
-                                  {message && message.sendAt ? (
-                                    new Date(message.sendAt).toString() !== "Invalid Date" ? 
-                                      new Date(message.sendAt).toLocaleTimeString([], {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      }) : 
-                                      new Date().toLocaleTimeString([], {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })
-                                  ) : new Date().toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
-                                </div>
-                              </div>
-                            </div>
+                        <ChevronLeft className="h-6 w-6" />
+                      </button>
+                      <Avatar className="h-10 w-10 mr-3 border border-zinc-700">
+                        <AvatarImage src={activeChat?.avatar || undefined} />
+                        <AvatarFallback className="bg-gradient-to-br from-zinc-700 to-zinc-800 text-zinc-300">
+                          {activeChat?.name ? activeChat.name.substring(0, 2).toUpperCase() : "UN"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="font-medium">{activeChat?.name}</div>
+                        <div className="text-xs text-zinc-400">
+                          {activeChat?.isOnline ? (
+                            <span className="flex items-center gap-1">
+                              <span className="h-2 w-2 bg-green-500 rounded-full"></span>
+                              Online
+                            </span>
                           ) : (
-                            <div className="px-4 py-2">
-                              <div>{message.content}</div>
-                              <div
-                                className={`text-xs mt-1 ${
-                                  message.senderId === currentUserId ? "text-black/60" : "text-zinc-400"
-                                }`}
-                              >
-                                {message && message.sendAt ? (
-                                  new Date(message.sendAt).toString() !== "Invalid Date" ? 
-                                    new Date(message.sendAt).toLocaleTimeString([], {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    }) : 
-                                    new Date().toLocaleTimeString([], {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })
-                                ) : new Date().toLocaleTimeString([], {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })}
-                              </div>
-                            </div>
+                            "Offline"
                           )}
                         </div>
                       </div>
-                    )) : (
-                      <div className="flex justify-center items-center h-full text-zinc-400">
-                        No messages yet. Start the conversation!
+                      <div className="flex gap-4">
+                        <button className="text-zinc-400 hover:text-white transition-all duration-200 hover:scale-110">
+                          <MoreVertical className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div
+                      className="flex-1 p-4 bg-gradient-to-b from-black to-zinc-900 overflow-y-auto"
+                    >
+                      <div className="flex flex-col gap-4 pb-2">
+                        {messages.length > 0 ? messages.map((message) => (
+                          <div
+                            key={message.id}
+                            className={`flex ${
+                              message.senderId === currentUserId ? "justify-end" : "justify-start"
+                            }`}
+                          >
+                            <div
+                              className={`max-w-[80%] rounded-lg overflow-hidden ${
+                                message.senderId === currentUserId
+                                  ? "bg-[#3BE188] text-black"
+                                  : "bg-zinc-800 text-white"
+                              } shadow-lg`}
+                            >
+                              {message.type === "image" ? (
+                                <div className="max-w-sm">
+                                  {message.id.startsWith('temp-') && !message.imageUrl ? (
+                                    <div className="bg-zinc-700 h-48 w-64 flex items-center justify-center">
+                                      <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+                                    </div>
+                                  ) : (
+                                    <img 
+                                      src={message.imageUrl || ""} 
+                                      alt="Chat image" 
+                                      className="w-full h-auto max-h-64 object-contain"
+                                      onError={(e) => {
+                                        (e.target as HTMLImageElement).src = "/placeholder-image.jpg";
+                                      }}
+                                    />
+                                  )}
+                                  <div className="px-3 py-2">
+                                    <div
+                                      className={`text-xs ${
+                                        message.senderId === currentUserId ? "text-black/60" : "text-zinc-400"
+                                      }`}
+                                    >
+                                      {message && message.sendAt ? (
+                                        new Date(message.sendAt).toString() !== "Invalid Date" ? 
+                                          new Date(message.sendAt).toLocaleTimeString([], {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                          }) : 
+                                          new Date().toLocaleTimeString([], {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                          })
+                                      ) : new Date().toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })}
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="px-4 py-2">
+                                  <div>{message.content}</div>
+                                  <div
+                                    className={`text-xs mt-1 ${
+                                      message.senderId === currentUserId ? "text-black/60" : "text-zinc-400"
+                                    }`}
+                                  >
+                                    {message && message.sendAt ? (
+                                      new Date(message.sendAt).toString() !== "Invalid Date" ? 
+                                        new Date(message.sendAt).toLocaleTimeString([], {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        }) : 
+                                        new Date().toLocaleTimeString([], {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })
+                                    ) : new Date().toLocaleTimeString([], {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )) : (
+                          <div className="flex justify-center items-center h-full text-zinc-400">
+                            No messages yet. Start the conversation!
+                          </div>
+                        )}
+                        <div ref={messagesEndRef} />
+                      </div>
+                    </div>
+
+                    {imagePreview && (
+                      <div className="p-3 bg-zinc-800 border-t border-zinc-700">
+                        <div className="relative inline-block">
+                          <img 
+                            src={imagePreview} 
+                            alt="Selected image" 
+                            className="h-24 w-auto rounded-md object-cover border border-zinc-600"
+                          />
+                          <button 
+                            onClick={handleCancelImage}
+                            className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 hover:bg-red-600 transition-colors"
+                            disabled={isUploading}
+                          >
+                            <X className="h-4 w-4 text-white" />
+                          </button>
+                        </div>
                       </div>
                     )}
-                    <div ref={messagesEndRef} />
-                  </div>
-                </div>
 
-                {/* Image preview */}
-                {imagePreview && (
-                  <div className="p-3 bg-zinc-800 border-t border-zinc-700">
-                    <div className="relative inline-block">
-                      <img 
-                        src={imagePreview} 
-                        alt="Selected image" 
-                        className="h-24 w-auto rounded-md object-cover border border-zinc-600"
-                      />
-                      <button 
-                        onClick={handleCancelImage}
-                        className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 hover:bg-red-600 transition-colors"
-                        disabled={isUploading}
-                      >
-                        <X className="h-4 w-4 text-white" />
-                      </button>
+                    <div className="p-4 bg-zinc-900 border-t border-zinc-800">
+                      <div className="flex flex-col">
+                        <div className="flex items-end">
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
+                          />
+                          <Button
+                            onClick={() => fileInputRef.current?.click()}
+                            className="mr-2 bg-zinc-800 hover:bg-zinc-700 text-white h-[40px] w-[40px] p-2 transition-all rounded-lg flex-shrink-0"
+                            disabled={isUploading || !!imagePreview}
+                          >
+                            {isUploading ? (
+                              <Loader2 className="h-5 w-5 animate-spin" />
+                            ) : (
+                              <ImageIcon className="h-5 w-5" />
+                            )}
+                          </Button>
+                          
+                          {messageInput.length > 50 ? (
+                            <Textarea
+                              placeholder="Type a message"
+                              value={messageInput}
+                              onChange={(e) => setMessageInput(e.target.value)}
+                              onKeyDown={handleKeyDown}
+                              disabled={isUploading}
+                              className="flex-1 bg-zinc-800 border-zinc-700 text-white min-h-[80px] rounded-r-none transition-all focus:ring-1 focus:ring-[#3BE188]"
+                            />
+                          ) : (
+                            <Input
+                              placeholder="Type a message"
+                              value={messageInput}
+                              onChange={(e) => setMessageInput(e.target.value)}
+                              onKeyDown={handleKeyDown}
+                              disabled={isUploading}
+                              className="flex-1 bg-zinc-800 border-zinc-700 text-white rounded-r-none transition-all focus:ring-1 focus:ring-[#3BE188]"
+                            />
+                          )}
+                          <Button
+                            onClick={handleSendMessage}
+                            disabled={(messageInput.trim() === "" && !imagePreview) || isUploading}
+                            className="ml-0 bg-[#3BE188] hover:bg-[#32BA72] text-black rounded-l-none h-[40px] px-4 transition-all hover:translate-x-1"
+                          >
+                            {isUploading ? (
+                              <Loader2 className="h-5 w-5 animate-spin" />
+                            ) : (
+                              <Send className="h-5 w-5" />
+                            )}
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </>
                 )}
-
-                {/* Message input */}
-                <div className="p-4 bg-zinc-900 border-t border-zinc-800">
-                  <div className="flex flex-col">
-                    <div className="flex items-end">
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="hidden"
-                      />
-                      <Button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="mr-2 bg-zinc-800 hover:bg-zinc-700 text-white h-[40px] w-[40px] p-2 transition-all rounded-lg flex-shrink-0"
-                        disabled={isUploading || !!imagePreview}
-                      >
-                        {isUploading ? (
-                          <Loader2 className="h-5 w-5 animate-spin" />
-                        ) : (
-                          <ImageIcon className="h-5 w-5" />
-                        )}
-                      </Button>
-                      
-                      {messageInput.length > 50 ? (
-                        <Textarea
-                          placeholder="Type a message"
-                          value={messageInput}
-                          onChange={(e) => setMessageInput(e.target.value)}
-                          onKeyDown={handleKeyDown}
-                          disabled={isUploading}
-                          className="flex-1 bg-zinc-800 border-zinc-700 text-white min-h-[80px] rounded-r-none transition-all focus:ring-1 focus:ring-[#3BE188]"
-                        />
-                      ) : (
-                        <Input
-                          placeholder="Type a message"
-                          value={messageInput}
-                          onChange={(e) => setMessageInput(e.target.value)}
-                          onKeyDown={handleKeyDown}
-                          disabled={isUploading}
-                          className="flex-1 bg-zinc-800 border-zinc-700 text-white rounded-r-none transition-all focus:ring-1 focus:ring-[#3BE188]"
-                        />
-                      )}
-                      <Button
-                        onClick={handleSendMessage}
-                        disabled={(messageInput.trim() === "" && !imagePreview) || isUploading}
-                        className="ml-0 bg-[#3BE188] hover:bg-[#32BA72] text-black rounded-l-none h-[40px] px-4 transition-all hover:translate-x-1"
-                      >
-                        {isUploading ? (
-                          <Loader2 className="h-5 w-5 animate-spin" />
-                        ) : (
-                          <Send className="h-5 w-5" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
               </div>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-zinc-900">

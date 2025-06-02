@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { X, Download, Filter, Search } from 'lucide-react';
+import { X, Filter, Search } from 'lucide-react';
 import { useState } from 'react';
 
 interface TransactionHistory {

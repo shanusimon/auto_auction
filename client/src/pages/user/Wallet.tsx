@@ -311,7 +311,6 @@ const WalletPage: React.FC = () => {
                                                             initial={{ opacity: 0, y: 10 }}
                                                             animate={{ opacity: 1, y: 0 }}
                                                             transition={{ duration: 0.3, delay: index * 0.05 }}
-                                                            component={TableRow}
                                                         >
                                                             <TableCell className="text-gray-300">
                                                                 {new Date(transaction.createdAt).toLocaleString()}

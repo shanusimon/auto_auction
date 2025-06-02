@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Clock, DollarSign, Gauge, MapPin, Users, Car as CarIcon, X } from 'lucide-react';
+import { Clock, DollarSign, Gauge, MapPin, Car as CarIcon, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-// Updated interface to match the backend structure
+
 interface CarDetailProps {
   isOpen: boolean;
   onClose: () => void;
@@ -28,7 +28,6 @@ interface CarDetailProps {
 }
 
 const CarDetailDialog: React.FC<CarDetailProps> = ({ isOpen, onClose, car }) => {
-  // Prevent body scrolling when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -45,11 +44,11 @@ const CarDetailDialog: React.FC<CarDetailProps> = ({ isOpen, onClose, car }) => 
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
-    
+
     if (isOpen) {
       window.addEventListener('keydown', handleEsc);
     }
-    
+
     return () => {
       window.removeEventListener('keydown', handleEsc);
     };
@@ -60,29 +59,28 @@ const CarDetailDialog: React.FC<CarDetailProps> = ({ isOpen, onClose, car }) => 
   // Format auction end time into readable format
   const formatAuctionEnd = () => {
     if (!car.auctionEndTime) return 'Unknown';
-    
+
     const endDate = new Date(car.auctionEndTime);
     const now = new Date();
-    
+
     // If auction has ended
     if (endDate < now) {
       return 'Auction ended';
     }
-    
+
     const diffTime = Math.abs(endDate.getTime() - now.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays > 1) {
       return `${diffDays} days left`;
     } else if (diffDays === 1) {
       return '1 day left';
     } else {
-      // Less than a day, show hours
       const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
       if (diffHours === 1) {
         return '1 hour left';
       } else {
-        return `${diffHours} hours left`;  
+        return `${diffHours} hours left`;
       }
     }
   };
@@ -90,7 +88,7 @@ const CarDetailDialog: React.FC<CarDetailProps> = ({ isOpen, onClose, car }) => 
   // Portal content
   const modalContent = (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
@@ -100,8 +98,8 @@ const CarDetailDialog: React.FC<CarDetailProps> = ({ isOpen, onClose, car }) => 
         {/* Header with close button */}
         <div className="flex justify-between items-center p-4 border-b border-zinc-700 bg-zinc-800/50">
           <div className="flex items-center gap-3">
-            <motion.div 
-              initial={{ rotate: -10 }} 
+            <motion.div
+              initial={{ rotate: -10 }}
               animate={{ rotate: 0 }}
               transition={{ duration: 0.4, ease: "easeOut" }}
               className="p-2 bg-zinc-800 rounded-full"
@@ -109,16 +107,16 @@ const CarDetailDialog: React.FC<CarDetailProps> = ({ isOpen, onClose, car }) => 
               <CarIcon size={24} className="text-[#3BE188]" />
             </motion.div>
             <div>
-              <motion.h2 
-                initial={{ x: -20, opacity: 0 }} 
+              <motion.h2
+                initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
                 className="text-xl font-bold text-white"
               >
                 {car.year} {car.make} {car.model}
               </motion.h2>
-              <motion.p 
-                initial={{ x: -20, opacity: 0 }} 
+              <motion.p
+                initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
                 className="text-gray-400 text-sm mt-0.5"
@@ -127,7 +125,7 @@ const CarDetailDialog: React.FC<CarDetailProps> = ({ isOpen, onClose, car }) => 
               </motion.p>
             </div>
           </div>
-          <motion.button 
+          <motion.button
             whileHover={{ scale: 1.1, rotate: 90 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
@@ -148,13 +146,13 @@ const CarDetailDialog: React.FC<CarDetailProps> = ({ isOpen, onClose, car }) => 
             >
               {car.images && car.images.length > 0 ? (
                 <div className="relative aspect-[16/9] bg-zinc-800 rounded-lg overflow-hidden shadow-md border border-zinc-700/30">
-                  <img 
-                    src={car.images[0]} 
-                    alt={`${car.make} ${car.model}`} 
+                  <img
+                    src={car.images[0]}
+                    alt={`${car.make} ${car.model}`}
                     className="w-full h-full object-cover"
                   />
                   {car.images.length > 1 && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.8 }}
@@ -172,7 +170,7 @@ const CarDetailDialog: React.FC<CarDetailProps> = ({ isOpen, onClose, car }) => 
             </motion.div>
 
             {/* Current bid */}
-            <motion.div 
+            <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
@@ -186,7 +184,7 @@ const CarDetailDialog: React.FC<CarDetailProps> = ({ isOpen, onClose, car }) => 
                     ${car.highestBid?.toLocaleString() || '0'}
                   </div>
                 </motion.div>
-                <motion.div 
+                <motion.div
                   whileHover={{ rotate: 15, scale: 1.1 }}
                   transition={{ duration: 0.3 }}
                   className="bg-[#3BE188]/10 p-3 rounded-full"
@@ -196,73 +194,80 @@ const CarDetailDialog: React.FC<CarDetailProps> = ({ isOpen, onClose, car }) => 
               </div>
             </motion.div>
 
-            {/* Quick details */}
-            <motion.div 
+            <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
               className="grid grid-cols-2 md:grid-cols-4 gap-3"
             >
               {car.mileage !== undefined && (
-                <motion.div 
+                <motion.div
                   whileHover={{ y: -3 }}
                   transition={{ duration: 0.2 }}
-                  className="bg-zinc-800 p-3 rounded-lg flex flex-col items-center justify-center shadow-sm border border-zinc-700/30 h-24"
+                  className="bg-zinc-800 p-3 rounded-lg flex flex-col items-center justify-center shadow-sm border border-zinc-700/30 min-h-[6.5rem]"
                 >
                   <div className="bg-zinc-700/50 p-1.5 rounded-full mb-2">
                     <Gauge size={20} className="text-[#3BE188]" />
                   </div>
                   <div className="text-xs text-gray-400">Mileage</div>
-                  <div className="font-semibold text-sm mt-0.5 truncate">{car.mileage?.toLocaleString()} mi</div>
+                  <div className="font-semibold text-sm mt-0.5 truncate max-w-full text-center whitespace-nowrap">
+                    {car.mileage?.toLocaleString()} mi
+                  </div>
                 </motion.div>
               )}
-              
+
               {car.location && (
-                <motion.div 
+                <motion.div
                   whileHover={{ y: -3 }}
                   transition={{ duration: 0.2 }}
-                  className="bg-zinc-800 p-3 rounded-lg flex flex-col items-center justify-center shadow-sm border border-zinc-700/30 h-24"
+                  className="bg-zinc-800 p-3 rounded-lg flex flex-col items-center justify-center shadow-sm border border-zinc-700/30 min-h-[6.5rem]"
                 >
                   <div className="bg-zinc-700/50 p-1.5 rounded-full mb-2">
                     <MapPin size={20} className="text-[#3BE188]" />
                   </div>
                   <div className="text-xs text-gray-400">Location</div>
-                  <div className="font-semibold text-sm mt-0.5 truncate max-w-full">{car.location}</div>
+                  <div className="font-semibold text-sm mt-0.5 truncate max-w-full text-center whitespace-nowrap">
+                    {car.location}
+                  </div>
                 </motion.div>
               )}
-              
+
               {car.bodyType && (
-                <motion.div 
+                <motion.div
                   whileHover={{ y: -3 }}
                   transition={{ duration: 0.2 }}
-                  className="bg-zinc-800 p-3 rounded-lg flex flex-col items-center justify-center shadow-sm border border-zinc-700/30 h-24"
+                  className="bg-zinc-800 p-3 rounded-lg flex flex-col items-center justify-center shadow-sm border border-zinc-700/30 min-h-[6.5rem]"
                 >
                   <div className="bg-zinc-700/50 p-1.5 rounded-full mb-2">
                     <CarIcon size={20} className="text-[#3BE188]" />
                   </div>
                   <div className="text-xs text-gray-400">Body Type</div>
-                  <div className="font-semibold text-sm mt-0.5">{car.bodyType}</div>
+                  <div className="font-semibold text-sm mt-0.5 truncate max-w-full text-center whitespace-nowrap">
+                    {car.bodyType}
+                  </div>
                 </motion.div>
               )}
-              
+
               {car.auctionEndTime && (
-                <motion.div 
+                <motion.div
                   whileHover={{ y: -3 }}
                   transition={{ duration: 0.2 }}
-                  className="bg-zinc-800 p-3 rounded-lg flex flex-col items-center justify-center shadow-sm border border-zinc-700/30 h-24"
+                  className="bg-zinc-800 p-3 rounded-lg flex flex-col items-center justify-center shadow-sm border border-zinc-700/30 min-h-[6.5rem]"
                 >
                   <div className="bg-zinc-700/50 p-1.5 rounded-full mb-2">
                     <Clock size={20} className="text-[#3BE188]" />
                   </div>
                   <div className="text-xs text-gray-400">Auction Ends</div>
-                  <div className="font-semibold text-sm mt-0.5 truncate">{formatAuctionEnd()}</div>
+                  <div className="font-semibold text-sm mt-0.5 truncate max-w-full text-center whitespace-nowrap">
+                    {formatAuctionEnd()}
+                  </div>
                 </motion.div>
               )}
             </motion.div>
-            
+
             {/* Description */}
             {car.description && (
-              <motion.div 
+              <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
@@ -272,9 +277,9 @@ const CarDetailDialog: React.FC<CarDetailProps> = ({ isOpen, onClose, car }) => 
                 <p className="text-gray-300 text-sm leading-relaxed">{car.description}</p>
               </motion.div>
             )}
-            
+
             {/* Car Details */}
-            <motion.div 
+            <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.6 }}

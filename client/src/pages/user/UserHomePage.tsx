@@ -16,6 +16,47 @@ import AuctionSocket from '@/services/webSocket/webSockeService';
 import { Car } from '@/types/Types';
 import { useGetSoldCars } from '@/hooks/user/useGetSoldCars';
 
+interface SoldCar {
+  _id?: string;
+  id?: string;
+  title?: string;
+  year?: number;
+  make?: string;
+  model?: string;
+  imageUrl?: string;
+  images?: string[];
+  image?: string;
+  photos?: string[];
+  highestBid?: number;
+  currentBid?: number;
+  finalBid?: number;
+  bids?: number;
+  bidCount?: number;
+  totalBids?: number;
+  location?: string;
+  noReserve?: boolean;
+  specs?: string[];
+  approvalStatus?: 'sold' | 'ended';
+  soldDate?: string;
+  auctionEndDate?: string;
+  updatedAt?: string;
+}
+
+
+interface SoldCarsResponse {
+  data?: SoldCar[];
+}
+
+
+interface Filters {
+  year: string;
+  bodyType: string;
+  fuel: string;
+  transmission: string;
+  sort: string;
+}
+
+
 interface BidPayload {
   success: boolean;
   bid: {
@@ -26,6 +67,7 @@ interface BidPayload {
   };
 }
 
+
 interface AuctionEndedPayload {
   success: boolean;
   carId: string;
@@ -35,16 +77,16 @@ interface AuctionEndedPayload {
 export default function UserHomePage() {
   const { mutate: storeFCMToken } = useStoreFCMToken();
   const { mutate: endAuction } = useAuctionEnd();
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Filters>({
     year: '',
     bodyType: '',
     fuel: '',
     transmission: '',
     sort: 'ending-soon',
   });
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState<number>(1);
   const [allCars, setAllCars] = useState<Car[]>([]);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState<boolean>(true);
 
   const { data: cars, isLoading, error } = useCars({
     year: filters.year ? Number(filters.year) : undefined,
@@ -56,13 +98,11 @@ export default function UserHomePage() {
     limit: 20,
   });
 
-
   const { 
     data: soldCars, 
     isLoading: soldCarsLoading, 
     error: soldCarsError 
-  } = useGetSoldCars();
-
+  } = useGetSoldCars() as { data?: SoldCarsResponse; isLoading: boolean; error: any };
 
   useEffect(() => {
     const setupFCM = async () => {
@@ -90,7 +130,7 @@ export default function UserHomePage() {
       if (page === 1) {
         setAllCars(cars);
       } else {
-        setAllCars((prev:any) => [...prev, ...cars]);
+        setAllCars((prev) => [...prev, ...cars]);
       }
       setHasMore(cars.length === 20);
     }
@@ -139,7 +179,7 @@ export default function UserHomePage() {
     };
   }, []);
 
-  const handleFilterChange = (newFilters: Partial<typeof filters>) => {
+  const handleFilterChange = (newFilters: Partial<Filters>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
     setPage(1);
     setAllCars([]);
@@ -164,21 +204,23 @@ export default function UserHomePage() {
   };
 
   // Transform sold cars data for EndedCarCard component
-  const recentSoldCars = soldCars?.data ? soldCars.data.slice(0, 4).map((car: any) => ({
-    id: car._id || car.id,
-    title: car.title || `${car.year} ${car.make} ${car.model}`,
-    year: car.year || 0,
-    make: car.make || 'Unknown',
-    model: car.model || 'Unknown',
-    imageUrl: car.imageUrl || car.images?.[0] || car.image || car.photos?.[0] || '/placeholder-car.jpg',
-    winningBid: car.highestBid || car.currentBid || car.finalBid || 0,
-    totalBids: car.bids || car.bidCount || car.totalBids || 0,
-    location: car.location || '',
-    noReserve: car.noReserve || false,
-    specs: car.specs || [],
-    approvalStatus: car.approvalStatus || 'sold',
-    soldDate: car.soldDate || car.auctionEndDate || car.updatedAt,
-  })) : [];
+  const recentSoldCars = soldCars?.data
+    ? soldCars.data.slice(0, 4).map((car: SoldCar) => ({
+        id: car._id || car.id || '',
+        title: car.title || `${car.year || 0} ${car.make || 'Unknown'} ${car.model || 'Unknown'}`,
+        year: car.year || 0,
+        make: car.make || 'Unknown',
+        model: car.model || 'Unknown',
+        imageUrl: car.imageUrl || car.images?.[0] || car.image || car.photos?.[0] || '/placeholder-car.jpg',
+        winningBid: car.highestBid || car.currentBid || car.finalBid || 0,
+        totalBids: car.bids || car.bidCount || car.totalBids || 0,
+        location: car.location || '',
+        noReserve: car.noReserve || false,
+        specs: car.specs || [],
+        approvalStatus: (car.approvalStatus || 'sold') as 'sold' | 'ended',
+        soldDate: car.soldDate || car.auctionEndDate || car.updatedAt,
+      }))
+    : [];
 
   return (
     <div className="bg-black min-h-screen w-full">
@@ -218,14 +260,12 @@ export default function UserHomePage() {
             )}
           </section>
 
-          {/* Recent Sold Cars Section - Now using EndedCarCard */}
+          {/* Recent Sold Cars Section */}
           <section className="mb-12">
             <h2 className="text-2xl font-bold mb-6 text-white">Recently Sold</h2>
-            
             {soldCarsError && (
               <p className="text-red-500">Error loading sold cars: {soldCarsError.message}</p>
             )}
-            
             {soldCarsLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {renderSoldCarSkeletons()}
@@ -233,10 +273,7 @@ export default function UserHomePage() {
             ) : recentSoldCars.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {recentSoldCars.map((car) => (
-                  <EndedCarCard 
-                    key={car.id} 
-                    {...car}
-                  />
+                  <EndedCarCard key={car.id} {...car} />
                 ))}
               </div>
             ) : (

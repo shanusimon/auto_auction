@@ -1,4 +1,3 @@
-// src/components/admin/AdminDashboard.tsx
 import { useState } from 'react';
 import Sidebar from '@/components/admin/Sidebar';
 import Header from '@/components/admin/Header';
@@ -12,9 +11,11 @@ import { useDashboardDetails } from '@/hooks/admin/useDashBoardData';
 
 const AdminDashboard: React.FC = () => {
   const [showTransactionModal, setShowTransactionModal] = useState(false);
-  const { data, loading, error } = useDashboardDetails();
 
-  // Debug error
+
+  const { data, isLoading, error } = useDashboardDetails();
+
+
   if (error) {
     console.error('Dashboard error:', error);
   }
@@ -66,22 +67,26 @@ const AdminDashboard: React.FC = () => {
             CustomersCount={data?.CustomersCount || 0}
             approvedSellers={data?.approvedSellers || 0}
             carRegistered={data?.carRegistered || 0}
-            loading={loading}
-            error={error}
+            loading={isLoading}   
+          error={error ? error.message : null}
             previousMonthData={previousMonthData}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <RevenueChart />
-            <AuctionAnalytics stats={data?.stats || []} loading={loading} error={error} />
+            <AuctionAnalytics
+              stats={data?.stats || []}
+              loading={isLoading}   
+          error={error ? error.message : null}
+            />
           </div>
 
           <TransactionHistoryModal
             open={showTransactionModal}
             onOpenChange={setShowTransactionModal}
             transactions={data?.transactionHistory || []}
-            loading={loading}
-            error={error}
+            loading={isLoading}   
+      error={error ? error.message : null}
           />
         </main>
       </div>

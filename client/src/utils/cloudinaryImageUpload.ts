@@ -1,7 +1,9 @@
 import axios from "axios";
-
-
-export const uploadProfileImageCloudinary = async(file:File):Promise<string | null>=>{
+type CloudinaryUploadResponse = {
+  secure_url: string;
+  public_id?: string;
+};
+export const uploadProfileImageCloudinary = async(file:File):Promise<CloudinaryUploadResponse | null>=>{
     const CLOUDINARY_CLOUD_PRESET =import.meta.env.VITE_CLOUDINARY_PROFILE_UPLOAD_PRESET;
     const CLOUDINARY_CLOUD_NAME  = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 

@@ -9,9 +9,10 @@ import { toast } from 'sonner';
 import CarCard from '@/components/cars/Car';
 import CarCardSkeleton from '@/components/cars/CarCardSkeleton';
 import AuctionSocket from '@/services/webSocket/webSockeService';
-import { Car } from '@/types/Types';
+import { useAuctionEnd } from '@/hooks/user/useAuctionEnd';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { CarFilterReturn } from '@/types/CarFormTypes';
 
 interface BidPayload {
   success: boolean;
@@ -40,14 +41,14 @@ const Community: React.FC = () => {
 
   const { mutateAsync: createPost } = useAddPost();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+const { mutate: endAuction } = useAuctionEnd();
 
   const { data: cars, isLoading: isCarsLoading } = useCars({
     sort: 'ending-soon',
     limit: 4,
   });
 
-  const [allCars, setAllCars] = useState<Car[]>([]);
+  const [allCars, setAllCars] = useState<CarFilterReturn[]>([]);
   const [newsArticles, setNewsArticles] = useState<NewsArticle[]>([]);
   const [isNewsLoading, setIsNewsLoading] = useState(false);
   const [newsError, setNewsError] = useState<string | null>(null);
@@ -184,7 +185,7 @@ const Community: React.FC = () => {
                   onClick={() => handleCarClick(car.id)}
                   className="cursor-pointer transition-transform hover:scale-105"
                 >
-                  <CarCard {...car} />
+                  <CarCard {...car}  endAuction={endAuction}/>
                 </div>
               ))
             ) : (

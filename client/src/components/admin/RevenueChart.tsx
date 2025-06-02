@@ -1,14 +1,30 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+} from 'recharts';
 import { useGetDashboardRevenue } from '@/hooks/admin/useGetRevenue';
-
 
 const RevenueChart = () => {
   const [timePeriod, setTimePeriod] = useState<'weekly' | 'monthly' | 'yearly'>('monthly');
-  const { data, loading, error, refetch } = useGetDashboardRevenue(timePeriod);
+  const { data, isLoading, isError, error, refetch } = useGetDashboardRevenue(timePeriod);
 
   const chartConfig = {
     revenue: {
@@ -25,10 +41,12 @@ const RevenueChart = () => {
         <CardTitle>Revenue Overview</CardTitle>
         <Select
           value={timePeriod}
-          onValueChange={(value: 'weekly' | 'monthly' | 'yearly') => setTimePeriod(value)}
+          onValueChange={(value) =>
+            setTimePeriod(value as 'weekly' | 'monthly' | 'yearly')
+          }
         >
           <SelectTrigger className="w-32">
-            <SelectValue />
+            <SelectValue placeholder="Select period" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="weekly">Weekly</SelectItem>
@@ -37,23 +55,27 @@ const RevenueChart = () => {
           </SelectContent>
         </Select>
       </CardHeader>
+
       <CardContent>
-        {loading && <p className="text-center text-gray-500">Loading...</p>}
-        {error && (
+        {isLoading && <p className="text-center text-gray-500">Loading...</p>}
+
+        {isError && (
           <div className="text-center">
-            <p className="text-red-500">{error}</p>
+            <p className="text-red-500">{error?.message || 'Something went wrong'}</p>
             <button
               className="mt-2 text-blue-500 underline hover:text-blue-700"
-              onClick={refetch}
+              onClick={() => refetch()}
             >
               Retry
             </button>
           </div>
         )}
-        {!loading && !error && chartData.length === 0 && (
+
+        {!isLoading && !isError && chartData.length === 0 && (
           <p className="text-center text-gray-500">No revenue data available</p>
         )}
-        {!loading && !error && chartData.length > 0 && (
+
+        {!isLoading && !isError && chartData.length > 0 && (
           <ChartContainer config={chartConfig} className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>

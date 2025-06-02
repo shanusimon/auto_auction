@@ -3,11 +3,11 @@ import { ChevronLeft, ChevronRight, ArrowRight, Car as CarIcon } from 'lucide-re
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useCars } from '@/hooks/user/useGetCars';
-import { Car } from '@/types/Types';
+import { CarFilterReturn } from '@/types/CarFormTypes';
 
 const FeaturedCarCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [featuredCars, setFeaturedCars] = useState<Car[]>([]);
+  const [featuredCars, setFeaturedCars] = useState<CarFilterReturn[]>([]);
   const [isTransitioning, setIsTransitioning] = useState(false);
   
   const { data: cars, isLoading, error } = useCars({

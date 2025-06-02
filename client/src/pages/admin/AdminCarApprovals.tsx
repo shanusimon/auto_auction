@@ -18,7 +18,7 @@ const CarApprovals: React.FC = () => {
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10;
-  const {mutate: updateCarStatus,isPending} = useUpdateCarStatus();
+  const {mutate: updateCarStatus} = useUpdateCarStatus();
   
   useEffect(() => {
     const handler = debounce(() => setDebouncedSearch(searchQuery), 300);

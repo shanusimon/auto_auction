@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { auctionEnd } from "@/services/user/userServices";
-import { toast } from "sonner";
 
 export const useAuctionEnd = () => {
   const queryClient = useQueryClient();
@@ -18,19 +17,19 @@ export const useAuctionEnd = () => {
           refetchType: "active",
         });
         const message = data.auctionStatus === "sold" ? "Car sold successfully" : "Auction ended successfully";
-        toast.success(message);
+        console.log(message);
       } else {
-        toast.error(data.message || "Failed to end auction");
+        console.log(data.message || "Failed to end auction");
       }
     },
     onError: (error: any) => {
       console.error("Error ending auction:", error);
       if (error.message.includes("already ended")) {
-        toast.info("Auction has already ended");
+         console.error("Auction has already ended");
       } else if (error.message.includes("not found")) {
-        toast.error("Car not found");
+         console.error("Car not found");
       } else {
-        toast.error(error.message || "Failed to process auction end");
+       console.error(error.message || "Failed to process auction end");
       }
     },
   });

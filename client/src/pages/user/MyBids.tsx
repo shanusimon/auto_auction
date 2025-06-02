@@ -15,18 +15,51 @@ import { toast } from 'sonner';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
+
+interface CarDetails {
+  _id: string;
+  year: number;
+  make: string;
+  model: string;
+  highestBid: number;
+  auctionEndTime: string;
+}
+
+interface SellerDetails {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  profileImage?: string;
+}
+
+interface Bid {
+  _id: string;
+  amount: number;
+  createdAt: string;
+  carId: CarDetails | null;
+}
+
+interface WonAuction {
+  _id: string;
+  amount: number;
+  platformCharge: number;
+  paymentStatus: 'succeeded' | 'pending';
+  carId: CarDetails | null;
+  sellerId: SellerDetails | null;
+}
+
+type BidStatus = 'active' | 'outbid' | 'won' | 'unknown';
+
 const MyBids: React.FC = () => {
-  // State management
-  const [selectedCar, setSelectedCar] = useState<any>(null);
+  const [selectedCar, setSelectedCar] = useState<CarDetails | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isPaymentLoading, setIsPaymentLoading] = useState<string | null>(null);
-
 
   const { data: bids, isLoading: bidsLoading, isError: bidsError } = useGetAllBids();
   const { data: wonAuction, isLoading: wonAuctionLoading, isError: wonAuctionError } = useWonAuction();
 
-
-  const getBidStatus = (bid: any) => {
+  const getBidStatus = (bid: Bid): BidStatus => {
     if (!bid.carId || !bid.carId.highestBid) return 'unknown';
 
     if (bid.carId.auctionEndTime && new Date(bid.carId.auctionEndTime) < new Date()) {
@@ -36,7 +69,7 @@ const MyBids: React.FC = () => {
     return bid.amount >= bid.carId.highestBid ? 'active' : 'outbid';
   };
 
-  const formatTimeAgo = (timestamp: string) => {
+  const formatTimeAgo = (timestamp: string): string => {
     if (!timestamp) return 'Unknown';
 
     const now = new Date();
@@ -52,7 +85,7 @@ const MyBids: React.FC = () => {
     return 'Just now';
   };
 
-  const renderBidStatus = (status: string) => {
+  const renderBidStatus = (status: BidStatus): React.JSX.Element => {
     switch (status) {
       case 'active':
         return <span className="text-[#3BE188] font-medium">Active</span>;
@@ -65,51 +98,60 @@ const MyBids: React.FC = () => {
     }
   };
 
-  const handleViewCar = (bid: any) => {
-    setSelectedCar(bid.carId);
-    setIsDetailOpen(true);
+  const handleViewCar = (bid: Bid): void => {
+    if (bid.carId) {
+      setSelectedCar(bid.carId);
+      setIsDetailOpen(true);
+    }
   };
 
- const handlePayment = async (auctionId: string) => {
-  setIsPaymentLoading(auctionId);
-  try {
-    const response = await createCheckOut(auctionId);
-    console.log(response);
-
-    const sessionId = response.data.sessionId;
-
-    const stripe = await stripePromise;
-    if (!stripe) {
-      throw new Error('Stripe failed to initialize');
+  const handleWonAuctionViewCar = (auction: WonAuction): void => {
+    if (auction.carId) {
+      setSelectedCar(auction.carId);
+      setIsDetailOpen(true);
     }
+  };
 
-    const { error } = await stripe.redirectToCheckout({ sessionId });
-    if (error) {
-      throw new Error(error.message);
+  const handlePayment = async (auctionId: string): Promise<void> => {
+    setIsPaymentLoading(auctionId);
+    try {
+      const response = await createCheckOut(auctionId);
+      console.log(response);
+
+      const sessionId = response.data.sessionId;
+
+      const stripe = await stripePromise;
+      if (!stripe) {
+        throw new Error('Stripe failed to initialize');
+      }
+
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+      if (error) {
+        throw new Error(error.message);
+      }
+    } catch (error: any) {
+      console.error('Payment initiation error:', error);
+      toast.error(error.message || 'Failed to initiate payment');
+    } finally {
+      setIsPaymentLoading(null);
     }
-  } catch (error: any) {
-    console.error('Payment initiation error:', error);
-    toast.error(error.message || 'Failed to initiate payment');
-  } finally {
-    setIsPaymentLoading(null);
-  }
-};
+  };
 
   // Loading state
   if (bidsLoading || wonAuctionLoading) {
     return (
       <>
-    <Header/>
-      <div className="flex h-screen bg-zinc-900">
-        <UserSidebar />
-        <div className="flex-1 p-8 flex items-center justify-center">
-          <div className="flex items-center space-x-3 text-white">
-            <Loader2 size={24} className="animate-spin text-[#3BE188]" />
-            <span className="text-lg">Loading your bids...</span>
+        <Header/>
+        <div className="flex h-screen bg-zinc-900">
+          <UserSidebar />
+          <div className="flex-1 p-8 flex items-center justify-center">
+            <div className="flex items-center space-x-3 text-white">
+              <Loader2 size={24} className="animate-spin text-[#3BE188]" />
+              <span className="text-lg">Loading your bids...</span>
+            </div>
           </div>
         </div>
-      </div>
-            </>
+      </>
     );
   }
 
@@ -138,11 +180,10 @@ const MyBids: React.FC = () => {
   }
 
   // Process data
-  const bidsList = bids?.data || [];
-  const wonAuctionsList = wonAuction?.data || [];
+  const bidsList: Bid[] = bids?.data || [];
+  const wonAuctionsList: WonAuction[] = wonAuction?.data || [];
 
   const activeBids = bidsList.filter(bid => getBidStatus(bid) === 'active');
-  const outbidBids = bidsList.filter(bid => getBidStatus(bid) === 'outbid');
   const otherBids = bidsList.filter(bid => getBidStatus(bid) !== 'active' && getBidStatus(bid) !== 'won');
 
   return (
@@ -396,10 +437,7 @@ const MyBids: React.FC = () => {
                                         size="sm"
                                         variant="ghost"
                                         className="hover:bg-zinc-600 text-gray-200 flex-1"
-                                        onClick={() => {
-                                          setSelectedCar(auction.carId);
-                                          setIsDetailOpen(true);
-                                        }}
+                                        onClick={() => handleWonAuctionViewCar(auction)}
                                         disabled={!auction.carId}
                                       >
                                         <ExternalLink size={16} className="mr-1" />

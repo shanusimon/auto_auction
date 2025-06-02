@@ -105,19 +105,32 @@ export interface CarFilterReturn {
   year: number;
   make: string;
   model: string;
-  imageUrl: string;
+  imageUrl: string; 
   currentBid: number;
-  timeRemaining: string;
+  timeRemaining: string; 
   bids: number;
   location?: string;
   noReserve?: boolean;
-  specs?: string[];
+  images?: { url: string }[]; 
+  image?: string; 
+  description?: string;
+  mileage?: number | string; 
+  transmission?: string; 
+  fuel?: string;
+  timeLeft?: string; 
+  auctionEndTime: string; 
+  approvalStatus: 'pending' | 'approved' | 'rejected' | 'sold' | 'ended';
+  specs?: string[]; 
 }
 
 type CommentType = {
   _id: string;
   carId: string;
-  userId: { id: string; name?: string }; // adjust structure based on your real user object
+  userId: {
+    id: string;
+    name?: string;
+    profileImage?: string; 
+  };
   content: string;
   parentId: string | null;
   likes: any[];
@@ -126,13 +139,19 @@ type CommentType = {
   type?: 'comment';
 };
 
+
 type BidType = {
   _id: string;
   carId: string;
-  userId: { id: string; name?: string }; // adjust structure
+  userId: {
+    id: string;
+    name?: string;
+    profileImage?: string; 
+  };
   amount: number;
   depositHeld: number;
-  timestamp: string;
+  createdAt: string;
+  updatedAt: string;
   status: string;
   type?: 'bid';
 };

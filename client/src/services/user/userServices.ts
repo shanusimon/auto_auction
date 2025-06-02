@@ -109,7 +109,7 @@ export const getAllBids = async()=>{
 
 export const getSellerStatistics = async()=>{
   const response = await userAxiosInstance.get(`/_us/user/seller-statistics`);
-  return response.data
+  return response.data.data
 }
 
 export const getBidHistory = async(carId:string)=>{

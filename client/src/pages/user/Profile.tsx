@@ -86,7 +86,7 @@ const UserProfile: React.FC = () => {
       if (selectedImage) {
         const response = await uploadProfileImageCloudinary(selectedImage);
         if (response) {
-          imageUrl = response;
+          imageUrl = response.secure_url;
         }
       }
 

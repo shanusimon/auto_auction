@@ -1,6 +1,6 @@
 import { useState,useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Heart, MessageSquare, Share } from 'lucide-react';
+import { Heart, Share } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PostProps as Post } from '@/types/Post.Types';
 import { toast } from 'sonner';

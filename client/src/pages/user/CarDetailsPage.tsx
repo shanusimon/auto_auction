@@ -12,8 +12,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ThumbsUp,
-  Flag,
-  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuctionSocket } from "@/services/webSocket/webSockeService";
@@ -29,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 
 const CarDetailsPage = () => {
   const { carid } = useParams();
-  const { data: carData, isLoading: carLoading, isError: carError, error: carErrorData } = useGetCarDetails(carid);
+  const { data: carData, isLoading: carLoading, isError: carError, error: carErrorData } = useGetCarDetails(carid!);
   const { mutate: getOrCreateConversation} = useConversation();
   const [mainImgIdx, setMainImgIdx] = useState(0);
   const [activeTab, setActiveTab] = useState("newest");
@@ -145,7 +143,7 @@ const CarDetailsPage = () => {
     if (!carid || !socketConnected) return;
 
  
-    const handleBidPlaced = (data) => {
+    const handleBidPlaced = (data:any) => {
       setIsBidding(false);
       if (data.success) {
         toast.success("Bid placed successfully");
@@ -157,7 +155,7 @@ const CarDetailsPage = () => {
       }
     };
 
-    const handleNewBid = (data) => {
+    const handleNewBid = (data:any) => {
       if (data.success) {
         setHighestBid(data.bid.amount);
         if (data.bid.auctionEndTime) {
@@ -167,11 +165,9 @@ const CarDetailsPage = () => {
       }
     };
 
-    console.log('Setting up bid event handlers');
     AuctionSocket.on("bid-placed", handleBidPlaced);
     AuctionSocket.on("new-bid", handleNewBid);
 
-    // Cleanup
     return () => {
       console.log('Removing bid event handlers');
       AuctionSocket.off("bid-placed", handleBidPlaced);
@@ -196,7 +192,7 @@ const CarDetailsPage = () => {
     }
   };
 
-  // Auction timer
+
   useEffect(() => {
     if (!auctionEndTime) return;
 
@@ -226,7 +222,7 @@ const CarDetailsPage = () => {
 
  
   const handleKeyDown = useCallback(
-    (e) => {
+    (e:any) => {
       if (!showImageModal) return;
 
       if (e.key === "ArrowRight" || e.key === "ArrowDown") {
@@ -246,7 +242,7 @@ const CarDetailsPage = () => {
     if (commentInput.trim() !== "") {
       try {
         await addComment({
-          carId: carid,
+          carId: carid!,
           content: commentInput,
         });
         toast.success("Comment posted successfully");
@@ -259,10 +255,10 @@ const CarDetailsPage = () => {
     }
   };
 
-  const handleLikeComment = async (commentId) => {
+  const handleLikeComment = async (commentId:string) => {
     try {
-
       toast.success("Comment liked");
+      console.log(commentId);
       refetchCommentsAndBids(); 
     } catch (error) {
       console.error("Error liking comment:", error);
@@ -523,8 +519,7 @@ const CarDetailsPage = () => {
     setMainImgIdx((prev) => (prev - 1 + car.images.length) % car.images.length);
   };
 
-  // Format date for display
-  const formatDate = (dateString) => {
+  const formatDate = (dateString:string) => {
     const date = new Date(dateString);
     return date.toLocaleString();
   };
@@ -573,7 +568,7 @@ const CarDetailsPage = () => {
             </div>
 
             <div className="flex gap-2 md:gap-3 overflow-x-auto pb-2 px-1">
-              {car.images.map((src, idx) => (
+              {car.images.map((src:string, idx:number) => (
                 <div
                   key={idx}
                   onClick={() => setMainImgIdx(idx)}
@@ -816,7 +811,7 @@ const CarDetailsPage = () => {
                           <span>{item.likes?.length || 0}</span>
                         </span>
                         <button
-                          onClick={() => handleLikeComment(item.id)}
+                          onClick={() => handleLikeComment(item._id)}
                           className="flex items-center gap-1 cursor-pointer hover:text-white"
                         >
                           <ThumbsUp className="w-4 h-4" />
@@ -935,7 +930,7 @@ const CarDetailsPage = () => {
                   <ChevronRight className="w-8 h-8" />
                 </button>
                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-2 bg-black/60 rounded-full px-4 py-2">
-                  {car.images.map((_, idx) => (
+                  {car.images.map((_img:string, idx:number) => (
                     <button
                       key={idx}
                       onClick={() => setMainImgIdx(idx)}

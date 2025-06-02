@@ -6,7 +6,7 @@ export const useToggleLike = () => {
 
   return useMutation({
     mutationFn: (postId: string) => addOrRemoveLike(postId),
-    onSuccess: (_, postId) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allPosts'] });
     },
     onError: (error) => {
