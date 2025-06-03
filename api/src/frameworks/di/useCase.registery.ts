@@ -122,6 +122,10 @@ import { IGetDashboardRevenueUseCase } from "../../entities/useCaseInterfaces/ad
 import { getDashBoardRevenueUseCase } from "../../useCases/admin/GetDashboardRevenue";
 import { IGetAdminDashBoardUseCase } from "../../entities/useCaseInterfaces/admin/IGetAdminDashboardUseCase";
 import { getAdminDashboadUseCase } from "../../useCases/admin/AdminDashBoardUseCase";
+import { config } from "../../shared/config";
+
+console.log('resolver.ts: Initializing dependency registration');
+console.log('resolver.ts: STRIPE_SECRET_KEY:', config.stripe.STRIPE_SECRET_KEY?.substring(0, 10) + '...');
 
 export class UseCaseRegistery {
   static registerUseCases(): void {
