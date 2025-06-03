@@ -11,14 +11,16 @@ export class StripeService implements IPaymentService {
   private apiKey: string;
 
   constructor() {
-    this.apiKey = config.stripe.STRIPE_SECRET_KEY || "";
-    console.log('StripeService: API Key:', this.apiKey?.substring(0, 10) + '...');
-    if (!this.apiKey) {
+    
+    this.apiKey = config.stripe.STRIPE_SECRET_KEY!;
+     if (!this.apiKey) {
       throw new CustomError(
         'Stripe API key is missing or undefined',
         HTTP_STATUS.INTERNAL_SERVER_ERROR
       );
     }
+    console.log('StripeService: heyyy API Key:', this.apiKey?.substring(0, 10) + '...');
+ 
     this.stripe = new Stripe(this.apiKey, {
      apiVersion: "2024-06-20",
     });
