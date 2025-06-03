@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import path from "path"
-dotenv.config({path:path.resolve(__dirname,"../../.env")});
+dotenv.config({path:path.resolve(__dirname,"../.env")});
 import * as admin from "firebase-admin";
 
 const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH || path.resolve(__dirname, "../../auto-auction-ce674-firebase-adminsdk-fbsvc-7aa3c3be76.json");
