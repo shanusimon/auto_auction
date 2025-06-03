@@ -23,7 +23,6 @@ export class ClientRepository implements IClientRepository{
 
     async findById(id: any): Promise<IClientEntity | null> {
         const  client = await ClientModel.findById(id).lean();
-        console.log(client);
         if(!client) return null;
 
         return {
@@ -41,7 +40,6 @@ export class ClientRepository implements IClientRepository{
     }
     async findByIdAndUpdateStatus(id: string): Promise<void> {
         const customer = await ClientModel.findById(id);
-        console.log("customer id2",customer)
         if(!customer){
             throw new Error("Customer not found")
         }
@@ -75,9 +73,9 @@ export class ClientRepository implements IClientRepository{
         return updateProfile as ClientProfileResponse
     }
     async findByIdAndUpdatePassword(id: string, hashedPassword: string): Promise<void> {
-        console.log("hello")
+
         const data = await ClientModel.findByIdAndUpdate(id,{password:hashedPassword})
-        console.log(data)
+
     }
     async findBySearchTerm(searchTerm: string): Promise<String[]> {
         const useQuery = {

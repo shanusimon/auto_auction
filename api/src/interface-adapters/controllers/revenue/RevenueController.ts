@@ -28,6 +28,7 @@ export class RevenueController implements IRevenueController{
 async getAdminDashboard(req: Request, res: Response): Promise<void> {
     try {
       const dashboardData = await this.adminDashBoardUseCase.execute();
+      console.log(dashboardData);
       res.status(HTTP_STATUS.OK).json(dashboardData);
     } catch (error) {
       handleErrorResponse(res, error);

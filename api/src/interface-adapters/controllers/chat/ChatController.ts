@@ -313,7 +313,6 @@ export class ChatController implements IChatController {
               message: messagePayload,
             });
 
-            //send notification
             const user1Id = conversation.user1Id._id
               ? conversation.user1Id._id.toString()
               : conversation.user1Id.toString();

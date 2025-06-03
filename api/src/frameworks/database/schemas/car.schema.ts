@@ -102,9 +102,9 @@ export const carSchema = new Schema<ICarEntity>(
     },
     auctionStartTime: { type: Date },
     auctionEndTime: { type: Date },
-    winnerId: { type: Schema.Types.ObjectId, ref: "User" },
+    winnerId: { type: Schema.Types.ObjectId, ref: "Client" },
     highestBid: { type: Number, default: 0 }, 
-    highestBidderId: { type: Schema.Types.ObjectId, ref: "User" }, 
+    highestBidderId: { type: Schema.Types.ObjectId, ref: "Client" }, 
     rejectionReason:{
       type: String,
       default: ""

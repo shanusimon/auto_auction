@@ -201,7 +201,7 @@ export class SellerController implements ISellerController {
       const userId = (req as CustomRequest).user.id;
 
       const data = await this.getSellerStatusUseCase.execute(userId);
-
+      console.log("this is the data",data)
       res.status(200).json({
         success: true,
         message: SUCCESS_MESSAGES.DATA_RETRIEVED,

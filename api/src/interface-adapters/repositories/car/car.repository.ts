@@ -73,7 +73,9 @@ export class CarRepository implements ICarRepository {
   }
 
   async findAllCarsBySellerId(sellerId: string): Promise<ICarEntity[]> {
-    return await CarModel.find({ sellerId }).lean().exec();
+    return await CarModel.find({ sellerId })
+    .populate('highestBidderId',"name")
+    .lean().exec();
   }
 
   async updateRejectionReason(

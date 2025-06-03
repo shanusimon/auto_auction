@@ -25,7 +25,7 @@ export class GetSellerStatistics implements IGetSellerStatisticsUseCase {
     const sellerId = seller?._id?.toString();
 
     const totalListing = await this.carRepository.findCount(sellerId);
-    const cars = await this.carRepository.findAllCarsBySellerId(sellerId);
+      const cars = await this.carRepository.findAllCarsBySellerId(sellerId);
 
     const pendingAuction = [];
     const soldCar = [];
@@ -59,11 +59,17 @@ export class GetSellerStatistics implements IGetSellerStatisticsUseCase {
           const bidCount = await this.bidRepository.countBidsForCar(car._id?.toString() || "");
 
           return {
-            ...((car as unknown as any).toObject()),
+            ...((car as unknown as any)),
             bidCount,
           };
-        })
+        }),
       )
+    const enrichedSoldCars = await Promise.all(
+    soldCar.map(async (car) => {
+      const bidCount = await this.bidRepository.countBidsForCar(car._id?.toString() || "");
+      return { ...(car as any), bidCount };
+    })
+  );
       
     const totalBids = await this.bidRepository.countBidsForSeller(sellerId);
     
@@ -71,7 +77,7 @@ export class GetSellerStatistics implements IGetSellerStatisticsUseCase {
     return {
       totalListing,
       pendingAuction,
-      soldCar,
+      soldCar:enrichedSoldCars,
       rejectedCar,
       activeAuction:activeAuctionwithBidCounts,
       totalBids
