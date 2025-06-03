@@ -20,7 +20,7 @@ export class StripeService implements IPaymentService {
       );
     }
     this.stripe = new Stripe(this.apiKey, {
-     apiVersion: '2025-05-28.basil',
+     apiVersion: "2022-11-15",
     });
   }
 
