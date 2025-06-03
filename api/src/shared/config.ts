@@ -4,6 +4,7 @@ dotenv.config({path:path.resolve(__dirname,"../.env")});
 import * as admin from "firebase-admin";
 
 const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH || path.resolve(__dirname, "../../auto-auction-ce674-firebase-adminsdk-fbsvc-7aa3c3be76.json");
+console.log('config.js: Loaded STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY?.substring(0, 10) + '...');
 
 let serviceAccount: admin.ServiceAccount;
 
