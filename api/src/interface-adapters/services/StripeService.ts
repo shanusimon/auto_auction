@@ -12,6 +12,12 @@ export class StripeService implements IPaymentService {
 
   constructor() {
     this.apiKey = config.stripe.STRIPE_SECRET_KEY || "";
+    if (!this.apiKey) {
+      throw new CustomError(
+        'Stripe API key is missing or undefined',
+        HTTP_STATUS.INTERNAL_SERVER_ERROR
+      );
+    }
     this.stripe = new Stripe(this.apiKey, {
       apiVersion: "2025-02-24.acacia",
     });
