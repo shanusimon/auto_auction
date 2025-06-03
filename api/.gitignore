@@ -1,5 +1,6 @@
 node_modules/
 .env
+*.json
 auto-auction-ce674-firebase-adminsdk-fbsvc-7aa3c3be76.json
 package-lock.json
 dist/
