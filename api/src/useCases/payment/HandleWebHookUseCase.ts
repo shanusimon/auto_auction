@@ -28,7 +28,7 @@ export class WebHookUseCase implements IWebHookUseCase {
     @inject("IBidRepository") private bidRepository: IBidRepository
   ) {
     this.stripe = new Stripe(config.stripe.STRIPE_SECRET_KEY || "", {
-      apiVersion: "2025-02-24.acacia",
+       apiVersion: "2024-06-20",
     });
     this.endpointSecret = config.stripe.STRIPE_WEBHOOK_SECRET || "";
   }
