@@ -5,7 +5,7 @@ import { IBcrypt } from "../security/bcrypt.interface";
 import { PasswordBcrypt } from "../security/password.bcrypt";
 
 //strategy Imports
-import { ClientRegisterStrategy } from "../../useCases/auth/register-strategies/Client-register.strategy";
+import { ClientRegisterStrategy } from "../../useCases/auth/register-strategies/ClientRegisterStrategy";
 import { ClientLoginStrategy } from "../../useCases/auth/login-strategies/ClientLoginStrategy";
 import { AdminLoginStrategy } from "../../useCases/auth/login-strategies/AdminLoginStrategy";
 
