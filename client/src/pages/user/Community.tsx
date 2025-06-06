@@ -11,7 +11,6 @@ import CarCardSkeleton from '@/components/cars/CarCardSkeleton';
 import AuctionSocket from '@/services/webSocket/webSockeService';
 import { useAuctionEnd } from '@/hooks/user/useAuctionEnd';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { CarFilterReturn } from '@/types/CarFormTypes';
 import { userAxiosInstance } from '@/api/clientAxios';
 
