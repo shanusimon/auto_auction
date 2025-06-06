@@ -12,4 +12,5 @@ export interface AuctionWonRepositoryInterface {
   updatePaymentIntentId(auctionId:string,paymentIntendId:string):Promise<IAuctionWonEntity>;
   updateStripeSessionId(auctionId:string,stripeSessionId:string):Promise<void>
   update(auctionId: string, updates: Partial<IAuctionWonEntity>): Promise<IAuctionWonEntity | null>
+findByIdWithoutCarPopulation(auctionId: string): Promise<IAuctionWonEntity | null>;
 }

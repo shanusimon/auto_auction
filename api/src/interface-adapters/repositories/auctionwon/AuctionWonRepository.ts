@@ -63,4 +63,9 @@ async updatePaymentStatus(
     );
     return updated;
   }
+async findByIdWithoutCarPopulation(auctionId: string): Promise<IAuctionWonEntity | null> {
+    return await AuctionWonModel.findById(auctionId)
+      .populate("sellerId", "name email phone profileImage") 
+      .exec();
+  }
 }

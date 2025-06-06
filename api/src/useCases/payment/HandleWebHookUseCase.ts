@@ -126,7 +126,7 @@ export class WebHookUseCase implements IWebHookUseCase {
       );
     }
 
-    const auctionWon = await this.auctionWonRepository.findById(auctionId);
+    const auctionWon = await this.auctionWonRepository.findByIdWithoutCarPopulation(auctionId);
     if (!auctionWon) {
       throw new CustomError(
         `Auction record not found with ID: ${auctionId}`,
@@ -159,7 +159,6 @@ export class WebHookUseCase implements IWebHookUseCase {
         );
       }
 
-      // Store receipt URL
       if (session.payment_intent) {
         const paymentIntent = await this.stripe.paymentIntents.retrieve(
           session.payment_intent as string
@@ -178,8 +177,7 @@ export class WebHookUseCase implements IWebHookUseCase {
 
       let adminWallet = await this.adminWalletRepository.findSingle();
       const commissionAmount = updatedAuctionWon.platformCharge;
-      const carId =auctionWon.carId;
-      console.log("This is the carId",carId,auctionWon)
+      const carId =auctionWon.carId.toString();
       if (!adminWallet) {
         const newAdminWallet = {
           balanceAmount: commissionAmount,
