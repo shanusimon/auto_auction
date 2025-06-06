@@ -46,7 +46,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
     try {
       const now = new Date();
 
-      const car = await this.carRepository.findOneAndUpdate(
+       const car = await this.carRepository.findOneAndUpdate(
         {
           _id: carId,
           approvalStatus: "approved",
@@ -57,9 +57,14 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
             $set: {
               approvalStatus: {
                 $cond: {
-                  if: { $gte: ["$highestBid", { $ifNull: ["$reservedPrice", 0] }] },
-                  then: "sold",
-                  else: "ended",
+                  if: { 
+                    $or: [
+                      { $eq: ["$highestBid", 0] },
+                      { $lt: ["$highestBid", { $ifNull: ["$reservedPrice", 0] }] }
+                    ]
+                  },
+                  then: "ended",
+                  else: "sold",
                 },
               },
             },

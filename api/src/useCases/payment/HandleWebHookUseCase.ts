@@ -179,7 +179,7 @@ export class WebHookUseCase implements IWebHookUseCase {
       let adminWallet = await this.adminWalletRepository.findSingle();
       const commissionAmount = updatedAuctionWon.platformCharge;
       const carId =auctionWon.carId;
-
+      console.log("This is the carId",carId,auctionWon)
       if (!adminWallet) {
         const newAdminWallet = {
           balanceAmount: commissionAmount,
