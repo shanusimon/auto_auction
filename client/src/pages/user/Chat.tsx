@@ -43,6 +43,7 @@ interface Message {
   isRead: boolean;
   type: string;
   imageUrl?: string;
+  isOptimistic?: boolean; // Added to track optimistic messages
 }
 
 class ChatErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
@@ -225,8 +226,24 @@ const ChatPage: React.FC = () => {
           message.sendAt = new Date().toISOString();
         }
         setMessages((prev) => {
+          // Find optimistic message with matching properties
+          const optimisticMatch = prev.find(
+            (m) =>
+              m.isOptimistic &&
+              m.conversationId === message.conversationId &&
+              m.senderId === message.senderId &&
+              m.content === message.content &&
+              Math.abs(new Date(m.sendAt).getTime() - new Date(message.sendAt).getTime()) < 5000 // Within 5 seconds
+          );
+          if (optimisticMatch) {
+            // Replace the optimistic message
+            return prev.map((m) =>
+              m.id === optimisticMatch.id ? { ...message, isOptimistic: false } : m
+            );
+          }
+          // If no optimistic match, append only if message ID doesn't exist
           if (!prev.some((m) => m.id === message.id)) {
-            return [...prev, message];
+            return [...prev, { ...message, isOptimistic: false }];
           }
           return prev;
         });
@@ -321,7 +338,8 @@ const ChatPage: React.FC = () => {
         content: messageInput,
         sendAt: formattedDate,
         isRead: false,
-        type: "text"
+        type: "text",
+        isOptimistic: true // Mark as optimistic
       };
 
       setMessages((prev) => [...prev, optimisticMessage]);
@@ -332,7 +350,7 @@ const ChatPage: React.FC = () => {
         conversationId: activeChatId,
         content: messageInput,
         senderId: currentUserId,
-        type: "text",
+        type: "text"
       });
 
       setMessageInput("");
