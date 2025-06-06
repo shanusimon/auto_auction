@@ -88,7 +88,7 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
               transactionId: session.payment_intent?.toString() || session.id,
               userName: user.name || "Unknown",
               auctionId: updatedAuctionWon._id!.toString(),
-              carId: updatedAuctionWon.carId.toString(),
+              carId: auctionWon._id!,
               amountReceived: updatedAuctionWon.amount,
               commissionAmount,
               timeStamp: new Date(),
