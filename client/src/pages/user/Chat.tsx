@@ -189,24 +189,29 @@ const ChatPage: React.FC = () => {
     AuctionSocket.on("newMessage", ({ message }) => {
       console.log("Received newMessage:", message);
       if (!message || !message.content) {
-        console.error("Received invalid message in newMessage event:", message);
+        console.error("Invalid message in newMessage event:", message);
         return;
       }
       if (!message.sendAt) {
         message.sendAt = new Date().toISOString();
       }
-      if (message.senderId !== currentUserId) {
-        setMessages((prev) => {
-          const messageExists = prev.some((m) => m.id === message.id);
-          if (!messageExists) {
-            return [...prev, message];
-          }
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === message.id)) {
           return prev;
-        });
+        }
+        if (message.senderId === currentUserId) {
+          return prev; // Skip current user's messages, handled by messageSent
+        }
+        if (message.conversationId === activeChatId) {
+          return [...prev, message];
+        }
+        return prev;
+      });
+      if (message.senderId !== currentUserId) {
         setConversations((prev) =>
           prev.map((conv) =>
             conv.id === message.conversationId
-              ? { ...conv, lastMessage: message.content, time: message.sendAt }
+              ? { ...conv, lastMessage: message.type === "image" ? "Sent an image" : message.content, time: message.sendAt }
               : conv
           )
         );
@@ -220,22 +225,10 @@ const ChatPage: React.FC = () => {
           message.sendAt = new Date().toISOString();
         }
         setMessages((prev) => {
-          const tempMessage = prev.find(
-            (m) =>
-              m.id.startsWith("temp-") &&
-              ((m.type === "text" && m.content === message.content) ||
-               (m.type === "image" && m.imageUrl === message.imageUrl)) &&
-              m.senderId === currentUserId
-          );
-          if (tempMessage) {
-            return prev.map((m) => (m.id === tempMessage.id ? message : m));
-          } else {
-            const messageExists = prev.some((m) => m.id === message.id);
-            if (!messageExists) {
-              return [...prev, message];
-            }
-            return prev;
+          if (!prev.some((m) => m.id === message.id)) {
+            return [...prev, message];
           }
+          return prev;
         });
         const displayContent = message.type === "image" ? "Sent an image" : message.content;
         setConversations((prev) =>
@@ -246,7 +239,6 @@ const ChatPage: React.FC = () => {
           )
         );
       } else {
-        setMessages((prev) => prev.filter((m) => !m.id.startsWith("temp-")));
         toast.error("Failed to send message. Please try again.");
       }
     });
@@ -262,6 +254,9 @@ const ChatPage: React.FC = () => {
     });
 
     return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
       AuctionSocket.off("connect");
       AuctionSocket.off("disconnect");
       AuctionSocket.off("conversationsList");
@@ -275,7 +270,7 @@ const ChatPage: React.FC = () => {
       clearInterval(pingInterval);
       disconnectSocket();
     };
-  }, [currentUserId, navigate]);
+  }, [currentUserId, navigate, activeChatId]);
 
   useEffect(() => {
     if (!currentUserId) return;
@@ -361,6 +356,10 @@ const ChatPage: React.FC = () => {
       return;
     }
 
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+
     setSelectedFile(file);
     const previewUrl = URL.createObjectURL(file);
     setImagePreview(previewUrl);
@@ -381,32 +380,10 @@ const ChatPage: React.FC = () => {
     }
 
     setIsUploading(true);
-    const tempId = `temp-${Date.now()}`;
-    const now = new Date();
-    const formattedDate = now.toISOString();
 
     try {
-      const optimisticMessage = {
-        id: tempId,
-        conversationId: activeChatId,
-        senderId: currentUserId,
-        content: "Sending image...",
-        imageUrl: imagePreview || "",
-        sendAt: formattedDate,
-        isRead: false,
-        type: "image"
-      };
-
-      setMessages((prev) => [...prev, optimisticMessage]);
-
-      let imageData;
-      try {
-        imageData = await uploadProfileImageCloudinary(selectedFile);
-        console.log("Cloudinary response:", imageData);
-      } catch (uploadError) {
-        console.error("Cloudinary upload error:", uploadError);
-        throw new Error("Failed to upload image to cloud storage");
-      }
+      const imageData = await uploadProfileImageCloudinary(selectedFile);
+      console.log("Cloudinary response:", imageData);
 
       let imageUrl;
       if (typeof imageData === 'string') {
@@ -448,7 +425,6 @@ const ChatPage: React.FC = () => {
       const errorMessage = error instanceof Error ? error.message : "Unknown error during image upload";
       console.error("Error uploading image:", error);
       toast.error(`Failed to upload image: ${errorMessage}`);
-      setMessages((prev) => prev.filter((m) => m.id !== tempId));
     } finally {
       setIsUploading(false);
     }
@@ -548,25 +524,19 @@ const ChatPage: React.FC = () => {
                             <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-zinc-900 animate-pulse"></div>
                           )}
                         </div>
-
                         <div className="flex-1">
                           <div className="flex justify-between">
                             <span className="font-medium">{conversation.name}</span>
                             <span className="text-xs text-zinc-400">
-                              {conversation && conversation.time ? (
-                                new Date(conversation.time).toString() !== "Invalid Date" ?
-                                new Date(conversation.time).toLocaleTimeString([], {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                }) : 
-                                new Date().toLocaleTimeString([], {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })
-                              ) : new Date().toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
+                              {conversation.time && new Date(conversation.time).toString() !== "Invalid Date"
+                                ? new Date(conversation.time).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })
+                                : new Date().toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
                             </span>
                           </div>
                           <div className="flex justify-between mt-1">
@@ -624,98 +594,82 @@ const ChatPage: React.FC = () => {
                           )}
                         </div>
                       </div>
-                      <div className="flex gap-4">
+                      <div className="flex gap-2">
                         <button className="text-zinc-400 hover:text-white transition-all duration-200 hover:scale-110">
                           <MoreVertical className="h-5 w-5" />
                         </button>
                       </div>
                     </div>
 
-                    <div
-                      className="flex-1 p-4 bg-gradient-to-b from-black to-zinc-900 overflow-y-auto"
-                    >
+                    <div className="flex-1 p-4 bg-gradient-to-b from-black to-zinc-900 overflow-y-auto">
                       <div className="flex flex-col gap-4 pb-2">
-                        {messages.length > 0 ? messages.map((message) => (
-                          <div
-                            key={message.id}
-                            className={`flex ${
-                              message.senderId === currentUserId ? "justify-end" : "justify-start"
-                            }`}
-                          >
+                        {messages.length > 0 ? (
+                          messages.map((message) => (
                             <div
-                              className={`max-w-[80%] rounded-lg overflow-hidden ${
-                                message.senderId === currentUserId
-                                  ? "bg-[#3BE188] text-black"
-                                  : "bg-zinc-800 text-white"
-                              } shadow-lg`}
+                              key={message.id}
+                              className={`flex ${
+                                message.senderId === currentUserId ? "justify-end" : "justify-start"
+                              }`}
                             >
-                              {message.type === "image" ? (
-                                <div className="max-w-sm">
-                                  {message.id.startsWith('temp-') && !message.imageUrl ? (
-                                    <div className="bg-zinc-700 h-48 w-64 flex items-center justify-center">
-                                      <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
-                                    </div>
-                                  ) : (
-                                    <img 
-                                      src={message.imageUrl || ""} 
-                                      alt="Chat image" 
+                              <div
+                                className={`max-w-[80%] rounded-lg overflow-hidden ${
+                                  message.senderId === currentUserId
+                                    ? "bg-[#3BE188] text-black"
+                                    : "bg-zinc-800 text-white"
+                                } shadow-lg`}
+                              >
+                                {message.type === "image" ? (
+                                  <div className="max-w-sm">
+                                    <img
+                                      src={message.imageUrl || ""}
+                                      alt="Chat image"
                                       className="w-full h-auto max-h-64 object-contain"
                                       onError={(e) => {
                                         (e.target as HTMLImageElement).src = "/placeholder-image.jpg";
                                       }}
                                     />
-                                  )}
-                                  <div className="px-3 py-2">
+                                    <div className="px-3 py-2">
+                                      <div
+                                        className={`text-xs ${
+                                          message.senderId === currentUserId ? "text-black/60" : "text-zinc-400"
+                                        }`}
+                                      >
+                                        {message.sendAt && new Date(message.sendAt).toString() !== "Invalid Date"
+                                          ? new Date(message.sendAt).toLocaleTimeString([], {
+                                              hour: "2-digit",
+                                              minute: "2-digit",
+                                            })
+                                          : new Date().toLocaleTimeString([], {
+                                              hour: "2-digit",
+                                              minute: "2-digit",
+                                            })}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="px-4 py-2">
+                                    <div>{message.content}</div>
                                     <div
-                                      className={`text-xs ${
+                                      className={`text-xs mt-1 ${
                                         message.senderId === currentUserId ? "text-black/60" : "text-zinc-400"
                                       }`}
                                     >
-                                      {message && message.sendAt ? (
-                                        new Date(message.sendAt).toString() !== "Invalid Date" ? 
-                                          new Date(message.sendAt).toLocaleTimeString([], {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                          }) : 
-                                          new Date().toLocaleTimeString([], {
+                                      {message.sendAt && new Date(message.sendAt).toString() !== "Invalid Date"
+                                        ? new Date(message.sendAt).toLocaleTimeString([], {
                                             hour: "2-digit",
                                             minute: "2-digit",
                                           })
-                                      ) : new Date().toLocaleTimeString([], {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })}
+                                        : new Date().toLocaleTimeString([], {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                          })}
                                     </div>
                                   </div>
-                                </div>
-                              ) : (
-                                <div className="px-4 py-2">
-                                  <div>{message.content}</div>
-                                  <div
-                                    className={`text-xs mt-1 ${
-                                      message.senderId === currentUserId ? "text-black/60" : "text-zinc-400"
-                                    }`}
-                                  >
-                                    {message && message.sendAt ? (
-                                      new Date(message.sendAt).toString() !== "Invalid Date" ? 
-                                        new Date(message.sendAt).toLocaleTimeString([], {
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                        }) : 
-                                        new Date().toLocaleTimeString([], {
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                        })
-                                    ) : new Date().toLocaleTimeString([], {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })}
-                                  </div>
-                                </div>
-                              )}
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        )) : (
+                          ))
+                        ) : (
                           <div className="flex justify-center items-center h-full text-zinc-400">
                             No messages yet. Start the conversation!
                           </div>
@@ -727,12 +681,12 @@ const ChatPage: React.FC = () => {
                     {imagePreview && (
                       <div className="p-3 bg-zinc-800 border-t border-zinc-700">
                         <div className="relative inline-block">
-                          <img 
-                            src={imagePreview} 
-                            alt="Selected image" 
+                          <img
+                            src={imagePreview}
+                            alt="Selected image"
                             className="h-24 w-auto rounded-md object-cover border border-zinc-600"
                           />
-                          <button 
+                          <button
                             onClick={handleCancelImage}
                             className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 hover:bg-red-600 transition-colors"
                             disabled={isUploading}
@@ -755,7 +709,7 @@ const ChatPage: React.FC = () => {
                           />
                           <Button
                             onClick={() => fileInputRef.current?.click()}
-                            className="mr-2 bg-zinc-800 hover:bg-zinc-700 text-white h-[40px] w-[40px] p-2 transition-all rounded-lg flex-shrink-0"
+                            className="mr-2 bg-zinc-800 hover:bg-zinc-700 text-white h-[40px] w-[40px] p-2 rounded-lg flex-shrink-0 transition-all duration-200"
                             disabled={isUploading || !!imagePreview}
                           >
                             {isUploading ? (
@@ -764,30 +718,29 @@ const ChatPage: React.FC = () => {
                               <ImageIcon className="h-5 w-5" />
                             )}
                           </Button>
-                          
                           {messageInput.length > 50 ? (
                             <Textarea
-                              placeholder="Type a message"
+                              placeholder="Type a message..."
                               value={messageInput}
                               onChange={(e) => setMessageInput(e.target.value)}
                               onKeyDown={handleKeyDown}
                               disabled={isUploading}
-                              className="flex-1 bg-zinc-800 border-zinc-700 text-white min-h-[80px] rounded-r-none transition-all focus:ring-1 focus:ring-[#3BE188]"
+                              className="flex-1 bg-zinc-800 border-zinc-700 text-white min-h-[80px] rounded-r-none transition-all duration-200 focus:ring-1 focus:ring-[#3BE188]"
                             />
                           ) : (
                             <Input
-                              placeholder="Type a message"
+                              placeholder="Type a message..."
                               value={messageInput}
                               onChange={(e) => setMessageInput(e.target.value)}
                               onKeyDown={handleKeyDown}
                               disabled={isUploading}
-                              className="flex-1 bg-zinc-800 border-zinc-700 text-white rounded-r-none transition-all focus:ring-1 focus:ring-[#3BE188]"
+                              className="flex-1 bg-zinc-800 border-zinc-700 text-white rounded-r-none transition-all duration-200 focus:ring-1 focus:ring-[#3BE188]"
                             />
                           )}
                           <Button
                             onClick={handleSendMessage}
                             disabled={(messageInput.trim() === "" && !imagePreview) || isUploading}
-                            className="ml-0 bg-[#3BE188] hover:bg-[#32BA72] text-black rounded-l-none h-[40px] px-4 transition-all hover:translate-x-1"
+                            className="ml-0 bg-[#3BE188] hover:bg-[#32BA72] text-black rounded-l-none h-[40px] px-4 transition-all duration-200 hover:shadow-md"
                           >
                             {isUploading ? (
                               <Loader2 className="h-5 w-5 animate-spin" />
