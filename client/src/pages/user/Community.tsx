@@ -32,6 +32,7 @@ interface NewsArticle {
 }
 
 const Community: React.FC = () => {
+  const NEWS_API = import.meta.env.VITE_NEWS_API
   const navigate = useNavigate();
   const {
     data: posts,
@@ -64,7 +65,7 @@ const { mutate: endAuction } = useAuctionEnd();
             sortBy: 'publishedAt',
             language: 'en',
             pageSize: 7,
-            apiKey: '7c95d4071eaa40f3a084861df692d4c6',
+            apiKey: NEWS_API,
           },
         });
         setNewsArticles(response.data.articles);
