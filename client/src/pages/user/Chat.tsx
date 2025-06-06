@@ -412,7 +412,7 @@ const ChatPage: React.FC = () => {
       if (typeof imageData === 'string') {
         imageUrl = imageData;
       } else if (typeof imageData === 'object' && imageData !== null) {
-        imageUrl = imageData.secure_url;
+        imageUrl = imageData;
       } else {
         console.error("Invalid response from image upload:", imageData);
         throw new Error("Invalid response from image upload service");
