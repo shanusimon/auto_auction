@@ -16,6 +16,21 @@ import { IUpdatePasswordUseCase } from "../../../entities/useCaseInterfaces/user
 import { IIsSellerUseCase } from "../../../entities/useCaseInterfaces/user/IIsSellerUseCase";
 import { ISaveFCMTokenUseCase } from "../../../entities/useCaseInterfaces/user/ISaveFcmTokenUseCase";
 import { CustomError } from "../../../entities/utils/custom.error";
+import { config } from "../../../shared/config";
+import axios from "axios";
+
+interface NewsArticle {
+  title: string;
+  source: { name: string };
+  url: string;
+  publishedAt: string;
+}
+
+interface NewsApiResponse {
+  status: string;
+  totalResults: number;
+  articles: NewsArticle[];
+}
 
 @injectable()
 export class UserController implements IUserController {
@@ -32,6 +47,40 @@ export class UserController implements IUserController {
     @inject("SaveFCMTokenUseCase")
     private saveFcmTokenUsecase: ISaveFCMTokenUseCase
   ) {}
+
+ // Get news
+  async getNews(req: Request, res: Response): Promise<void> {
+    try {
+      const NEWS_API_KEY = config.news?.NEWS_API_KEY;
+      if (!NEWS_API_KEY) {
+        throw new CustomError(
+                    "News API key is not configured",
+          HTTP_STATUS.INTERNAL_SERVER_ERROR,
+
+        );
+      }
+
+      const response = await axios.get<NewsApiResponse>("https://newsapi.org/v2/everything", {
+        params: {
+          q: '"car" OR "automobile" OR "vehicle" OR "electric car" OR "EV" OR "car industry"',
+          domains: "autoexpress.co.uk",
+          sortBy: "publishedAt",
+          language: "en",
+          pageSize: 7,
+          apiKey: NEWS_API_KEY,
+        },
+      });
+
+      const articles: NewsArticle[] = response.data.articles;
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        message: SUCCESS_MESSAGES.ACTION_SUCCESS,
+        data: articles,
+      });
+    } catch (error) {
+      handleErrorResponse(res, error);
+    }
+  }
 
   //*                  🛠️ Get Users
 

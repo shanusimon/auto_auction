@@ -309,5 +309,12 @@ export class ClientRoutes extends BaseRoute {
       }
     );
 
+    //news api
+    this.router.get(
+      "/user/news",
+      (req:Request,res:Response)=>{
+        userController.getNews(req,res);
+      }
+    )
   }
 }

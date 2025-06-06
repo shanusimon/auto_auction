@@ -55,5 +55,8 @@ export const config ={
     stripe:{
         STRIPE_SECRET_KEY:process.env.STRIPE_SECRET_KEY,
         STRIPE_WEBHOOK_SECRET:process.env.STRIPE_WEBHOOK_KEY
+    },
+    news:{
+      NEWS_API_KEY:process.env.NEWS_API
     }
   }
