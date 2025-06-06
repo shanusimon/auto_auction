@@ -8,6 +8,10 @@ import { IAdminWalletRepository } from '../../entities/repositoryInterfaces/admi
 import { IClientRepository } from '../../entities/repositoryInterfaces/client/IClient-repository.interface';
 import { ISellerRepository } from '../../entities/repositoryInterfaces/seller/sellerRepository';
 import { ICarRepository } from '../../entities/repositoryInterfaces/car/carRepository';
+import { AuctionWonRepositoryInterface } from '../../entities/repositoryInterfaces/auctionwon/IAuctionWonRepositoryInterface';
+import { CustomError } from '../../entities/utils/custom.error';
+import { ERROR_MESSAGES, HTTP_STATUS } from '../../shared/constants';
+
 
 @injectable()
 export class getAdminDashboadUseCase implements IGetAdminDashBoardUseCase {
@@ -15,7 +19,8 @@ export class getAdminDashboadUseCase implements IGetAdminDashBoardUseCase {
     @inject('IAdminWalletRepository') private adminWalletRepository: IAdminWalletRepository,
     @inject('IClientRepository') private clientRepository: IClientRepository,
     @inject('ISellerRepository') private sellerRepository: ISellerRepository,
-    @inject('ICarRepository') private carRepository: ICarRepository
+    @inject('ICarRepository') private carRepository: ICarRepository,
+    @inject("AuctionWonRepositoryInterface") private auctionWonRepository:AuctionWonRepositoryInterface
   ) {}
 
   async execute(): Promise<{
@@ -36,7 +41,14 @@ export class getAdminDashboadUseCase implements IGetAdminDashBoardUseCase {
     const transactionHistory: TransactionHistory[] = [];
     if (wallet?.transaction?.length) {
       for (const tx of wallet.transaction) {
-        const car = await this.carRepository.findById(tx.carId.toString());
+        const auciton = await this.auctionWonRepository.findByIdWithoutCarPopulation(tx.auctionId.toString());
+        if(!auciton?.carId){
+          throw new CustomError(
+            ERROR_MESSAGES.CAR_NOT_FOUND,
+            HTTP_STATUS.BAD_REQUEST
+          )
+        }
+        const car = await this.carRepository.findById(auciton.carId.toString());
         transactionHistory.push({
           transactionId: tx.transactionId,
           userName: tx.userName,
