@@ -13,6 +13,7 @@ import { useAuctionEnd } from '@/hooks/user/useAuctionEnd';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { CarFilterReturn } from '@/types/CarFormTypes';
+import { userAxiosInstance } from '@/api/clientAxios';
 
 interface BidPayload {
   success: boolean;
@@ -32,7 +33,6 @@ interface NewsArticle {
 }
 
 const Community: React.FC = () => {
-  const NEWS_API = import.meta.env.VITE_NEWS_API
   const navigate = useNavigate();
   const {
     data: posts,
@@ -54,31 +54,21 @@ const { mutate: endAuction } = useAuctionEnd();
   const [isNewsLoading, setIsNewsLoading] = useState(false);
   const [newsError, setNewsError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchNews = async () => {
-      setIsNewsLoading(true);
-      try {
-        const response = await axios.get('https://newsapi.org/v2/everything', {
-          params: {
-            q: '"car" OR "automobile" OR "vehicle" OR "electric car" OR "EV" OR "car industry"',
-             domains: 'autoexpress.co.uk',
-            sortBy: 'publishedAt',
-            language: 'en',
-            pageSize: 7,
-            apiKey: NEWS_API,
-          },
-        });
-        setNewsArticles(response.data.articles);
-      } catch (error) {
-        setNewsError('Failed to fetch car news');
-        console.error('News fetch error:', error);
-      } finally {
-        setIsNewsLoading(false);
-      }
-    };
-    fetchNews();
-  }, []);
-
+useEffect(() => {
+  const fetchNews = async () => {
+    setIsNewsLoading(true);
+    try {
+      const response = await userAxiosInstance.get('/_us/user/news');
+      setNewsArticles(response.data.data);
+    } catch (error: any) {
+      setNewsError('Failed to fetch car news');
+      console.error('News fetch error:', error.response?.data || error.message);
+    } finally {
+      setIsNewsLoading(false);
+    }
+  };
+  fetchNews();
+}, []);
 
   useEffect(() => {
     if (cars && Array.isArray(cars)) {
