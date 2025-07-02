@@ -1,26 +1,9 @@
 import { ICarEntity } from "../../../entities/models/car.entity";
-import { ICarRepository } from "../../../entities/repositoryInterfaces/car/carRepository";
+import { ICarRepository } from "../../../entities/repositoryInterfaces/car/ICarRepository";
 import { CarModel } from "../../../frameworks/database/models/car.model";
 import { carDTO, ICarFilter } from "../../../shared/dtos/car.dto";
 
 export class CarRepository implements ICarRepository {
-  async create(data: carDTO): Promise<ICarEntity> {
-    const car = await CarModel.create(data);
-    return car;
-  }
-
-  async find(filter: any, skip: number, limit: number): Promise<ICarEntity[]> {
-    return await CarModel.find(filter).skip(skip).limit(limit).lean().exec();
-  }
-
-  async count(filter: any): Promise<number> {
-    return await CarModel.countDocuments(filter).exec();
-  }
-
-  async findById(carId: string): Promise<ICarEntity | null> {
-    return await CarModel.findById(carId).lean().exec();
-  }
-
   async findByIdAndUpdate(id: string, data: ICarEntity): Promise<void> {
     await CarModel.findByIdAndUpdate(id, data).exec();
   }
@@ -53,17 +36,6 @@ export class CarRepository implements ICarRepository {
     return await query.lean().exec();
   }
 
-  async update(
-    id: string,
-    updateData: Partial<ICarEntity>
-  ): Promise<ICarEntity | null> {
-    return await CarModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    })
-      .lean()
-      .exec();
-  }
-
   async findByVehicleNumber(vehicleNumber: string): Promise<ICarEntity | null> {
     return await CarModel.findOne({ vehicleNumber }).lean().exec();
   }
@@ -74,8 +46,9 @@ export class CarRepository implements ICarRepository {
 
   async findAllCarsBySellerId(sellerId: string): Promise<ICarEntity[]> {
     return await CarModel.find({ sellerId })
-    .populate('highestBidderId',"name")
-    .lean().exec();
+      .populate("highestBidderId", "name")
+      .lean()
+      .exec();
   }
 
   async updateRejectionReason(
@@ -147,7 +120,7 @@ export class CarRepository implements ICarRepository {
           : 0,
     }));
     const othersThreshold = 5;
-    const othersMinCount = 10; 
+    const othersMinCount = 10;
     const mainManufacturers = result.filter(
       (item) => item.value >= othersThreshold || item.count >= othersMinCount
     );
@@ -167,7 +140,6 @@ export class CarRepository implements ICarRepository {
       othersAggregate.value = Number(othersAggregate.value.toFixed(2));
       mainManufacturers.push(othersAggregate);
     }
-
 
     result = mainManufacturers.sort((a, b) => b.count - a.count).slice(0, 5);
 

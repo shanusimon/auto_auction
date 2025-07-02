@@ -1,5 +1,5 @@
 import { IGetCarsFilterUseCase } from "../../entities/useCaseInterfaces/car/IGetCarsFilterUseCase";
-import { ICarRepository } from "../../entities/repositoryInterfaces/car/carRepository";
+import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
 import { inject,injectable } from "tsyringe";
 import { ICarEntity } from "../../entities/models/car.entity";
 import { ICarFilter } from "../../shared/dtos/car.dto";

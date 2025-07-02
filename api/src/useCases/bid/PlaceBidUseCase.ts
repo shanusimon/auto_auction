@@ -3,13 +3,14 @@ import { inject, injectable } from "tsyringe";
 import { IWalletRepository } from "../../entities/repositoryInterfaces/wallet/IWalletRepositoryInterface";
 import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
 import { IWalletTransactionRepository } from "../../entities/repositoryInterfaces/wallet-transaction/IWalletTransactionRepository";
-import { ICarRepository } from "../../entities/repositoryInterfaces/car/carRepository";
+import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
 import { ERROR_MESSAGES } from "../../shared/constants";
 import { ICarEntity } from "../../entities/models/car.entity";
-import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/sellerRepository";
+import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/ISellerRepository";
 import { INotificationRepository } from "../../entities/repositoryInterfaces/notification/INotificationRepository";
 import { NotificationType } from "../../shared/types/notification.Types";
-
+import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
+import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
 @injectable()
 export class PlaceBidUseCase implements IPlaceBidUseCase {
   constructor(
@@ -19,7 +20,9 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
     private walletTransactionRepository: IWalletTransactionRepository,
     @inject("ICarRepository") private carRepository: ICarRepository,
     @inject("ISellerRepository") private sellerRepository:ISellerRepository,
-    @inject("INotificationRepository") private notificationRepository:INotificationRepository
+    @inject("INotificationRepository") private notificationRepository:INotificationRepository,
+    @inject("ICarBaseRepository") private carBaseRepository:ICarBaseRepository,
+    @inject("ISellerBaseRepository") private sellerBaseRepository:ISellerBaseRepository
   ) {}
 
   async execute(
@@ -27,7 +30,7 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
     carId: string,
     userId: string
   ): Promise<ICarEntity> {
-    const car = await this.carRepository.findById(carId);
+    const car = await this.carBaseRepository.findById(carId);
     if (!car) {
       throw new Error(ERROR_MESSAGES.CAR_NOT_FOUND);
     }
@@ -37,7 +40,7 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
       throw new Error("Auction has already ended");
     }
 
-    const seller = await this.sellerRepository.findByUserId(userId);
+    const seller = await this.sellerBaseRepository.findByUserId(userId);
     console.log("is this same",seller?._id,car.sellerId);
     if(car.sellerId.toString() === seller?._id?.toString()){
       throw new Error("You cannot place a bid on a car that you have listed.");
@@ -147,7 +150,7 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
         updateData.auctionEndTime = newEndTime;
       }
     }
-    const updatedCar = await this.carRepository.update(carId, updateData);
+    const updatedCar = await this.carBaseRepository.update(carId, updateData);
     if (!updatedCar) {
       throw new Error("failed to update car")
     }

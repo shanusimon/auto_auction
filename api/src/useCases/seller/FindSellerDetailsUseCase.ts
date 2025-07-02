@@ -1,6 +1,6 @@
 import { IFindSellerDetailsUseCase } from "../../entities/useCaseInterfaces/seller/IFindSellerDetails";
 import { inject,injectable } from "tsyringe";
-import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/sellerRepository";
+import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/ISellerRepository";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
 import { SellerDetailsDTO } from "../../shared/dtos/sellerDetailsDto";
 import { CustomError } from "../../entities/utils/custom.error";

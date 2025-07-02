@@ -1,21 +1,22 @@
 import { IGetSellerStatisticsUseCase } from "../../entities/useCaseInterfaces/seller/ISellerStatistics";
 import { inject, injectable } from "tsyringe";
-import { ICarRepository } from "../../entities/repositoryInterfaces/car/carRepository";
-import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/sellerRepository";
+import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
+import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/ISellerRepository";
 import { CustomError } from "../../entities/utils/custom.error";
 import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
-
+import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
 @injectable()
 export class GetSellerStatistics implements IGetSellerStatisticsUseCase {
   constructor(
     @inject("ICarRepository") private carRepository: ICarRepository,
     @inject("ISellerRepository") private sellerRepository: ISellerRepository,
-    @inject("IBidRepository") private bidRepository: IBidRepository
+    @inject("IBidRepository") private bidRepository: IBidRepository,
+      @inject("ISellerBaseRepository") private sellerBaseRepository:ISellerBaseRepository
   ) {}
   
   async execute(id: string): Promise<any> {
-    const seller = await this.sellerRepository.findByUserId(id);
+    const seller = await this.sellerBaseRepository.findByUserId(id);
     if(!seller || !seller._id){
       throw new CustomError(
         ERROR_MESSAGES.SELLER_NOT_FOUND,

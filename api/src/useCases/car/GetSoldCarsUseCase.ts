@@ -1,6 +1,6 @@
 import { inject,injectable } from "tsyringe";
 import { IGetSoldCarsUseCase } from "../../entities/useCaseInterfaces/car/IGetSoldCarsUseCase";
-import { ICarRepository } from "../../entities/repositoryInterfaces/car/carRepository";
+import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
 import { ICarEntity } from "../../entities/models/car.entity";
 
 @injectable()

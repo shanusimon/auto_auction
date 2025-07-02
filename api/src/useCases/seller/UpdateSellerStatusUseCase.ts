@@ -1,14 +1,14 @@
 import { IUpdateSellerStatusUseCase } from "../../entities/useCaseInterfaces/seller/IUpdateSellerStatusUseCase";
 import { inject, injectable } from "tsyringe";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
-import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/sellerRepository";
+import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/ISellerRepository";
 import { CustomError } from "../../entities/utils/custom.error";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
 import { ISellerEntity } from "../../entities/models/seller.entity";
 import { messaging } from "../../shared/config";
 import { INotificationRepository } from "../../entities/repositoryInterfaces/notification/INotificationRepository";
 import { NotificationType } from "../../shared/types/notification.Types";
-
+import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
 export enum SellerStatus {
   APPROVED = "approved",
   REJECTED = "rejected",
@@ -19,7 +19,8 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
   constructor(
     @inject("IClientRepository") private clientRepository: IClientRepository,
     @inject("ISellerRepository") private sellerRepository: ISellerRepository,
-    @inject("INotificationRepository") private notificationRepository: INotificationRepository
+    @inject("INotificationRepository") private notificationRepository: INotificationRepository,
+    @inject("ISellerBaseRepository") private sellerBaseRepository:ISellerBaseRepository
   ) {}
 
   async execute(id: string, status: SellerStatus, reason: string | undefined): Promise<ISellerEntity | null> {
@@ -37,7 +38,7 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
       seller.isActive = true;
       seller.isSeller = true;
 
-      const updated = await this.sellerRepository.update(seller);
+      const updated = await this.sellerBaseRepository.update(seller);
       if (!updated) {
         throw new CustomError(ERROR_MESSAGES.UPDATE_FAILED, HTTP_STATUS.INTERNAL_SERVER_ERROR);
       }
@@ -97,7 +98,7 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
         }
       }
       if(seller._id){
-             await this.sellerRepository.delete(seller._id.toString());
+             await this.sellerBaseRepository.delete(seller._id.toString());
       }
       return null;
     }

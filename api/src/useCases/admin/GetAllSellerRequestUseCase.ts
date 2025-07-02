@@ -1,14 +1,15 @@
 import { PagenateSellers } from "../../entities/models/pageinated-users.entity";
 import { IGetAllSellerRequestUseCase } from "../../entities/useCaseInterfaces/seller/IGetAllSellerRequestUseCase";
 import { inject,injectable } from "tsyringe";
-import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/sellerRepository";
+import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/ISellerRepository";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
-
+import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
 @injectable()
 export class GetAllSellerUseCase implements IGetAllSellerRequestUseCase{
     constructor(
         @inject("ISellerRepository") private sellerRepository:ISellerRepository,
-        @inject("IClientRepository") private clientRepository:IClientRepository
+        @inject("IClientRepository") private clientRepository:IClientRepository,
+        @inject("ISellerBaseRepository") private sellerBaseRepository:ISellerBaseRepository
     ){}
     async execute(page: number, pageSize: number, searchTerm: string,isRequestTable:boolean): Promise<PagenateSellers> {
         const validPageNumber = Math.max(1, page || 1);
@@ -27,8 +28,8 @@ export class GetAllSellerUseCase implements IGetAllSellerRequestUseCase{
         
         }
         const [sellers,total] = await Promise.all([
-            this.sellerRepository.find(filter,skip,validPageSize),
-            this.sellerRepository.count(filter)
+            this.sellerBaseRepository.find(filter,skip,validPageSize),
+            this.sellerBaseRepository.count(filter)
         ])
 
         const response: PagenateSellers = {

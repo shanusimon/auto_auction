@@ -1,6 +1,6 @@
 import { IAuctionWonEntity } from "../../entities/models/auction.won.entity";
 import { IEndAuctionUseCase } from "../../entities/useCaseInterfaces/auction/IEndAuctionUseCase";
-import { ICarRepository } from "../../entities/repositoryInterfaces/car/carRepository";
+import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
 import { AuctionWonRepositoryInterface } from "../../entities/repositoryInterfaces/auctionwon/IAuctionWonRepositoryInterface";
 import { inject, injectable } from "tsyringe";
 import { CustomError } from "../../entities/utils/custom.error";
@@ -8,12 +8,13 @@ import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
 import { IPaymentService } from "../../entities/services/IStripeService";
 import { Server as SocketIOServer } from "socket.io";
 import { INotificationRepository } from "../../entities/repositoryInterfaces/notification/INotificationRepository";
-import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/sellerRepository";
+import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/ISellerRepository";
 import { NotificationType } from "../../shared/types/notification.Types";
 import { messaging } from "../../shared/config";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
 import { IRedisClient } from "../../entities/services/IRedisClient";
 import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
+import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
 
 @injectable()
 export class EndAuctionUseCase implements IEndAuctionUseCase {
@@ -27,7 +28,8 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
     @inject("IPaymentService") private stripeService: IPaymentService,
     @inject("IClientRepository") private clientRepository: IClientRepository,
     @inject("IRedisClient") private redisClient: IRedisClient,
-    @inject("IBidRepository") private bidRepository:IBidRepository
+    @inject("IBidRepository") private bidRepository:IBidRepository,
+    @inject("ICarBaseRepository") private carBaseRepository:ICarBaseRepository
   ) {}
 
   public initialize(io: SocketIOServer) {
@@ -74,7 +76,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
       );
 
       if (!car) {
-        const existingCar = await this.carRepository.findById(carId);
+        const existingCar = await this.carBaseRepository.findById(carId);
         if (!existingCar) {
           throw new CustomError(ERROR_MESSAGES.CAR_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
         }

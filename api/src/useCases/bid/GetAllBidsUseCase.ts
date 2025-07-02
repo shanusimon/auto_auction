@@ -1,7 +1,7 @@
 import { IBidEntity } from "../../entities/models/bid.entity";
 import { IGetAllBidsUseCase } from "../../entities/useCaseInterfaces/bid/IGetAllBidsUseCase";
 import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
-import { ICarRepository } from "../../entities/repositoryInterfaces/car/carRepository";
+import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
 import { inject, injectable } from "tsyringe";
 
 @injectable()

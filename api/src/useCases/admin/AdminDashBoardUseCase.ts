@@ -6,13 +6,13 @@ import {
 } from '../../entities/useCaseInterfaces/admin/IGetAdminDashboardUseCase';
 import { IAdminWalletRepository } from '../../entities/repositoryInterfaces/adminWallet/IAdminWalletRepository';
 import { IClientRepository } from '../../entities/repositoryInterfaces/client/IClient-repository.interface';
-import { ISellerRepository } from '../../entities/repositoryInterfaces/seller/sellerRepository';
-import { ICarRepository } from '../../entities/repositoryInterfaces/car/carRepository';
+import { ISellerRepository } from '../../entities/repositoryInterfaces/seller/ISellerRepository';
+import { ICarRepository } from '../../entities/repositoryInterfaces/car/ICarRepository';
 import { AuctionWonRepositoryInterface } from '../../entities/repositoryInterfaces/auctionwon/IAuctionWonRepositoryInterface';
 import { CustomError } from '../../entities/utils/custom.error';
 import { ERROR_MESSAGES, HTTP_STATUS } from '../../shared/constants';
-
-
+import { ICarBaseRepository } from '../../entities/repositoryInterfaces/car/ICarBaseRepository';
+import { ISellerBaseRepository } from '../../entities/repositoryInterfaces/seller/ISellerBaseRepository';
 @injectable()
 export class getAdminDashboadUseCase implements IGetAdminDashBoardUseCase {
   constructor(
@@ -20,7 +20,9 @@ export class getAdminDashboadUseCase implements IGetAdminDashBoardUseCase {
     @inject('IClientRepository') private clientRepository: IClientRepository,
     @inject('ISellerRepository') private sellerRepository: ISellerRepository,
     @inject('ICarRepository') private carRepository: ICarRepository,
-    @inject("AuctionWonRepositoryInterface") private auctionWonRepository:AuctionWonRepositoryInterface
+    @inject("AuctionWonRepositoryInterface") private auctionWonRepository:AuctionWonRepositoryInterface,
+    @inject("ICarBaseRepository") private carBaseRepository:ICarBaseRepository,
+    @inject("ISellerBaseRepository") private sellerBaseRespository:ISellerBaseRepository
   ) {}
 
   async execute(): Promise<{
@@ -35,8 +37,8 @@ export class getAdminDashboadUseCase implements IGetAdminDashBoardUseCase {
     const walletBalance = wallet?.balanceAmount || 0;
 
     const CustomersCount = Number(await this.clientRepository.findCount());
-    const approvedSellers = Number(await this.sellerRepository.count({}));
-    const carRegistered = Number(await this.carRepository.count({}));
+    const approvedSellers = Number(await this.sellerBaseRespository.count({}));
+    const carRegistered = Number(await this.carBaseRepository.count({}));
 
     const transactionHistory: TransactionHistory[] = [];
     if (wallet?.transaction?.length) {
@@ -48,7 +50,7 @@ export class getAdminDashboadUseCase implements IGetAdminDashBoardUseCase {
             HTTP_STATUS.BAD_REQUEST
           )
         }
-        const car = await this.carRepository.findById(auciton.carId.toString());
+        const car = await this.carBaseRepository.findById(auciton.carId.toString());
         transactionHistory.push({
           transactionId: tx.transactionId,
           userName: tx.userName,

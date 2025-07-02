@@ -1,6 +1,6 @@
 import { IUpdateSellerActiveStatusUseCase } from "../../entities/useCaseInterfaces/seller/IUpdateSellerActiveStatusUseCase";
 import { inject,injectable } from "tsyringe";
-import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/sellerRepository";
+import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/ISellerRepository";
 
 @injectable()
 export class UpdateSellerActiveStatus implements IUpdateSellerActiveStatusUseCase{

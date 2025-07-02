@@ -1,6 +1,6 @@
 import { IConversation } from "../../entities/models/conversation.entity";
 import { IGetConversationUseCase } from "../../entities/useCaseInterfaces/conversation/IGetConversationUseCase";
-import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/sellerRepository";
+import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/ISellerRepository";
 import { inject, injectable } from "tsyringe";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
 import { IConversationRepository } from "../../entities/repositoryInterfaces/conversation/IConversationRepository";

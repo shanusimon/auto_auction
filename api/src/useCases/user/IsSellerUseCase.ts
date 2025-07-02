@@ -3,13 +3,12 @@ import { inject,injectable } from "tsyringe";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
 import { CustomError } from "../../entities/utils/custom.error";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
-import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/sellerRepository";
-
+import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
 @injectable()
 export class IsSellerUseCase implements IIsSellerUseCase {
     constructor(
         @inject("IClientRepository") private clientRepository: IClientRepository,
-        @inject("ISellerRepository") private sellerRepository: ISellerRepository
+        @inject("ISellerBaseRepository") private sellerBaseRepository:ISellerBaseRepository
     ) {}
 
     async execute(id: string): Promise<{ isSeller: boolean; sellerDetails?: any; isActive:boolean}> {
@@ -21,7 +20,7 @@ export class IsSellerUseCase implements IIsSellerUseCase {
             );
         }
         
-        const seller = await this.sellerRepository.findByUserId(user.id);
+        const seller = await this.sellerBaseRepository.findByUserId(user.id);
         console.log(seller);
         return {
             isSeller: seller?.approvalStatus === "approved" ? true : false,

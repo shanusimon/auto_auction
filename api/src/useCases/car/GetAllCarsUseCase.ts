@@ -1,14 +1,16 @@
 import { IGetAllCarsUseCase } from "../../entities/useCaseInterfaces/car/IGetAllCarsUseCase";
 import { inject, injectable } from "tsyringe";
-import { ICarRepository } from "../../entities/repositoryInterfaces/car/carRepository";
+import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
 import { PagenateCars } from "../../entities/models/pageinated-users.entity";
 import { IEndAuctionUseCase } from "../../entities/useCaseInterfaces/auction/IEndAuctionUseCase";
+import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
 
 @injectable()
 export class GetAllCarsUseCase implements IGetAllCarsUseCase {
   constructor(
     @inject("ICarRepository") private carRepository: ICarRepository,
-    @inject("IEndAuctionUseCase") private endAuctionCarUseCase:IEndAuctionUseCase
+    @inject("IEndAuctionUseCase") private endAuctionCarUseCase:IEndAuctionUseCase,
+    @inject("ICarBaseRepository") private carBaseRepository:ICarBaseRepository
   ) {}
   async execute(
     page: number,
@@ -33,8 +35,8 @@ export class GetAllCarsUseCase implements IGetAllCarsUseCase {
     }
 
     const [cars,total] = await Promise.all([
-        this.carRepository.find(filter,skip,validPageSize),
-        this.carRepository.count(filter)
+        this.carBaseRepository.find(filter,skip,validPageSize),
+        this.carBaseRepository.count(filter)
     ])
     
 

@@ -16,10 +16,10 @@ import { IWalletRepository } from "../../entities/repositoryInterfaces/wallet/IW
 import { WalletRepository } from "../../interface-adapters/repositories/wallet/WalletRepository";
 import { IWalletTransactionRepository } from "../../entities/repositoryInterfaces/wallet-transaction/IWalletTransactionRepository";
 import { WalletTransactionRepository } from "../../interface-adapters/repositories/wallet-transaction/WalletTransactionRepository";
-import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/sellerRepository";
+import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/ISellerRepository";
 import { SellerRepository } from "../../interface-adapters/repositories/seller/SellerRepository";
 import { CarRepository } from "../../interface-adapters/repositories/car/car.repository";
-import { ICarRepository } from "../../entities/repositoryInterfaces/car/carRepository";
+import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
 import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
 import { BidRepository } from "../../interface-adapters/repositories/bid/bid.repository";
 import { ICarCommentRepository } from "../../entities/repositoryInterfaces/comments/ICarCommentRepository";
@@ -36,6 +36,10 @@ import { AuctionWonRepositoryInterface } from "../../entities/repositoryInterfac
 import { AuctionWonRepository } from "../../interface-adapters/repositories/auctionwon/AuctionWonRepository";
 import { IAdminWalletRepository } from "../../entities/repositoryInterfaces/adminWallet/IAdminWalletRepository";
 import { adminWalletRepository } from "../../interface-adapters/repositories/adminWallet/adminWalletRepository";
+import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
+import { CarBaseRepository } from "../../interface-adapters/repositories/car/car.base.repository";
+import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
+import { SellerBaseRepository } from "../../interface-adapters/repositories/seller/SellerBaseRepository";
 //service imports
 import { IOtpService } from "../../entities/services/IOtpService";
 import { OtpService } from "../../interface-adapters/services/OtpService";
@@ -57,9 +61,15 @@ export class RepositoryRegistry {
     container.register<IAdminWalletRepository>("IAdminWalletRepository",{
       useClass:adminWalletRepository
     })
+    container.register<ICarBaseRepository>("ICarBaseRepository",{
+      useClass:CarBaseRepository
+    })
     container.register<IUserExistenceService>("IUserExistenceService", {
       useClass: UserExistenceService,
     });
+    container.register<ISellerBaseRepository>("ISellerBaseRepository",{
+      useClass:SellerBaseRepository
+    })
     container.register<ICarRepository>("ICarRepository", {
       useClass: CarRepository,
     });
