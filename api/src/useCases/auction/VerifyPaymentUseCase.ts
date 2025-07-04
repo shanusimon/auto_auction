@@ -9,6 +9,7 @@ import { IAuctionWonEntity } from "../../entities/models/auction.won.entity";
 import { IAdminWalletRepository } from "../../entities/repositoryInterfaces/adminWallet/IAdminWalletRepository";
 import { IAdminWallet } from "../../entities/models/admin.wallet.entity";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
+import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
 
 @injectable()
 export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
@@ -19,7 +20,9 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
     private stripeService: IPaymentService,
     @inject("IAdminWalletRepository")
     private adminWalletRepository: IAdminWalletRepository,
-    @inject("IClientRepository") private clientRepository: IClientRepository
+    @inject("IClientRepository") private clientRepository: IClientRepository,
+    @inject("IClientBaseRepository")
+    private clientBaseRepository: IClientBaseRepository
   ) {}
 
   async execute(userId: string, sessionId: string): Promise<IAuctionWonEntity> {
@@ -29,17 +32,26 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
     }
 
     if (session.metadata?.type !== "car_payment") {
-      throw new CustomError("Invalid payment type for auction verification", HTTP_STATUS.BAD_REQUEST);
+      throw new CustomError(
+        "Invalid payment type for auction verification",
+        HTTP_STATUS.BAD_REQUEST
+      );
     }
 
-    const user = await this.clientRepository.findById(userId);
+    const user = await this.clientBaseRepository.findById(userId);
     if (!user) {
-      throw new CustomError(ERROR_MESSAGES.USER_NOT_FOUND, HTTP_STATUS.BAD_REQUEST);
+      throw new CustomError(
+        ERROR_MESSAGES.USER_NOT_FOUND,
+        HTTP_STATUS.BAD_REQUEST
+      );
     }
 
     const auctionId = session.metadata?.auctionId;
     if (!auctionId) {
-      throw new CustomError("Missing auction ID in session metadata", HTTP_STATUS.BAD_REQUEST);
+      throw new CustomError(
+        "Missing auction ID in session metadata",
+        HTTP_STATUS.BAD_REQUEST
+      );
     }
 
     const auctionWon = await this.auctionWonRepository.findById(auctionId);
@@ -48,7 +60,10 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
     }
 
     if (auctionWon.winnerId?.toString() !== userId) {
-      throw new CustomError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, HTTP_STATUS.BAD_REQUEST);
+      throw new CustomError(
+        ERROR_MESSAGES.UNAUTHORIZED_ACCESS,
+        HTTP_STATUS.BAD_REQUEST
+      );
     }
 
     if (auctionWon.paymentStatus === "succeeded") {
@@ -56,20 +71,34 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
     }
 
     if (session.status === "complete" && session.payment_status === "paid") {
-      const updatedAuctionWon = await this.auctionWonRepository.updatePaymentStatus(auctionId, "succeeded");
+      const updatedAuctionWon =
+        await this.auctionWonRepository.updatePaymentStatus(
+          auctionId,
+          "succeeded"
+        );
       if (!updatedAuctionWon) {
-        throw new CustomError("Failed to update auction payment status", HTTP_STATUS.INTERNAL_SERVER_ERROR);
+        throw new CustomError(
+          "Failed to update auction payment status",
+          HTTP_STATUS.INTERNAL_SERVER_ERROR
+        );
       }
 
       // Store receiptUrl if not already set (e.g., by WebHookUseCase)
       if (session.payment_intent && !updatedAuctionWon.receiptUrl) {
-        const paymentIntent = await this.stripeService.getPaymentIntent(session.payment_intent as string);
+        const paymentIntent = await this.stripeService.getPaymentIntent(
+          session.payment_intent as string
+        );
         if (paymentIntent.latest_charge) {
-          const charge = await this.stripeService.getCharge(paymentIntent.latest_charge as string);
+          const charge = await this.stripeService.getCharge(
+            paymentIntent.latest_charge as string
+          );
           if (charge.receipt_url) {
-            await this.auctionWonRepository.update(auctionId, { receiptUrl: charge.receipt_url });
+            await this.auctionWonRepository.update(auctionId, {
+              receiptUrl: charge.receipt_url,
+            });
             // Refresh updatedAuctionWon to include receiptUrl
-            const refreshedAuctionWon = await this.auctionWonRepository.findById(auctionId);
+            const refreshedAuctionWon =
+              await this.auctionWonRepository.findById(auctionId);
             if (refreshedAuctionWon) {
               updatedAuctionWon.receiptUrl = refreshedAuctionWon.receiptUrl;
             }

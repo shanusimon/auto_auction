@@ -9,13 +9,15 @@ import { generateUniqueUid } from "../../../frameworks/security/uniqueuid.bcrypt
 import { CustomError } from "../../../entities/utils/custom.error";
 import { IWalletRepository } from "../../../entities/repositoryInterfaces/wallet/IWalletRepositoryInterface";
 import { IWallet } from "../../../entities/models/wallet.entity";
+import { IClientBaseRepository } from "../../../entities/repositoryInterfaces/client/IClientBaseRepository";
 
 @injectable()
 export class ClientRegisterStrategy implements IRegisterStrategy{
     constructor(
         @inject("IClientRepository") private clientRepository:IClientRepository,
         @inject("IPasswordBcrypt") private passwordBcrypt:IBcrypt,
-        @inject("IWalletRepository") private walletRepository:IWalletRepository
+        @inject("IWalletRepository") private walletRepository:IWalletRepository,
+        @inject("IClientBaseRepository") private clientBaseRepository:IClientBaseRepository
     ){}
 
     async register(user: UserDTO): Promise<IUserEntity | void> {
@@ -47,7 +49,7 @@ export class ClientRegisterStrategy implements IRegisterStrategy{
                 reservedBalance:0
             })
 
-            const newUser = await this.clientRepository.save({
+            const newUser = await this.clientBaseRepository.save({
                 name,
                 email,
                 password:hashedPassword ?? "",

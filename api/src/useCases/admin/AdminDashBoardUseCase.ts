@@ -13,6 +13,8 @@ import { CustomError } from '../../entities/utils/custom.error';
 import { ERROR_MESSAGES, HTTP_STATUS } from '../../shared/constants';
 import { ICarBaseRepository } from '../../entities/repositoryInterfaces/car/ICarBaseRepository';
 import { ISellerBaseRepository } from '../../entities/repositoryInterfaces/seller/ISellerBaseRepository';
+import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
+
 @injectable()
 export class getAdminDashboadUseCase implements IGetAdminDashBoardUseCase {
   constructor(
@@ -22,7 +24,9 @@ export class getAdminDashboadUseCase implements IGetAdminDashBoardUseCase {
     @inject('ICarRepository') private carRepository: ICarRepository,
     @inject("AuctionWonRepositoryInterface") private auctionWonRepository:AuctionWonRepositoryInterface,
     @inject("ICarBaseRepository") private carBaseRepository:ICarBaseRepository,
-    @inject("ISellerBaseRepository") private sellerBaseRespository:ISellerBaseRepository
+    @inject("ISellerBaseRepository") private sellerBaseRespository:ISellerBaseRepository,
+        @inject("IClientBaseRepository")
+    private clientBaseRepository: IClientBaseRepository
   ) {}
 
   async execute(): Promise<{
@@ -36,7 +40,7 @@ export class getAdminDashboadUseCase implements IGetAdminDashBoardUseCase {
     const wallet = await this.adminWalletRepository.findSingle();
     const walletBalance = wallet?.balanceAmount || 0;
 
-    const CustomersCount = Number(await this.clientRepository.findCount());
+    const CustomersCount = Number(await this.clientBaseRepository.findCount());
     const approvedSellers = Number(await this.sellerBaseRespository.count({}));
     const carRegistered = Number(await this.carBaseRepository.count({}));
 

@@ -6,7 +6,7 @@ import { CustomRequest } from "./authMiddleware";
 import { NextFunction, Response } from "express";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
 import { clearAuthCookies } from "../../shared/utils/cookieHelper";
-
+import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
 
 @injectable()
 export class BlockStatusMiddleware {
@@ -16,7 +16,8 @@ export class BlockStatusMiddleware {
     @inject("IBlackListTokenUseCase")
     private readonly blacklistTokenUseCase: IBlackListTokenUseCase,
     @inject("IRevokeRefreshTokenUseCase")
-    private readonly revokeRefreshTokenUseCase: IRevokeRefreshTokenUseCase
+    private readonly revokeRefreshTokenUseCase: IRevokeRefreshTokenUseCase,
+    @inject("IClientBaseRepository") private clientBaseRepository:IClientBaseRepository
   ) {}
   checkStatus = async (
     req: CustomRequest,
@@ -35,7 +36,7 @@ export class BlockStatusMiddleware {
       const { id, role } = req.user;
       let status: Boolean = false;
       if (role === "user") {
-        const user = await this.clientRepository.findById(id);
+        const user = await this.clientBaseRepository.findById(id);
         if (!user) {
           res.status(HTTP_STATUS.NOT_FOUND).json({
             success: false,

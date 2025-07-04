@@ -7,6 +7,7 @@ import { CustomError } from "../../entities/utils/custom.error";
 import { OAuth2Client } from "google-auth-library";
 import { IClientEntity } from "../../entities/models/client.entity";
 import { generateUniqueUid } from "../../frameworks/security/uniqueuid.bcrypt";
+import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
 
 @injectable()
 export class GoogleAuthUseCase implements IGoogleAuthUseCase {
@@ -14,7 +15,8 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
     
     constructor(
         @inject("IClientRepository") private clientRepo: IClientRepository,
-        @inject("IWalletRepository") private walletRepository: IWalletRepository
+        @inject("IWalletRepository") private walletRepository: IWalletRepository,
+        @inject("IClientBaseRepository") private clientBaseRepository:IClientBaseRepository
     ){
         this.oAuthClient = new OAuth2Client();
     }
@@ -61,7 +63,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
             let newUser;
             
             try {
-                newUser = await this.clientRepo.save({
+                newUser = await this.clientBaseRepository.save({
                     password: " ", 
                     clientId: customerId,
                     name,

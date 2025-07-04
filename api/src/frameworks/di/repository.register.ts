@@ -40,6 +40,8 @@ import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICar
 import { CarBaseRepository } from "../../interface-adapters/repositories/car/car.base.repository";
 import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
 import { SellerBaseRepository } from "../../interface-adapters/repositories/seller/SellerBaseRepository";
+import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
+import { ClientBaseRepository } from "../../interface-adapters/repositories/client/client.base.repository";
 //service imports
 import { IOtpService } from "../../entities/services/IOtpService";
 import { OtpService } from "../../interface-adapters/services/OtpService";
@@ -63,6 +65,9 @@ export class RepositoryRegistry {
     })
     container.register<ICarBaseRepository>("ICarBaseRepository",{
       useClass:CarBaseRepository
+    })
+    container.register<IClientBaseRepository>("IClientBaseRepository",{
+      useClass:ClientBaseRepository
     })
     container.register<IUserExistenceService>("IUserExistenceService", {
       useClass: UserExistenceService,

@@ -10,6 +10,7 @@ import { IWalletRepository } from "../../entities/repositoryInterfaces/wallet/IW
 import { IAdminWalletRepository } from "../../entities/repositoryInterfaces/adminWallet/IAdminWalletRepository";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
 import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
+import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
 
 @injectable()
 export class WebHookUseCase implements IWebHookUseCase {
@@ -25,7 +26,8 @@ export class WebHookUseCase implements IWebHookUseCase {
     @inject("IAdminWalletRepository")
     private adminWalletRepository: IAdminWalletRepository,
     @inject("IClientRepository") private clientRepository: IClientRepository,
-    @inject("IBidRepository") private bidRepository: IBidRepository
+    @inject("IBidRepository") private bidRepository: IBidRepository,
+    @inject("IClientBaseRepository") private clientBaseRepository:IClientBaseRepository
   ) {
     this.stripe = new Stripe(config.stripe.STRIPE_SECRET_KEY || "", {
        apiVersion: "2024-06-20",
@@ -118,7 +120,7 @@ export class WebHookUseCase implements IWebHookUseCase {
       );
     }
 
-    const user = await this.clientRepository.findById(userId);
+    const user = await this.clientBaseRepository.findById(userId);
     if (!user) {
       throw new CustomError(
         `User not found with ID: ${userId}`,

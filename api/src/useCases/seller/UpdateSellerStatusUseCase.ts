@@ -9,6 +9,7 @@ import { messaging } from "../../shared/config";
 import { INotificationRepository } from "../../entities/repositoryInterfaces/notification/INotificationRepository";
 import { NotificationType } from "../../shared/types/notification.Types";
 import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
+import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
 export enum SellerStatus {
   APPROVED = "approved",
   REJECTED = "rejected",
@@ -19,18 +20,28 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
   constructor(
     @inject("IClientRepository") private clientRepository: IClientRepository,
     @inject("ISellerRepository") private sellerRepository: ISellerRepository,
-    @inject("INotificationRepository") private notificationRepository: INotificationRepository,
-    @inject("ISellerBaseRepository") private sellerBaseRepository:ISellerBaseRepository
+    @inject("INotificationRepository")
+    private notificationRepository: INotificationRepository,
+    @inject("ISellerBaseRepository")
+    private sellerBaseRepository: ISellerBaseRepository,
+    @inject("IClientBaseRepository")
+    private clientBaseRepository: IClientBaseRepository
   ) {}
 
-  async execute(id: string, status: SellerStatus, reason: string | undefined): Promise<ISellerEntity | null> {
+  async execute(
+    id: string,
+    status: SellerStatus,
+    reason: string | undefined
+  ): Promise<ISellerEntity | null> {
     const seller = await this.sellerRepository.findOne(id);
     if (!seller) {
-      throw new CustomError(ERROR_MESSAGES.USER_NOT_FOUND, HTTP_STATUS.BAD_REQUEST);
+      throw new CustomError(
+        ERROR_MESSAGES.USER_NOT_FOUND,
+        HTTP_STATUS.BAD_REQUEST
+      );
     }
 
-    const user = await this.clientRepository.findById(seller.userId);
-
+    const user = await this.clientBaseRepository.findById(seller.userId);
 
     if (status === SellerStatus.APPROVED) {
       seller.approvalStatus = status;
@@ -40,9 +51,11 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
 
       const updated = await this.sellerBaseRepository.update(seller);
       if (!updated) {
-        throw new CustomError(ERROR_MESSAGES.UPDATE_FAILED, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+        throw new CustomError(
+          ERROR_MESSAGES.UPDATE_FAILED,
+          HTTP_STATUS.INTERNAL_SERVER_ERROR
+        );
       }
-
 
       if (user?.id) {
         await this.notificationRepository.create(
@@ -52,7 +65,6 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
           "Seller Approved"
         );
       }
-
 
       if (user?.fcmToken) {
         try {
@@ -73,7 +85,6 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
     }
 
     if (status === SellerStatus.REJECTED) {
-
       if (user?.id) {
         await this.notificationRepository.create(
           user.id,
@@ -94,11 +105,14 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
           });
           console.log(`FCM sent to user ${user.id} for rejection.`);
         } catch (err) {
-          console.error(`Failed to send rejection FCM to user ${user.id}:`, err);
+          console.error(
+            `Failed to send rejection FCM to user ${user.id}:`,
+            err
+          );
         }
       }
-      if(seller._id){
-             await this.sellerBaseRepository.delete(seller._id.toString());
+      if (seller._id) {
+        await this.sellerBaseRepository.delete(seller._id.toString());
       }
       return null;
     }

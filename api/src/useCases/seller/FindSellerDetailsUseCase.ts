@@ -5,20 +5,21 @@ import { IClientRepository } from "../../entities/repositoryInterfaces/client/IC
 import { SellerDetailsDTO } from "../../shared/dtos/sellerDetailsDto";
 import { CustomError } from "../../entities/utils/custom.error";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
-
+import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
 
 @injectable()
 export class FindSellerDetailsUseCase implements IFindSellerDetailsUseCase{
     constructor(
         @inject("ISellerRepository") private sellerRepository:ISellerRepository,
-        @inject("IClientRepository") private clientRepository:IClientRepository
+        @inject("IClientRepository") private clientRepository:IClientRepository,
+        @inject("IClientBaseRepository") private clientBaseRepository:IClientBaseRepository
     ){}
     async execute(sellerId: string): Promise<SellerDetailsDTO> {
         const seller = await this.sellerRepository.findOne(sellerId);
         if(!seller){
             throw new CustomError(ERROR_MESSAGES.SELLER_NOT_FOUND,HTTP_STATUS.BAD_REQUEST);
         }
-        const userDetails = await this.clientRepository.findById(seller.userId);
+        const userDetails = await this.clientBaseRepository.findById(seller.userId);
 
         if(!userDetails){
             throw new CustomError(

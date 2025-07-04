@@ -4,16 +4,17 @@ import { IClientRepository } from "../../entities/repositoryInterfaces/client/IC
 import { messaging } from "../../shared/config";
 import { INotificationRepository } from "../../entities/repositoryInterfaces/notification/INotificationRepository";
 import { NotificationType } from "../../shared/types/notification.Types";
-
+import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
 @injectable()
 export class SendNotificationUseCase implements ISendNotificationUseCase {
   constructor(
     @inject("IClientRepository") private clientRepoitory: IClientRepository,
-    @inject("INotificationRepository") private notificationRepository:INotificationRepository
+    @inject("INotificationRepository") private notificationRepository:INotificationRepository,
+    @inject("IClientBaseRepository") private clientBaseRepository:IClientBaseRepository
   ) {}
   async execute(userId: string, message: string,senderName:string): Promise<void> {
   
-    const user = await this.clientRepoitory.findById(userId);
+    const user = await this.clientBaseRepository.findById(userId);
 
     await this.notificationRepository.create(userId,NotificationType.CHAT_MESSAGE,message.length > 20 ? message.slice(0,10) + "...":message,`New Message from ${senderName}`)
     
