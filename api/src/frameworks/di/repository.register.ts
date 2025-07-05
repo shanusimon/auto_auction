@@ -13,11 +13,11 @@ import { RefreshTokenRepository } from "../../interface-adapters/repositories/au
 import { IRedisTokenRepository } from "../../entities/repositoryInterfaces/redis/IRedisTokenRepository";
 import { RedisTokenRepository } from "../../interface-adapters/repositories/redis/RedisTokenRepository";
 import { IWalletRepository } from "../../entities/repositoryInterfaces/wallet/IWalletRepositoryInterface";
-import { WalletRepository } from "../../interface-adapters/repositories/wallet/WalletRepository";
+import { WalletRepository } from "../../interface-adapters/repositories/wallet/wallet.repository";
 import { IWalletTransactionRepository } from "../../entities/repositoryInterfaces/wallet-transaction/IWalletTransactionRepository";
-import { WalletTransactionRepository } from "../../interface-adapters/repositories/wallet-transaction/WalletTransactionRepository";
+import { WalletTransactionRepository } from "../../interface-adapters/repositories/wallet-transaction/wallet.transaction.repository";
 import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/ISellerRepository";
-import { SellerRepository } from "../../interface-adapters/repositories/seller/SellerRepository";
+import { SellerRepository } from "../../interface-adapters/repositories/seller/seller.repository";
 import { CarRepository } from "../../interface-adapters/repositories/car/car.repository";
 import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
 import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
@@ -39,7 +39,7 @@ import { adminWalletRepository } from "../../interface-adapters/repositories/adm
 import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
 import { CarBaseRepository } from "../../interface-adapters/repositories/car/car.base.repository";
 import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
-import { SellerBaseRepository } from "../../interface-adapters/repositories/seller/SellerBaseRepository";
+import { SellerBaseRepository } from "../../interface-adapters/repositories/seller/seller.base.repository";
 import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
 import { ClientBaseRepository } from "../../interface-adapters/repositories/client/client.base.repository";
 //service imports
