@@ -4,7 +4,8 @@ import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepo
 import { PagenateCars } from "../../entities/models/pageinated-users.entity";
 import { IEndAuctionUseCase } from "../../entities/useCaseInterfaces/auction/IEndAuctionUseCase";
 import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
-
+import { FilterQuery } from "mongoose";
+import { ICarEntity } from "../../entities/models/car.entity";
 @injectable()
 export class GetAllCarsUseCase implements IGetAllCarsUseCase {
   constructor(
@@ -22,7 +23,7 @@ export class GetAllCarsUseCase implements IGetAllCarsUseCase {
     const validPageSize = Math.max(1, pageSize || 10);
     const skip = (validPageNumber - 1) * validPageSize;
 
-    const filter: any = {
+    const filter: FilterQuery<ICarEntity> = {
       approvalStatus: "pending",
     };
 

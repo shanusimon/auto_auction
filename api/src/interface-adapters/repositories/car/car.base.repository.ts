@@ -2,17 +2,20 @@ import { ICarEntity } from "../../../entities/models/car.entity";
 import { ICarBaseRepository } from "../../../entities/repositoryInterfaces/car/ICarBaseRepository";
 import { CreateCarDTO } from "../../../shared/dtos/car.dto";
 import { CarModel } from "../../../frameworks/database/models/car.model";
+import { FilterQuery } from "mongoose";
 
 export class CarBaseRepository implements ICarBaseRepository {
   constructor() {}
-  async count(filter: any): Promise<number> {
+  async count(filter: {
+    approvalStatus:String
+  }): Promise<number> {
     return await CarModel.countDocuments(filter).exec();
   }
   async create(data: CreateCarDTO): Promise<ICarEntity> {
     const car = await CarModel.create(data);
     return car;
   }
-  async find(filter: any, skip: number, limit: number): Promise<ICarEntity[]> {
+  async find(filter: FilterQuery<ICarEntity>, skip: number, limit: number): Promise<ICarEntity[]> {
     return await CarModel.find(filter).skip(skip).limit(limit).lean().exec();
   }
   async findById(carId: string): Promise<ICarEntity | null> {
