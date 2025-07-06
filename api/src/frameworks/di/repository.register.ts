@@ -20,7 +20,7 @@ import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/IS
 import { SellerRepository } from "../../interface-adapters/repositories/seller/seller.repository";
 import { CarRepository } from "../../interface-adapters/repositories/car/car.repository";
 import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
-import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
+import { IBidRepository } from "../../entities/repositoryInterfaces/bid/IBidRepository";
 import { BidRepository } from "../../interface-adapters/repositories/bid/bid.repository";
 import { ICarCommentRepository } from "../../entities/repositoryInterfaces/comments/ICarCommentRepository";
 import { CarCommentRepository } from "../../interface-adapters/repositories/comments/car.comment.repository";
@@ -42,6 +42,8 @@ import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/selle
 import { SellerBaseRepository } from "../../interface-adapters/repositories/seller/seller.base.repository";
 import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
 import { ClientBaseRepository } from "../../interface-adapters/repositories/client/client.base.repository";
+import { IBidBaseRepository } from "../../entities/repositoryInterfaces/bid/IBidBaseRepository";
+import { BidBaseRepository } from "../../interface-adapters/repositories/bid/bid.base.repository";
 //service imports
 import { IOtpService } from "../../entities/services/IOtpService";
 import { OtpService } from "../../interface-adapters/services/OtpService";
@@ -57,6 +59,9 @@ export class RepositoryRegistry {
     container.register<IClientRepository>("IClientRepository", {
       useClass: ClientRepository,
     });
+    container.register<IBidBaseRepository>("IBidBaseRepository",{
+      useClass:BidBaseRepository
+    })
     container.register<AuctionWonRepositoryInterface>("AuctionWonRepositoryInterface",{
       useClass:AuctionWonRepository
     })

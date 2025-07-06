@@ -13,7 +13,7 @@ import { NotificationType } from "../../shared/types/notification.Types";
 import { messaging } from "../../shared/config";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
 import { IRedisClient } from "../../entities/services/IRedisClient";
-import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
+import { IBidRepository } from "../../entities/repositoryInterfaces/bid/IBidRepository";
 import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
 import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
 

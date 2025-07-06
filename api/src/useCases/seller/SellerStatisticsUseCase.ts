@@ -3,7 +3,7 @@ import { inject, injectable } from "tsyringe";
 import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
 import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/ISellerRepository";
 import { CustomError } from "../../entities/utils/custom.error";
-import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
+import { IBidRepository } from "../../entities/repositoryInterfaces/bid/IBidRepository";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
 import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
 @injectable()

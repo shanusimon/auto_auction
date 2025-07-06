@@ -1,14 +1,11 @@
 import { ObjectId } from "mongoose";
 import { IBidEntity } from "../../../entities/models/bid.entity";
-import { IBidRepository } from "../../../entities/repositoryInterfaces/bid/bidRepository";
+import { IBidRepository } from "../../../entities/repositoryInterfaces/bid/IBidRepository";
 import { BidModel } from "../../../frameworks/database/models/bid.model";
 import { CreateBidDTO } from "../../../shared/dtos/bid.dto";
 
 export class BidRepository implements IBidRepository {
   constructor() {}
-  async create(data: CreateBidDTO): Promise<IBidEntity> {
-    return await BidModel.create(data);
-  }
   async findHighestBidByCarAndUser(
     carId: string,
     userId: string
@@ -63,7 +60,5 @@ export class BidRepository implements IBidRepository {
       const bid = await BidModel.findOne({carId}).sort({amount:-1}).limit(1).exec();
       return bid
   }
-  async findById(id:string):Promise<IBidEntity | null>{
-    return BidModel.findById(id);
-  }
+
 }

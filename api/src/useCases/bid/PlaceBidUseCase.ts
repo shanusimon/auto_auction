@@ -1,7 +1,7 @@
 import { IPlaceBidUseCase } from "../../entities/useCaseInterfaces/bid/IBidUseCase";
 import { inject, injectable } from "tsyringe";
 import { IWalletRepository } from "../../entities/repositoryInterfaces/wallet/IWalletRepositoryInterface";
-import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
+import { IBidRepository } from "../../entities/repositoryInterfaces/bid/IBidRepository";
 import { IWalletTransactionRepository } from "../../entities/repositoryInterfaces/wallet-transaction/IWalletTransactionRepository";
 import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
 import { ERROR_MESSAGES } from "../../shared/constants";
@@ -11,6 +11,7 @@ import { INotificationRepository } from "../../entities/repositoryInterfaces/not
 import { NotificationType } from "../../shared/types/notification.Types";
 import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
 import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
+import { IBidBaseRepository } from "../../entities/repositoryInterfaces/bid/IBidBaseRepository";
 @injectable()
 export class PlaceBidUseCase implements IPlaceBidUseCase {
   constructor(
@@ -22,7 +23,8 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
     @inject("ISellerRepository") private sellerRepository:ISellerRepository,
     @inject("INotificationRepository") private notificationRepository:INotificationRepository,
     @inject("ICarBaseRepository") private carBaseRepository:ICarBaseRepository,
-    @inject("ISellerBaseRepository") private sellerBaseRepository:ISellerBaseRepository
+    @inject("ISellerBaseRepository") private sellerBaseRepository:ISellerBaseRepository,
+    @inject("IBidBaseRepository") private bidBaseRepository:IBidBaseRepository
   ) {}
 
   async execute(
@@ -81,7 +83,7 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
       status: "completed",
     });
 
-    const newBid = await this.bidRepository.create({
+    const newBid = await this.bidBaseRepository.create({
       carId,
       userId,
       amount,

@@ -1,7 +1,7 @@
 import { IBidEntity } from "../../entities/models/bid.entity";
 import { IGetBidHistoryUseCase } from "../../entities/useCaseInterfaces/bid/IGetBidHistoryUseCase";
 import { inject,injectable } from "tsyringe";
-import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
+import { IBidRepository } from "../../entities/repositoryInterfaces/bid/IBidRepository";
 import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
 import { CustomError } from "../../entities/utils/custom.error";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";

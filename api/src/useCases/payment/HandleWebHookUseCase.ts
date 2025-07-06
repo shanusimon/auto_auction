@@ -9,8 +9,9 @@ import { IWalletTransactionRepository } from "../../entities/repositoryInterface
 import { IWalletRepository } from "../../entities/repositoryInterfaces/wallet/IWalletRepositoryInterface";
 import { IAdminWalletRepository } from "../../entities/repositoryInterfaces/adminWallet/IAdminWalletRepository";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
-import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
+import { IBidRepository } from "../../entities/repositoryInterfaces/bid/IBidRepository";
 import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
+import { IBidBaseRepository } from "../../entities/repositoryInterfaces/bid/IBidBaseRepository";
 
 @injectable()
 export class WebHookUseCase implements IWebHookUseCase {
@@ -18,6 +19,7 @@ export class WebHookUseCase implements IWebHookUseCase {
   private endpointSecret: string;
 
   constructor(
+    @inject("IBidBaseRepository") private bidBaseRepository:IBidBaseRepository,
     @inject("AuctionWonRepositoryInterface")
     private auctionWonRepository: AuctionWonRepositoryInterface,
     @inject("IWalletTransactionRepository")
@@ -213,7 +215,7 @@ export class WebHookUseCase implements IWebHookUseCase {
         });
       }
 
-      const bid = await this.bidRepository.findById(
+      const bid = await this.bidBaseRepository.findById(
         auctionWon.bidId.toString()
       );
       const wallet = await this.walletRepository.findWalletByUserId(userId);

@@ -1,6 +1,6 @@
 import { CommentWithBidsDto, IGetAllCommentsAndBidsUseCase } from "../../entities/useCaseInterfaces/comments/IGetAllCommentsAndBidsUseCase";
 import { inject,injectable } from "tsyringe";
-import { IBidRepository } from "../../entities/repositoryInterfaces/bid/bidRepository";
+import { IBidRepository } from "../../entities/repositoryInterfaces/bid/IBidRepository";
 import { ICarCommentRepository } from "../../entities/repositoryInterfaces/comments/ICarCommentRepository";
 
 
