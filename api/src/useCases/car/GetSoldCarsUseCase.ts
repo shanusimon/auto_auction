@@ -9,9 +9,7 @@ export class getSoldCarsUseCase implements IGetSoldCarsUseCase{
         @inject("ICarRepository") private carRepository:ICarRepository
     ){}
     async execute(): Promise<ICarEntity[] | []> {
-        console.log("hello sold car useCase")
         const soldCars = await this.carRepository.findSoldCars();
-        console.log("This is sold cars",soldCars)
         return soldCars
     }
 }

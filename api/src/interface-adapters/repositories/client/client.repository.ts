@@ -8,6 +8,31 @@ import { ERROR_MESSAGES, HTTP_STATUS } from "../../../shared/constants";
 
 @injectable()
 export class ClientRepository implements IClientRepository {
+  async findCount(): Promise<Number> {
+    return await ClientModel.countDocuments();
+  }
+  async find(
+    filter: any,
+    skip: number,
+    limit: number
+  ): Promise<{ users: IClientEntity[] | []; total: number }> {
+    const users = await ClientModel.find({ role: "user", ...filter })
+      .skip(skip)
+      .limit(limit);
+    return { users, total: users.length };
+  }
+  async save(data: Partial<IClientEntity>): Promise<IClientEntity> {
+    return await ClientModel.create(data);
+  }
+  async findById(id: any): Promise<IClientEntity | null> {
+    const client = await ClientModel.findById(id).lean();
+    if (!client) return null;
+
+    return {
+      ...client,
+      id: client._id.toString(),
+    } as IClientEntity;
+  }
   async findByEmail(email: string): Promise<IClientEntity | null> {
     const client = await ClientModel.findOne({ email }).lean();
     if (!client) return null;

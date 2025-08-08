@@ -5,14 +5,13 @@ import { ICarEntity } from "../../entities/models/car.entity";
 import { CustomError } from "../../entities/utils/custom.error";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
 import { INodemailerService } from "../../entities/services/INodeMailerService";
-import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
 
 @injectable()
 export class UpdateCarStatus implements IUpdateCarStatus {
   constructor(
     @inject("ICarRepository") private carRepository: ICarRepository,
     @inject("INodemailerService") private mailService: INodemailerService,
-    @inject("ICarBaseRepository") private carBaseRepository: ICarBaseRepository
+
   ) {}
   async execute(
     carId: string,
@@ -20,7 +19,7 @@ export class UpdateCarStatus implements IUpdateCarStatus {
     sellerEmail: string,
     rejectionReason?: string
   ): Promise<void> {
-    const car = await this.carBaseRepository.findById(carId);
+    const car = await this.carRepository.findOne({_id:carId});
     if (!car) {
       throw new CustomError(
         ERROR_MESSAGES.CAR_NOT_FOUND,

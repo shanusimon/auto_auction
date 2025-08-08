@@ -5,17 +5,15 @@ import { IBidRepository } from "../../entities/repositoryInterfaces/bid/IBidRepo
 import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
 import { CustomError } from "../../entities/utils/custom.error";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
-import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
 
 @injectable()
 export class getBidHistoryUseCase implements IGetBidHistoryUseCase{
     constructor(
         @inject("IBidRepository") private bidRepository:IBidRepository,
         @inject("ICarRepository") private carRepository:ICarRepository,
-         @inject("ICarBaseRepository") private carBaseRepository:ICarBaseRepository
     ){}
     async execute(carId: string): Promise<IBidEntity[]> {
-        const car = await this.carBaseRepository.findById(carId);
+        const car = await this.carRepository.findOne({_id:carId});
         if(!car || !car._id){
             throw new CustomError(
                 ERROR_MESSAGES.CAR_NOT_FOUND,

@@ -8,8 +8,6 @@ import { ISellerEntity } from "../../entities/models/seller.entity";
 import { messaging } from "../../shared/config";
 import { INotificationRepository } from "../../entities/repositoryInterfaces/notification/INotificationRepository";
 import { NotificationType } from "../../shared/types/notification.Types";
-import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
-import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
 export enum SellerStatus {
   APPROVED = "approved",
   REJECTED = "rejected",
@@ -22,10 +20,6 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
     @inject("ISellerRepository") private sellerRepository: ISellerRepository,
     @inject("INotificationRepository")
     private notificationRepository: INotificationRepository,
-    @inject("ISellerBaseRepository")
-    private sellerBaseRepository: ISellerBaseRepository,
-    @inject("IClientBaseRepository")
-    private clientBaseRepository: IClientBaseRepository
   ) {}
 
   async execute(
@@ -33,7 +27,7 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
     status: SellerStatus,
     reason: string | undefined
   ): Promise<ISellerEntity | null> {
-    const seller = await this.sellerRepository.findOne(id);
+    const seller = await this.sellerRepository.findOne({_id:id});
     if (!seller) {
       throw new CustomError(
         ERROR_MESSAGES.USER_NOT_FOUND,
@@ -41,7 +35,7 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
       );
     }
 
-    const user = await this.clientBaseRepository.findById(seller.userId);
+    const user = await this.clientRepository.findById(seller.userId);
 
     if (status === SellerStatus.APPROVED) {
       seller.approvalStatus = status;
@@ -49,7 +43,7 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
       seller.isActive = true;
       seller.isSeller = true;
 
-      const updated = await this.sellerBaseRepository.update(seller);
+      const updated = await this.sellerRepository.update(seller);
       if (!updated) {
         throw new CustomError(
           ERROR_MESSAGES.UPDATE_FAILED,
@@ -112,7 +106,7 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
         }
       }
       if (seller._id) {
-        await this.sellerBaseRepository.delete(seller._id.toString());
+        await this.sellerRepository.delete(seller._id.toString());
       }
       return null;
     }

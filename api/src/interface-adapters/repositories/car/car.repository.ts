@@ -2,12 +2,41 @@ import { ICarEntity } from "../../../entities/models/car.entity";
 import { ICarRepository } from "../../../entities/repositoryInterfaces/car/ICarRepository";
 import { CarModel } from "../../../frameworks/database/models/car.model";
 import { carDTO, ICarFilter } from "../../../shared/dtos/car.dto";
+import { CreateCarDTO } from "../../../shared/dtos/car.dto";
+import { FilterQuery } from "mongoose";
+import { BaseRepository } from "../base-repository";
 
-export class CarRepository implements ICarRepository {
+export class CarRepository
+  extends BaseRepository<ICarEntity>
+  implements ICarRepository
+{
+  constructor() {
+    super(CarModel);
+  }
   async findByIdAndUpdate(id: string, data: ICarEntity): Promise<void> {
     await CarModel.findByIdAndUpdate(id, data).exec();
   }
-
+  async findWithPagination(
+    filter: FilterQuery<ICarEntity>,
+    skip: number,
+    limit: number
+  ): Promise<ICarEntity[]> {
+    return await CarModel.find(filter).skip(skip).limit(limit).lean().exec();
+  }
+  async create(data: CreateCarDTO): Promise<ICarEntity> {
+    const car = await CarModel.create(data);
+    return car;
+  }
+  async update(
+    id: string,
+    updateData: Partial<ICarEntity>
+  ): Promise<ICarEntity | null> {
+    return await CarModel.findByIdAndUpdate(id, updateData, {
+      new: true,
+    })
+      .lean()
+      .exec();
+  }
   async getFilteredCars(
     filter: ICarFilter,
     sort: string,

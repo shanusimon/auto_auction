@@ -14,8 +14,7 @@ import { messaging } from "../../shared/config";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
 import { IRedisClient } from "../../entities/services/IRedisClient";
 import { IBidRepository } from "../../entities/repositoryInterfaces/bid/IBidRepository";
-import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
-import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
+
 
 @injectable()
 export class EndAuctionUseCase implements IEndAuctionUseCase {
@@ -30,8 +29,6 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
     @inject("IClientRepository") private clientRepository: IClientRepository,
     @inject("IRedisClient") private redisClient: IRedisClient,
     @inject("IBidRepository") private bidRepository:IBidRepository,
-    @inject("ICarBaseRepository") private carBaseRepository:ICarBaseRepository,
-    @inject("IClientBaseRepository") private clientBaseRepository:IClientBaseRepository
   ) {}
 
   public initialize(io: SocketIOServer) {
@@ -78,7 +75,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
       );
 
       if (!car) {
-        const existingCar = await this.carBaseRepository.findById(carId);
+        const existingCar = await this.carRepository.findOne({_id:carId});
         if (!existingCar) {
           throw new CustomError(ERROR_MESSAGES.CAR_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
         }
@@ -102,8 +99,8 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
       }
 
       const user = await this.sellerRepository.findOne(car.sellerId.toString());
-      const carSeller = await this.clientBaseRepository.findById(user?.userId);
-      const carWonClient = await this.clientBaseRepository.findById(car.highestBidderId);
+      const carSeller = await this.clientRepository.findById(user?.userId);
+      const carWonClient = await this.clientRepository.findById(car.highestBidderId);
       const topBid = await this.bidRepository.findTopBidByCarId(carId);
 
       if (!topBid || !topBid._id || !topBid.amount || !topBid.userId) {

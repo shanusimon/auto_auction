@@ -9,7 +9,7 @@ import { IAuctionWonEntity } from "../../entities/models/auction.won.entity";
 import { IAdminWalletRepository } from "../../entities/repositoryInterfaces/adminWallet/IAdminWalletRepository";
 import { IAdminWallet } from "../../entities/models/admin.wallet.entity";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
-import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
+
 
 @injectable()
 export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
@@ -21,8 +21,6 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
     @inject("IAdminWalletRepository")
     private adminWalletRepository: IAdminWalletRepository,
     @inject("IClientRepository") private clientRepository: IClientRepository,
-    @inject("IClientBaseRepository")
-    private clientBaseRepository: IClientBaseRepository
   ) {}
 
   async execute(userId: string, sessionId: string): Promise<IAuctionWonEntity> {
@@ -38,7 +36,7 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
       );
     }
 
-    const user = await this.clientBaseRepository.findById(userId);
+    const user = await this.clientRepository.findById(userId);
     if (!user) {
       throw new CustomError(
         ERROR_MESSAGES.USER_NOT_FOUND,

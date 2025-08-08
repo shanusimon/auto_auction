@@ -36,14 +36,6 @@ import { AuctionWonRepositoryInterface } from "../../entities/repositoryInterfac
 import { AuctionWonRepository } from "../../interface-adapters/repositories/auctionwon/AuctionWonRepository";
 import { IAdminWalletRepository } from "../../entities/repositoryInterfaces/adminWallet/IAdminWalletRepository";
 import { adminWalletRepository } from "../../interface-adapters/repositories/adminWallet/adminWalletRepository";
-import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
-import { CarBaseRepository } from "../../interface-adapters/repositories/car/car.base.repository";
-import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
-import { SellerBaseRepository } from "../../interface-adapters/repositories/seller/seller.base.repository";
-import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
-import { ClientBaseRepository } from "../../interface-adapters/repositories/client/client.base.repository";
-import { IBidBaseRepository } from "../../entities/repositoryInterfaces/bid/IBidBaseRepository";
-import { BidBaseRepository } from "../../interface-adapters/repositories/bid/bid.base.repository";
 //service imports
 import { IOtpService } from "../../entities/services/IOtpService";
 import { OtpService } from "../../interface-adapters/services/OtpService";
@@ -59,27 +51,15 @@ export class RepositoryRegistry {
     container.register<IClientRepository>("IClientRepository", {
       useClass: ClientRepository,
     });
-    container.register<IBidBaseRepository>("IBidBaseRepository",{
-      useClass:BidBaseRepository
-    })
     container.register<AuctionWonRepositoryInterface>("AuctionWonRepositoryInterface",{
       useClass:AuctionWonRepository
     })
     container.register<IAdminWalletRepository>("IAdminWalletRepository",{
       useClass:adminWalletRepository
     })
-    container.register<ICarBaseRepository>("ICarBaseRepository",{
-      useClass:CarBaseRepository
-    })
-    container.register<IClientBaseRepository>("IClientBaseRepository",{
-      useClass:ClientBaseRepository
-    })
     container.register<IUserExistenceService>("IUserExistenceService", {
       useClass: UserExistenceService,
     });
-    container.register<ISellerBaseRepository>("ISellerBaseRepository",{
-      useClass:SellerBaseRepository
-    })
     container.register<ICarRepository>("ICarRepository", {
       useClass: CarRepository,
     });

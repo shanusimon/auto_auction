@@ -3,19 +3,16 @@ import { inject,injectable } from "tsyringe";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
 import { CustomError } from "../../entities/utils/custom.error";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
-import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
-import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
+import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/ISellerRepository";
 @injectable()
 export class IsSellerUseCase implements IIsSellerUseCase {
     constructor(
         @inject("IClientRepository") private clientRepository: IClientRepository,
-        @inject("ISellerBaseRepository") private sellerBaseRepository:ISellerBaseRepository,
-        @inject("IClientBaseRepository") private clientBaseRepository:IClientBaseRepository
-        
+        @inject("ISellerRepository") private sellerRepository:ISellerRepository
     ) {}
 
     async execute(id: string): Promise<{ isSeller: boolean; sellerDetails?: any; isActive:boolean}> {
-        const user = await this.clientBaseRepository.findById(id);
+        const user = await this.clientRepository.findById(id);
         if (!user || !user.id) {
             throw new CustomError(
                 ERROR_MESSAGES.USER_NOT_FOUND,
@@ -23,7 +20,7 @@ export class IsSellerUseCase implements IIsSellerUseCase {
             );
         }
         
-        const seller = await this.sellerBaseRepository.findByUserId(user.id);
+        const seller = await this.sellerRepository.findByUserId(user.id);
         console.log(seller);
         return {
             isSeller: seller?.approvalStatus === "approved" ? true : false,

@@ -12,7 +12,6 @@ export class GetAllBidsUseCase implements IGetAllBidsUseCase{
     ){}
     async execute(userId: string): Promise<IBidEntity[] | []> {
         const bids = await this.bidRepository.findByUserId(userId);
-        console.log(bids)
         return bids
     }
 }

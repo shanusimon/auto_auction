@@ -10,8 +10,7 @@ import { IWalletRepository } from "../../entities/repositoryInterfaces/wallet/IW
 import { IAdminWalletRepository } from "../../entities/repositoryInterfaces/adminWallet/IAdminWalletRepository";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
 import { IBidRepository } from "../../entities/repositoryInterfaces/bid/IBidRepository";
-import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
-import { IBidBaseRepository } from "../../entities/repositoryInterfaces/bid/IBidBaseRepository";
+
 
 @injectable()
 export class WebHookUseCase implements IWebHookUseCase {
@@ -19,7 +18,6 @@ export class WebHookUseCase implements IWebHookUseCase {
   private endpointSecret: string;
 
   constructor(
-    @inject("IBidBaseRepository") private bidBaseRepository:IBidBaseRepository,
     @inject("AuctionWonRepositoryInterface")
     private auctionWonRepository: AuctionWonRepositoryInterface,
     @inject("IWalletTransactionRepository")
@@ -29,7 +27,6 @@ export class WebHookUseCase implements IWebHookUseCase {
     private adminWalletRepository: IAdminWalletRepository,
     @inject("IClientRepository") private clientRepository: IClientRepository,
     @inject("IBidRepository") private bidRepository: IBidRepository,
-    @inject("IClientBaseRepository") private clientBaseRepository:IClientBaseRepository
   ) {
     this.stripe = new Stripe(config.stripe.STRIPE_SECRET_KEY || "", {
        apiVersion: "2024-06-20",
@@ -122,7 +119,7 @@ export class WebHookUseCase implements IWebHookUseCase {
       );
     }
 
-    const user = await this.clientBaseRepository.findById(userId);
+    const user = await this.clientRepository.findById(userId);
     if (!user) {
       throw new CustomError(
         `User not found with ID: ${userId}`,
@@ -215,7 +212,7 @@ export class WebHookUseCase implements IWebHookUseCase {
         });
       }
 
-      const bid = await this.bidBaseRepository.findById(
+      const bid = await this.bidRepository.findById(
         auctionWon.bidId.toString()
       );
       const wallet = await this.walletRepository.findWalletByUserId(userId);

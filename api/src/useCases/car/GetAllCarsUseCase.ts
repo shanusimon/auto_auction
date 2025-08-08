@@ -3,7 +3,6 @@ import { inject, injectable } from "tsyringe";
 import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepository";
 import { PagenateCars } from "../../entities/models/pageinated-users.entity";
 import { IEndAuctionUseCase } from "../../entities/useCaseInterfaces/auction/IEndAuctionUseCase";
-import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
 import { FilterQuery } from "mongoose";
 import { ICarEntity } from "../../entities/models/car.entity";
 @injectable()
@@ -11,7 +10,6 @@ export class GetAllCarsUseCase implements IGetAllCarsUseCase {
   constructor(
     @inject("ICarRepository") private carRepository: ICarRepository,
     @inject("IEndAuctionUseCase") private endAuctionCarUseCase:IEndAuctionUseCase,
-    @inject("ICarBaseRepository") private carBaseRepository:ICarBaseRepository
   ) {}
   async execute(
     page: number,
@@ -36,8 +34,8 @@ export class GetAllCarsUseCase implements IGetAllCarsUseCase {
     }
 
     const [cars,total] = await Promise.all([
-        this.carBaseRepository.find(filter,skip,validPageSize),
-        this.carBaseRepository.count(filter)
+        this.carRepository.findWithPagination(filter,skip,validPageSize),
+        this.carRepository.countDocuments(filter)
     ])
     
 

@@ -11,9 +11,6 @@ import { ICarRepository } from '../../entities/repositoryInterfaces/car/ICarRepo
 import { AuctionWonRepositoryInterface } from '../../entities/repositoryInterfaces/auctionwon/IAuctionWonRepositoryInterface';
 import { CustomError } from '../../entities/utils/custom.error';
 import { ERROR_MESSAGES, HTTP_STATUS } from '../../shared/constants';
-import { ICarBaseRepository } from '../../entities/repositoryInterfaces/car/ICarBaseRepository';
-import { ISellerBaseRepository } from '../../entities/repositoryInterfaces/seller/ISellerBaseRepository';
-import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
 
 @injectable()
 export class getAdminDashboadUseCase implements IGetAdminDashBoardUseCase {
@@ -23,10 +20,6 @@ export class getAdminDashboadUseCase implements IGetAdminDashBoardUseCase {
     @inject('ISellerRepository') private sellerRepository: ISellerRepository,
     @inject('ICarRepository') private carRepository: ICarRepository,
     @inject("AuctionWonRepositoryInterface") private auctionWonRepository:AuctionWonRepositoryInterface,
-    @inject("ICarBaseRepository") private carBaseRepository:ICarBaseRepository,
-    @inject("ISellerBaseRepository") private sellerBaseRespository:ISellerBaseRepository,
-        @inject("IClientBaseRepository")
-    private clientBaseRepository: IClientBaseRepository
   ) {}
 
   async execute(): Promise<{
@@ -40,9 +33,9 @@ export class getAdminDashboadUseCase implements IGetAdminDashBoardUseCase {
     const wallet = await this.adminWalletRepository.findSingle();
     const walletBalance = wallet?.balanceAmount || 0;
 
-    const CustomersCount = Number(await this.clientBaseRepository.findCount());
-    const approvedSellers = Number(await this.sellerBaseRespository.count({}));
-    const carRegistered = Number(await this.carBaseRepository.count({}));
+    const CustomersCount = Number(await this.clientRepository.findCount());
+    const approvedSellers = Number(await this.sellerRepository.count({}));
+    const carRegistered = Number(await this.carRepository.count({}));
 
     const transactionHistory: TransactionHistory[] = [];
     if (wallet?.transaction?.length) {
@@ -54,7 +47,7 @@ export class getAdminDashboadUseCase implements IGetAdminDashBoardUseCase {
             HTTP_STATUS.BAD_REQUEST
           )
         }
-        const car = await this.carBaseRepository.findById(auciton.carId.toString());
+        const car = await this.carRepository.findById(auciton.carId.toString());
         transactionHistory.push({
           transactionId: tx.transactionId,
           userName: tx.userName,

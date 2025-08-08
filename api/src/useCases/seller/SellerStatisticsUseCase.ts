@@ -5,18 +5,17 @@ import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/IS
 import { CustomError } from "../../entities/utils/custom.error";
 import { IBidRepository } from "../../entities/repositoryInterfaces/bid/IBidRepository";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
-import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
+
 @injectable()
 export class GetSellerStatistics implements IGetSellerStatisticsUseCase {
   constructor(
     @inject("ICarRepository") private carRepository: ICarRepository,
     @inject("ISellerRepository") private sellerRepository: ISellerRepository,
     @inject("IBidRepository") private bidRepository: IBidRepository,
-      @inject("ISellerBaseRepository") private sellerBaseRepository:ISellerBaseRepository
   ) {}
   
   async execute(id: string): Promise<any> {
-    const seller = await this.sellerBaseRepository.findByUserId(id);
+    const seller = await this.sellerRepository.findByUserId(id);
     if(!seller || !seller._id){
       throw new CustomError(
         ERROR_MESSAGES.SELLER_NOT_FOUND,

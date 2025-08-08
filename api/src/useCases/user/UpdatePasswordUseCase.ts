@@ -4,17 +4,15 @@ import { IBcrypt } from "../../frameworks/security/bcrypt.interface";
 import { IClientRepository } from "../../entities/repositoryInterfaces/client/IClient-repository.interface";
 import { CustomError } from "../../entities/utils/custom.error";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
-import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
 
 @injectable()
 export class UpdatePasswordUseCase implements IUpdatePasswordUseCase{
     constructor(
         @inject("IClientRepository") private clientRepo:IClientRepository,
         @inject("IPasswordBcrypt") private passwordBcrypt:IBcrypt,
-        @inject("IClientBaseRepository") private clientBaseRepository:IClientBaseRepository
     ){}
     async execute(id: string, currPass: string, newPass: string): Promise<void> {
-        const user = await this.clientBaseRepository.findById(id);
+        const user = await this.clientRepo.findById(id);
         
 
         
@@ -24,10 +22,7 @@ export class UpdatePasswordUseCase implements IUpdatePasswordUseCase{
                 HTTP_STATUS.NOT_FOUND
             )
         }
-        console.log(currPass,newPass,user.password)
         const isPasswordMatch = await this.passwordBcrypt.compare(currPass,user.password);
-
-        console.log("hello",isPasswordMatch);
 
         if(!isPasswordMatch){
             throw new CustomError(
@@ -38,7 +33,6 @@ export class UpdatePasswordUseCase implements IUpdatePasswordUseCase{
 
         const isCurrentMatchWithOld = await this.passwordBcrypt.compare(newPass,user.password);
 
-        console.log("hai    ",isCurrentMatchWithOld)
         if(isCurrentMatchWithOld){
             throw new CustomError(
                 ERROR_MESSAGES.SAME_CURR_NEW_PASSWORD,
@@ -47,7 +41,6 @@ export class UpdatePasswordUseCase implements IUpdatePasswordUseCase{
         }
 
         const hashedPassword = await this.passwordBcrypt.hash(newPass);
-        console.log(hashedPassword)
         await this.clientRepo.findByIdAndUpdatePassword(id,hashedPassword);
     }
 }

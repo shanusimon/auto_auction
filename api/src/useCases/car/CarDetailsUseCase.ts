@@ -6,19 +6,17 @@ import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/IS
 import { CustomError } from "../../entities/utils/custom.error";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
 import { ISellerEntity } from "../../entities/models/seller.entity";
-import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
 
 @injectable()
 export class GetCarDetailsUseCase implements IGetCarDetailsUseCase {
   constructor(
     @inject("ICarRepository") private carRepository: ICarRepository,
     @inject("ISellerRepository") private sellerRepository: ISellerRepository,
-     @inject("ICarBaseRepository") private carBaseRepository:ICarBaseRepository
   ) {}
   async execute(
     carId: string
   ): Promise<{ car: ICarEntity; seller: ISellerEntity | null }> {
-    const car = await this.carBaseRepository.findById(carId);
+    const car = await this.carRepository.findOne({_id:carId});
     if (!car) {
       throw new CustomError(
         ERROR_MESSAGES.CAR_NOT_FOUND,

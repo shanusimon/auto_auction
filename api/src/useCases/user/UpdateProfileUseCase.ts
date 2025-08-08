@@ -5,18 +5,14 @@ import { CustomError } from "../../entities/utils/custom.error";
 import { IClientEntity } from "../../entities/models/client.entity";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
 import { ClientProfileResponse } from "../../shared/dtos/user.dto";
-import { IClientBaseRepository } from "../../entities/repositoryInterfaces/client/IClientBaseRepository";
-
-
 
 @injectable()
 export class UpdateProfileUseCase implements IUpdateProfileUseCase{
     constructor(
         @inject("IClientRepository") private clientRepo:IClientRepository,
-                @inject("IClientBaseRepository") private clientBaseRepository:IClientBaseRepository
     ){}
     async execute(clientId: string, data: Partial<IClientEntity>): Promise<ClientProfileResponse> {
-        const isExist = await this.clientBaseRepository.findById(clientId);
+        const isExist = await this.clientRepo.findById(clientId);
 
         if(!isExist){
             throw new CustomError(

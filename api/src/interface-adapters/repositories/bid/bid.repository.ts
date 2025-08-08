@@ -6,6 +6,15 @@ import { CreateBidDTO } from "../../../shared/dtos/bid.dto";
 
 export class BidRepository implements IBidRepository {
   constructor() {}
+  async findById(id: string): Promise<IBidEntity | null> {
+    return BidModel.findById(id);
+  }
+  async delete(id: string): Promise<void> {
+    await BidModel.findByIdAndDelete(id);
+  }
+  async create(data: CreateBidDTO): Promise<IBidEntity> {
+    return await BidModel.create(data);
+  }
   async findHighestBidByCarAndUser(
     carId: string,
     userId: string
@@ -53,12 +62,14 @@ export class BidRepository implements IBidRepository {
     return bidCount;
   }
   async countBidsForCar(carId: string): Promise<number> {
-      const bidsCount = await BidModel.countDocuments({carId});
-      return bidsCount
+    const bidsCount = await BidModel.countDocuments({ carId });
+    return bidsCount;
   }
   async findTopBidByCarId(carId: string): Promise<IBidEntity | null> {
-      const bid = await BidModel.findOne({carId}).sort({amount:-1}).limit(1).exec();
-      return bid
+    const bid = await BidModel.findOne({ carId })
+      .sort({ amount: -1 })
+      .limit(1)
+      .exec();
+    return bid;
   }
-
 }

@@ -9,9 +9,7 @@ import { ICarEntity } from "../../entities/models/car.entity";
 import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/ISellerRepository";
 import { INotificationRepository } from "../../entities/repositoryInterfaces/notification/INotificationRepository";
 import { NotificationType } from "../../shared/types/notification.Types";
-import { ICarBaseRepository } from "../../entities/repositoryInterfaces/car/ICarBaseRepository";
-import { ISellerBaseRepository } from "../../entities/repositoryInterfaces/seller/ISellerBaseRepository";
-import { IBidBaseRepository } from "../../entities/repositoryInterfaces/bid/IBidBaseRepository";
+
 @injectable()
 export class PlaceBidUseCase implements IPlaceBidUseCase {
   constructor(
@@ -22,9 +20,6 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
     @inject("ICarRepository") private carRepository: ICarRepository,
     @inject("ISellerRepository") private sellerRepository:ISellerRepository,
     @inject("INotificationRepository") private notificationRepository:INotificationRepository,
-    @inject("ICarBaseRepository") private carBaseRepository:ICarBaseRepository,
-    @inject("ISellerBaseRepository") private sellerBaseRepository:ISellerBaseRepository,
-    @inject("IBidBaseRepository") private bidBaseRepository:IBidBaseRepository
   ) {}
 
   async execute(
@@ -32,7 +27,7 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
     carId: string,
     userId: string
   ): Promise<ICarEntity> {
-    const car = await this.carBaseRepository.findById(carId);
+    const car = await this.carRepository.findOne({_id:carId});
     if (!car) {
       throw new Error(ERROR_MESSAGES.CAR_NOT_FOUND);
     }
@@ -42,7 +37,7 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
       throw new Error("Auction has already ended");
     }
 
-    const seller = await this.sellerBaseRepository.findByUserId(userId);
+    const seller = await this.sellerRepository.findByUserId(userId);
     console.log("is this same",seller?._id,car.sellerId);
     if(car.sellerId.toString() === seller?._id?.toString()){
       throw new Error("You cannot place a bid on a car that you have listed.");
@@ -83,7 +78,7 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
       status: "completed",
     });
 
-    const newBid = await this.bidBaseRepository.create({
+    const newBid = await this.bidRepository.create({
       carId,
       userId,
       amount,
@@ -152,7 +147,7 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
         updateData.auctionEndTime = newEndTime;
       }
     }
-    const updatedCar = await this.carBaseRepository.update(carId, updateData);
+    const updatedCar = await this.carRepository.update(carId, updateData);
     if (!updatedCar) {
       throw new Error("failed to update car")
     }
