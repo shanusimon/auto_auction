@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { AxiosError } from "axios";
 
 export interface SignupFormValues {
     fullName: string;
@@ -66,6 +67,11 @@ export interface IClient {
   joinedAt:Date
 }
 
+
+export const ADMIN_PREFIX = "/_ad/admin";
+
+
+export const USER_PREFIX = "/_us/user";
 
 export interface AuthResponse {
   success: boolean;
@@ -191,4 +197,11 @@ export enum NotificationType {
   CHAT_MESSAGE = "CHAT_MESSAGE",
   SELLER_REQUEST_REJECT = "YOUR_SELLER_REQUEST_HAS_BEEN_REJECTED",
   SELLER_REQUEST_APPROVAL = "YOUR_SELLER_REQUEST_HAS_BEEN_APPROVED"
+}
+
+export interface InterceptorOptions {
+  refreshTokenUrl: string;
+  logoutAction: () => any; 
+  redirectPath: string;
+  check401: (error: AxiosError<any>) => boolean;
 }

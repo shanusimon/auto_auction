@@ -1,4 +1,4 @@
-import { userAxiosInstance } from "@/api/clientAxios";
+import { userAxiosInstance } from "@/api/axios";
 
 export interface AddMoneyData{
     amount:number

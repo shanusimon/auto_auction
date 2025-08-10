@@ -1,30 +1,28 @@
-import { userAxiosInstance } from "@/api/clientAxios";
+import { userAxiosInstance } from "@/api/axios";
 import { ChangePasswordData } from "@/hooks/user/userDashboard";
-import { CreateCarDTO } from "@/types/CarFormTypes";
+import { CreateCarDTO, CarFilterReturn } from "@/types/CarFormTypes";
 import {
   CreateCommentDto,
   SellerRequestPayload,
   WalletTransactionsResponse,
 } from "@/types/Types";
-import { CarFilterReturn } from "@/types/CarFormTypes";
 import { Post } from "@/types/Post.Types";
 
-export const logoutUser = async () => {
-  const response = await userAxiosInstance.post("/_us/user/logout");
-  return response.data;
+export const logoutUser = async (): Promise<void> => {
+  await userAxiosInstance.post("/logout");
 };
 
-export const carDetails = async (carId:string)=>{
-  const response = await userAxiosInstance.get(`/_us/user/car/${carId}`);
-  return response.data
-}
+export const carDetails = async (carId: string): Promise<any> => {
+  const { data } = await userAxiosInstance.get(`/car/${carId}`);
+  return data;
+};
 
 export const getCars = async (
   year?: number,
   transmission?: string,
   bodyType?: string,
   fuel?: string,
-  sort: string = 'ending-soon',
+  sort: string = "ending-soon",
   page: number = 1,
   limit: number = 20
 ): Promise<CarFilterReturn[]> => {
@@ -38,121 +36,113 @@ export const getCars = async (
     limit: limit.toString(),
   }).toString();
 
-  const response = await userAxiosInstance.get(`/_us/user/cars?${queryParams}`);
-  return response.data.data; 
+  const { data } = await userAxiosInstance.get(`/cars?${queryParams}`);
+  return data.data;
 };
 
-
-export const changePassword = async (data: ChangePasswordData) => {
-  const response = await userAxiosInstance.patch(
-    "/_us/user/change-password",
-    data
-  );
-  console.log("changePassword response", response);
-  return response.data;
+export const changePassword = async (data: ChangePasswordData): Promise<void> => {
+  await userAxiosInstance.patch("/change-password", data);
 };
 
 export const getAllTransaction = async (
   page: number = 1,
   limit: number = 6
 ): Promise<WalletTransactionsResponse> => {
-  const response = await userAxiosInstance.get("/_us/user/getAllTransaction", {
+  const { data } = await userAxiosInstance.get("/getAllTransaction", {
     params: { page, limit },
   });
-  return response.data.data;
+  return data.data;
 };
 
-export const getWalletBalance = async () => {
-  const response = await userAxiosInstance.get("/_us/user/getWalletBalance");
-  return response.data;
+export const getWalletBalance = async (): Promise<number> => {
+  const { data } = await userAxiosInstance.get("/getWalletBalance");
+  return data;
 };
 
-export const getIsSeller = async () => {
-  const repsonse = await userAxiosInstance.get("/_us/user/seller-status");
-  return repsonse.data;
+export const getIsSeller = async (): Promise<boolean> => {
+  const { data } = await userAxiosInstance.get("/seller-status");
+  return data;
 };
 
-export const getSellerRequest = async (data: SellerRequestPayload) => {
-  const response = await userAxiosInstance.post(
-    "/_us/user/seller-request",
-    data
-  );
-  return response.data;
+export const getSellerRequest = async (
+  payload: SellerRequestPayload
+): Promise<any> => {
+  const { data } = await userAxiosInstance.post("/seller-request", payload);
+  return data;
 };
 
-export const saveFCMtoken = async (token: string) => {
-  const response = await userAxiosInstance.post("/_us/user/savefcm-token", {
-    token,
-  });
-  return response.data;
+export const saveFCMtoken = async (token: string): Promise<void> => {
+  await userAxiosInstance.post("/savefcm-token", { token });
 };
 
-export const carRegister = async (carDetails: CreateCarDTO) => {
-  const response = await userAxiosInstance.post("/_us/user/register-car", carDetails);
-  return response.data;
+export const carRegister = async (carDetails: CreateCarDTO): Promise<any> => {
+  const { data } = await userAxiosInstance.post("/register-car", carDetails);
+  return data;
 };
 
-export const carComment = async (comment:CreateCommentDto) => {
-  const response = await userAxiosInstance.post("/_us/user/car-comment",comment);
-  return response.data
-}
-
-export const getCarComments = async(carId:string)=>{
-  const response = await userAxiosInstance.get(`/_us/user/car-comments/${carId}`);
-  return response.data
-}
-
-export const getAllBids = async()=>{
-  const response = await userAxiosInstance.get(`/_us/user/bids`);
-  return response.data
-}
-
-export const getSellerStatistics = async()=>{
-  const response = await userAxiosInstance.get(`/_us/user/seller-statistics`);
-  return response.data.data
-}
-
-export const getBidHistory = async(carId:string)=>{
-  const response = await userAxiosInstance.get(`/_us/user/bid-history/${carId}`);
-  return response.data
-}
-
-export const createPost = async(post:Post)=>{
-  const response = await userAxiosInstance.post(`/_us/user/create-post`,post);
-  return response.data
-}
-
-export const getAllposts = async()=>{
-  const response = await userAxiosInstance.get(`/_us/user/posts`);
-  return response.data
-}
-
-export const addOrRemoveLike = async (postId: string) => {
-  const response = await userAxiosInstance.patch(`/_us/user/like/${postId}`);
-  return response.data;
+export const carComment = async (comment: CreateCommentDto): Promise<any> => {
+  const { data } = await userAxiosInstance.post("/car-comment", comment);
+  return data;
 };
 
-export const getNotifications = async()=>{
-  const response = await userAxiosInstance.get(`/_us/user/notification`);
-  return response.data
-}
+export const getCarComments = async (carId: string): Promise<any[]> => {
+  const { data } = await userAxiosInstance.get(`/car-comments/${carId}`);
+  return data;
+};
 
-export const updateNotification = async (payload:{id?:string,all?:boolean})=>{
-  const response = await userAxiosInstance.patch(`/_us/user/notification`,payload);
-  return response.data
-}
+export const getAllBids = async (): Promise<any[]> => {
+  const { data } = await userAxiosInstance.get("/bids");
+  return data;
+};
 
-export const auctionEnd = async(carId:string)=>{
-  const response = await userAxiosInstance.post(`/_us/user/${carId}/end`)
-  return response.data
-}
+export const getSellerStatistics = async (): Promise<any> => {
+  const { data } = await userAxiosInstance.get("/seller-statistics");
+  return data.data;
+};
 
-export const soldCars = async () => {
-  const response = await userAxiosInstance.get(`/_us/user/soldcars`)
-  return response.data
-}
+export const getBidHistory = async (carId: string): Promise<any[]> => {
+  const { data } = await userAxiosInstance.get(`/bid-history/${carId}`);
+  return data;
+};
 
-export const wonAuction = async ()=>{
-  const response = await userAxiosInstance.get(`/_us/user/auction/won`)
-  return response.data
-}
+export const createPost = async (post: Post): Promise<any> => {
+  const { data } = await userAxiosInstance.post("/create-post", post);
+  return data;
+};
+
+export const getAllPosts = async (): Promise<Post[]> => {
+  const { data } = await userAxiosInstance.get("/posts");
+  return data;
+};
+
+export const addOrRemoveLike = async (postId: string): Promise<any> => {
+  const { data } = await userAxiosInstance.patch(`/like/${postId}`);
+  return data;
+};
+
+export const getNotifications = async (): Promise<any[]> => {
+  const { data } = await userAxiosInstance.get("/notification");
+  return data;
+};
+
+export const updateNotification = async (
+  payload: { id?: string; all?: boolean }
+): Promise<any> => {
+  const { data } = await userAxiosInstance.patch("/notification", payload);
+  return data;
+};
+
+export const auctionEnd = async (carId: string): Promise<any> => {
+  const { data } = await userAxiosInstance.post(`/${carId}/end`);
+  return data;
+};
+
+export const soldCars = async (): Promise<any[]> => {
+  const { data } = await userAxiosInstance.get("/soldcars");
+  return data;
+};
+
+export const wonAuction = async (): Promise<any[]> => {
+  const { data } = await userAxiosInstance.get("/auction/won");
+  return data;
+};
