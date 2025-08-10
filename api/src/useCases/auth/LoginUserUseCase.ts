@@ -10,12 +10,12 @@ import { IUserEntity } from "../../entities/models/user.entity";
 export class LoginUserUseCase implements ILoginUserUseCase{
     private strategies:Record<string,ILoginStrategy>;
     constructor(
-        @inject("ClientLoginStrategy") private clientLogin:ILoginStrategy,
-        @inject("AdminLoginStrategy") private adminLogin:ILoginStrategy
+        @inject("ClientLoginStrategy") private _clientLogin:ILoginStrategy,
+        @inject("AdminLoginStrategy") private _adminLogin:ILoginStrategy
     ){
         this.strategies = {
-            user:clientLogin,
-            admin:adminLogin
+            user:_clientLogin,
+            admin:_adminLogin
         }
     }
     async execute(user: LoginUserDTO): Promise<Partial<IUserEntity>> {

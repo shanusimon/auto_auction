@@ -11,20 +11,20 @@ import { CustomError } from "../../entities/utils/custom.error";
 @injectable()
 export class ResetPasswordUseCase implements IResetPasswordUseCase{
     constructor(
-        @inject("IRedisTokenRepository") private redisRepository:IRedisTokenRepository,
-        @inject("IPasswordBcrypt") private bcrypt:IBcrypt,
-        @inject("ITokenService") private tokenService:ITokenService,
-        @inject("IClientRepository") private clientRepository:IClientRepository
+        @inject("IRedisTokenRepository") private _redisRepository:IRedisTokenRepository,
+        @inject("IPasswordBcrypt") private _bcrypt:IBcrypt,
+        @inject("ITokenService") private _tokenService:ITokenService,
+        @inject("IClientRepository") private _clientRepository:IClientRepository
     ){}
 async execute(newPassword: string, token: string, role: string): Promise<void> {
-    const payload = this.tokenService.verifyResetToken(token);
+    const payload = this._tokenService.verifyResetToken(token);
     if(!payload || !payload.email){
         throw new CustomError(ERROR_MESSAGES.INVALID_TOKEN,HTTP_STATUS.BAD_REQUEST)
     }
 
     const email = payload.email;
 
-    const user = await this.clientRepository.findByEmail(email);
+    const user = await this._clientRepository.findByEmail(email);
 
     if(!user){
         throw new CustomError(
@@ -33,7 +33,7 @@ async execute(newPassword: string, token: string, role: string): Promise<void> {
         )
     }
 
-    const tokenValid = await this.redisRepository.verifyResetToken(user.id ?? "",token)
+    const tokenValid = await this._redisRepository.verifyResetToken(user.id ?? "",token)
 
     if(!tokenValid){
         throw new CustomError(
@@ -42,7 +42,7 @@ async execute(newPassword: string, token: string, role: string): Promise<void> {
         )
     }
 
-    const passwordSame = await this.bcrypt.compare(newPassword,user.password);
+    const passwordSame = await this._bcrypt.compare(newPassword,user.password);
 
     if(passwordSame){
         throw new CustomError(
@@ -51,10 +51,10 @@ async execute(newPassword: string, token: string, role: string): Promise<void> {
         )
     }
 
-    const hashedPassword = await this.bcrypt.hash(newPassword);
+    const hashedPassword = await this._bcrypt.hash(newPassword);
 
-    await this.clientRepository.findAndUpdateByEmail(email,{password:hashedPassword});
+    await this._clientRepository.findAndUpdateByEmail(email,{password:hashedPassword});
 
-    await this.redisRepository.deleteResetToken(user.id ?? "")
+    await this._redisRepository.deleteResetToken(user.id ?? "")
 }
 }

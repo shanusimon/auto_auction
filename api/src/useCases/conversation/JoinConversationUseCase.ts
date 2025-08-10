@@ -5,11 +5,11 @@ import { IConversationRepository } from "../../entities/repositoryInterfaces/con
 @injectable()
 export class JoinConversationUseCase implements IJoinConversationUseCase {
     constructor(
-        @inject("IConversationRepository") private conversationRepository: IConversationRepository
+        @inject("IConversationRepository") private _conversationRepository: IConversationRepository
     ) {}
 
     async execute(userId: string, conversationId: string): Promise<any> {
-        const conversation = await this.conversationRepository.findOne(userId, conversationId);
+        const conversation = await this._conversationRepository.findOne(userId, conversationId);
         if (!conversation) {
             console.log(`Conversation ${conversationId} not found or user ${userId} unauthorized`);
             return null;

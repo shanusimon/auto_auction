@@ -13,13 +13,13 @@ import { IWallet } from "../../../entities/models/wallet.entity";
 @injectable()
 export class ClientRegisterStrategy implements IRegisterStrategy{
     constructor(
-        @inject("IClientRepository") private clientRepository:IClientRepository,
-        @inject("IPasswordBcrypt") private passwordBcrypt:IBcrypt,
-        @inject("IWalletRepository") private walletRepository:IWalletRepository,
+        @inject("IClientRepository") private _clientRepository:IClientRepository,
+        @inject("IPasswordBcrypt") private _passwordBcrypt:IBcrypt,
+        @inject("IWalletRepository") private _walletRepository:IWalletRepository,
     ){}
 
     async register(user: UserDTO): Promise<IUserEntity | void> {
-        const existingClient = await this.clientRepository.findByEmail(
+        const existingClient = await this._clientRepository.findByEmail(
             user.email
         );
 
@@ -34,20 +34,20 @@ export class ClientRegisterStrategy implements IRegisterStrategy{
 
         let hashedPassword = null;
         if(password){
-            hashedPassword = await this.passwordBcrypt.hash(password);
+            hashedPassword = await this._passwordBcrypt.hash(password);
         }
         const clientId = generateUniqueUid("user");
 
         let wallet :IWallet | null = null;
         
         try {
-            wallet = await this.walletRepository.create({
+            wallet = await this._walletRepository.create({
                 userId:null,
                 availableBalance:0,
                 reservedBalance:0
             })
 
-            const newUser = await this.clientRepository.save({
+            const newUser = await this._clientRepository.save({
                 name,
                 email,
                 password:hashedPassword ?? "",
@@ -57,7 +57,7 @@ export class ClientRegisterStrategy implements IRegisterStrategy{
                 walletId:wallet._id
             })
 
-            await this.walletRepository.update(wallet._id,{
+            await this._walletRepository.update(wallet._id,{
                 userId:newUser.id
             })
             
@@ -65,7 +65,7 @@ export class ClientRegisterStrategy implements IRegisterStrategy{
         } catch (error) {
             if(wallet && wallet._id){
                 console.log(`Rolling back: Deleting wallet ${wallet._id}`);
-                await this.walletRepository.delete(wallet._id);
+                await this._walletRepository.delete(wallet._id);
             }
             throw new CustomError(
                 ERROR_MESSAGES.SERVER_ERROR,

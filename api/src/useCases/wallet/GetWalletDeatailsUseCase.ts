@@ -13,7 +13,7 @@ import { IWalletTransactionRepository } from "../../entities/repositoryInterface
 @injectable()
 export class GetWalletDeatailsUseCase implements IGetWalletDeatailsUseCase {
   constructor(
-    @inject("IWalletRepository") private walletRepository: IWalletRepository,
+    @inject("IWalletRepository") private _walletRepository: IWalletRepository,
   ) {}
   async execute(userId: string): Promise<IWallet> {
     if (!userId) {
@@ -22,7 +22,7 @@ export class GetWalletDeatailsUseCase implements IGetWalletDeatailsUseCase {
         HTTP_STATUS.BAD_REQUEST
       );
     }
-    const walletData = await this.walletRepository.findWalletByUserId(userId);
+    const walletData = await this._walletRepository.findWalletByUserId(userId);
     if(!walletData){
         throw new CustomError(
             ERROR_MESSAGES.WALLET_NOT_FOUND,

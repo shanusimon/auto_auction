@@ -18,20 +18,20 @@ import { IPaymentService } from "../../../entities/services/IStripeService"; // 
 @injectable()
 export class AuctionController implements IAuctionController {
   constructor(
-    @inject("IEndAuctionUseCase") private endAuctionUseCase: IEndAuctionUseCase,
+    @inject("IEndAuctionUseCase") private _endAuctionUseCase: IEndAuctionUseCase,
     @inject("IGetWonAuctionUseCase")
-    private getAuctionWonUseCase: IGetWonAuctionUseCase,
+    private _getAuctionWonUseCase: IGetWonAuctionUseCase,
     @inject("ICreateCheckOutSessionUseCase")
-    private createCheckOutSessionUseCase: ICreateCheckOutSessionUseCase,
+    private _createCheckOutSessionUseCase: ICreateCheckOutSessionUseCase,
     @inject("IVerifyPaymentUseCase")
-    private verifyPaymentUseCase: IVerifyPaymentUseCase,
-    @inject("IPaymentService") private stripeService: IPaymentService // Inject StripeService
+    private _verifyPaymentUseCase: IVerifyPaymentUseCase,
+    @inject("IPaymentService") private _stripeService: IPaymentService // Inject StripeService
   ) {}
 
   async endAuction(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     try {
-      const result = await this.endAuctionUseCase.execute(id);
+      const result = await this._endAuctionUseCase.execute(id);
       if (result) {
         res.status(200).json({
           success: true,
@@ -55,7 +55,7 @@ export class AuctionController implements IAuctionController {
   async getWonAuction(req: Request, res: Response): Promise<void> {
     const userId = (req as CustomRequest).user.id;
     try {
-      const wonAuction = await this.getAuctionWonUseCase.execute(userId);
+      const wonAuction = await this._getAuctionWonUseCase.execute(userId);
       res.status(HTTP_STATUS.OK).json({ data: wonAuction });
     } catch (error) {
       handleErrorResponse(res, error);
@@ -72,7 +72,7 @@ export class AuctionController implements IAuctionController {
           HTTP_STATUS.BAD_REQUEST
         );
       }
-      const sessionId = await this.createCheckOutSessionUseCase.execute(
+      const sessionId = await this._createCheckOutSessionUseCase.execute(
         auctionId.toString(),
         userId
       );
@@ -94,8 +94,8 @@ export class AuctionController implements IAuctionController {
         throw new CustomError("Missing session ID", HTTP_STATUS.BAD_REQUEST);
       }
 
-      const auctionWon = await this.verifyPaymentUseCase.execute(userId, sessionId);
-      const session = await this.stripeService.getCheckOutSession(sessionId); 
+      const auctionWon = await this._verifyPaymentUseCase.execute(userId, sessionId);
+      const session = await this._stripeService.getCheckOutSession(sessionId); 
 
       res.status(HTTP_STATUS.OK).json({
         success: true,

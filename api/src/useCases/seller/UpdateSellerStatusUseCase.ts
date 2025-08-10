@@ -16,8 +16,8 @@ export enum SellerStatus {
 @injectable()
 export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
   constructor(
-    @inject("IClientRepository") private clientRepository: IClientRepository,
-    @inject("ISellerRepository") private sellerRepository: ISellerRepository,
+    @inject("IClientRepository") private _clientRepository: IClientRepository,
+    @inject("ISellerRepository") private _sellerRepository: ISellerRepository,
     @inject("INotificationRepository")
     private notificationRepository: INotificationRepository,
   ) {}
@@ -27,7 +27,7 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
     status: SellerStatus,
     reason: string | undefined
   ): Promise<ISellerEntity | null> {
-    const seller = await this.sellerRepository.findOne({_id:id});
+    const seller = await this._sellerRepository.findOne({_id:id});
     if (!seller) {
       throw new CustomError(
         ERROR_MESSAGES.USER_NOT_FOUND,
@@ -35,7 +35,7 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
       );
     }
 
-    const user = await this.clientRepository.findById(seller.userId);
+    const user = await this._clientRepository.findById(String(seller.userId));
 
     if (status === SellerStatus.APPROVED) {
       seller.approvalStatus = status;
@@ -43,7 +43,7 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
       seller.isActive = true;
       seller.isSeller = true;
 
-      const updated = await this.sellerRepository.update(seller);
+      const updated = await this._sellerRepository.update(seller);
       if (!updated) {
         throw new CustomError(
           ERROR_MESSAGES.UPDATE_FAILED,
@@ -106,7 +106,7 @@ export class UpdateSellerStatusUseCase implements IUpdateSellerStatusUseCase {
         }
       }
       if (seller._id) {
-        await this.sellerRepository.delete(seller._id.toString());
+        await this._sellerRepository.delete(seller._id.toString());
       }
       return null;
     }

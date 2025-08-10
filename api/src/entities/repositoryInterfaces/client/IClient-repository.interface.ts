@@ -1,10 +1,11 @@
 import { IClientEntity } from "../../models/client.entity";
 import { ClientProfileResponse } from "../../../shared/dtos/user.dto";
+import { FilterQuery } from "mongoose";
 
 export interface IClientRepository {
-  findById(id: any): Promise<IClientEntity | null>;
+  findById(id: string | undefined): Promise<IClientEntity | null>;
   find(
-    filter: any,
+    filter: FilterQuery<IClientEntity>,
     skip: number,
     limit: number
   ): Promise<{ users: IClientEntity[] | []; total: number }>;

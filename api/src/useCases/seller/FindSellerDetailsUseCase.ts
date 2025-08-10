@@ -9,15 +9,15 @@ import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
 @injectable()
 export class FindSellerDetailsUseCase implements IFindSellerDetailsUseCase{
     constructor(
-        @inject("ISellerRepository") private sellerRepository:ISellerRepository,
-        @inject("IClientRepository") private clientRepository:IClientRepository,
+        @inject("ISellerRepository") private _sellerRepository:ISellerRepository,
+        @inject("IClientRepository") private _clientRepository:IClientRepository,
     ){}
     async execute(sellerId: string): Promise<SellerDetailsDTO> {
-       const seller = await this.sellerRepository.findOne({ _id: sellerId });
+       const seller = await this._sellerRepository.findOne({ _id: sellerId });
         if(!seller){
             throw new CustomError(ERROR_MESSAGES.SELLER_NOT_FOUND,HTTP_STATUS.BAD_REQUEST);
         }
-        const userDetails = await this.clientRepository.findById(seller.userId);
+        const userDetails = await this._clientRepository.findById(String(seller.userId));
 
         if(!userDetails){
             throw new CustomError(

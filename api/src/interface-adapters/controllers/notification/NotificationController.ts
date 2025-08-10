@@ -9,13 +9,13 @@ import { IUpdateNotificationUseCase } from "../../../entities/useCaseInterfaces/
 @injectable()
 export class NotificationController implements INotificationController{
     constructor(
-        @inject("IGetAllNotificationUseCase") private getAllNotificationUseCase:IGetAllNotificationUseCase,
-        @inject("IUpdateNotificationUseCase") private updateNotificationUsecase:IUpdateNotificationUseCase
+        @inject("IGetAllNotificationUseCase") private _getAllNotificationUseCase:IGetAllNotificationUseCase,
+        @inject("IUpdateNotificationUseCase") private _updateNotificationUsecase:IUpdateNotificationUseCase
     ){}
     async getNotifcations(req: Request, res: Response): Promise<void> {
         try {
          const userId = (req as CustomRequest).user.id;
-         const data = await this.getAllNotificationUseCase.execute(userId);
+         const data = await this._getAllNotificationUseCase.execute(userId);
          res.status(HTTP_STATUS.OK).json({data})
         } catch (error) {
             handleErrorResponse(res,error)
@@ -30,9 +30,9 @@ export class NotificationController implements INotificationController{
 }
 
         if (id) {
-            await this.updateNotificationUsecase.execute(userId, id);
+            await this._updateNotificationUsecase.execute(userId, id);
         } else if (all) {
-            await this.updateNotificationUsecase.execute(userId, undefined, all);
+            await this._updateNotificationUsecase.execute(userId, undefined, all);
         }
 
         res.status(HTTP_STATUS.OK).json({ message: SUCCESS_MESSAGES.ACTION_SUCCESS });

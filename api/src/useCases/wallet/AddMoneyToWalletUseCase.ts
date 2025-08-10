@@ -7,16 +7,16 @@ import { IWalletTransactionRepository } from "../../entities/repositoryInterface
 @injectable()
 export class AddMoneyToWalletUseCase implements IAddMoneyToWalletUseCase{
     constructor(
-        @inject("IPaymentService") private stripeService:IPaymentService,
-        @inject("IWalletRepository") private walletRepository:IWalletRepository,
-        @inject("IWalletTransactionRepository") private walletTransaction:IWalletTransactionRepository
+        @inject("IPaymentService") private _stripeService:IPaymentService,
+        @inject("IWalletRepository") private _walletRepository:IWalletRepository,
+        @inject("IWalletTransactionRepository") private _walletTransaction:IWalletTransactionRepository
     ){}
     async execute(userId: string, amount: number): Promise<{ clientSecret: string; }> {
         
-        const wallet = await this.walletRepository.findWalletByUserId(userId);
-        const paymentIntent = await this.stripeService.createPaymentIntent(amount,"usd",{ type: "wallet_fund", userId });
+        const wallet = await this._walletRepository.findWalletByUserId(userId);
+        const paymentIntent = await this._stripeService.createPaymentIntent(amount,"usd",{ type: "wallet_fund", userId });
         const amountInDollars = amount / 100;
-        await this.walletTransaction.create({
+        await this._walletTransaction.create({
             walletId:wallet?._id,
             type:"deposit",
             amount:amountInDollars,

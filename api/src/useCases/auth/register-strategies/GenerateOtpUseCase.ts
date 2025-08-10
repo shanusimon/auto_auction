@@ -7,27 +7,27 @@ import { INodemailerService } from "../../../entities/services/INodeMailerServic
 @injectable()
 export class GenerateOtpUseCase implements IGenerateOtpUseCase{
     constructor(
-        @inject("IOtpService") private otpService:IOtpService,
-        @inject("IPasswordBcrypt") private bcryptService:IBcrypt,
-        @inject("INodemailerService") private mailService:INodemailerService
+        @inject("IOtpService") private _otpService:IOtpService,
+        @inject("IPasswordBcrypt") private _bcryptService:IBcrypt,
+        @inject("INodemailerService") private _mailService:INodemailerService
     ){}
 
     async execute(email: string): Promise<void> {
         try {
        
-        const otp = await this.otpService.generateOtp();
+        const otp = await this._otpService.generateOtp();
         console.log("otp is",otp);
-        const hashedOtp = await this.bcryptService.hash(otp);
+        const hashedOtp = await this._bcryptService.hash(otp);
         
         console.log(hashedOtp)
         
-        await this.otpService.storeOtp(email,hashedOtp);
+        await this._otpService.storeOtp(email,hashedOtp);
 
-        const storedOtp = await this.otpService.getOtp(email);
+        const storedOtp = await this._otpService.getOtp(email);
             
         console.log(storedOtp);
 
-        await this.mailService.sendOtpEmail(email,otp)
+        await this._mailService.sendOtpEmail(email,otp)
         } catch (error) {
             console.log("error in usecase")
             console.log(error)

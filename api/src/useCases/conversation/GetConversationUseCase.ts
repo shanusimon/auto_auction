@@ -9,22 +9,22 @@ import { IConversationRepository } from "../../entities/repositoryInterfaces/con
 @injectable()
 export class GetConversationUseCase implements IGetConversationUseCase{
     constructor(
-        @inject("ISellerRepository") private sellerRepository:ISellerRepository,
-        @inject("IConversationRepository") private conversationRepository:IConversationRepository
+        @inject("ISellerRepository") private _sellerRepository:ISellerRepository,
+        @inject("IConversationRepository") private _conversationRepository:IConversationRepository
     ){}
     async execute(userId: string, sellerId: string): Promise<IConversation> {
-        const seller = await this.sellerRepository.findOne(sellerId);
+        const seller = await this._sellerRepository.findOne(sellerId);
         if(!seller){
             throw new Error(
                 ERROR_MESSAGES.SELLER_NOT_FOUND,
             )
         }
 
-        const existingConversation = await this.conversationRepository.findConversation(userId,String(seller.userId));
+        const existingConversation = await this._conversationRepository.findConversation(userId,String(seller.userId));
         if(existingConversation){
             return existingConversation
         }
-        const newConversation = await this.conversationRepository.createConversation({
+        const newConversation = await this._conversationRepository.createConversation({
             user1Id: userId,
             user2Id: String(seller.userId)
         });

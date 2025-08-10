@@ -8,10 +8,10 @@ import { injectable, inject } from "tsyringe";
 export class getDashBoardRevenueUseCase implements IGetDashboardRevenueUseCase {
   constructor(
     @inject("IAdminWalletRepository")
-    private adminWallet: IAdminWalletRepository
+    private _adminWallet: IAdminWalletRepository
   ) {}
   async execute(period: string): Promise<{ name: string; revenue: number }[]> {
-    const wallet = await this.adminWallet.findSingle();
+    const wallet = await this._adminWallet.findSingle();
     if (!wallet || !wallet.transaction) {
       return [];
     }

@@ -15,17 +15,17 @@ export class ChatController implements IChatController {
 
   constructor(
     @inject("IGetAllConversationUseCase")
-    private getAllConversation: IGetAllConversationUseCase,
+    private _getAllConversation: IGetAllConversationUseCase,
     @inject("IGetConversationUseCase")
-    private getConversation: IGetConversationUseCase,
+    private _getConversation: IGetConversationUseCase,
     @inject("IJoinConversationUseCase")
-    private joinConversation: IJoinConversationUseCase,
+    private _joinConversation: IJoinConversationUseCase,
     @inject("IGetAllMessagesUseCase")
-    private getAllMessagesUseCase: IGetAllMessagesUseCase,
+    private _getAllMessagesUseCase: IGetAllMessagesUseCase,
     @inject("ICreateMessageUseCase")
-    private createMessageUseCase: ICreateMessageUseCase,
+    private _createMessageUseCase: ICreateMessageUseCase,
     @inject("ISendNotificationUseCase")
-    private sendNotificationUseCase: ISendNotificationUseCase
+    private _sendNotificationUseCase: ISendNotificationUseCase
   ) {}
 
   public initialize(io: SocketIOServer): void {
@@ -38,7 +38,7 @@ export class ChatController implements IChatController {
     isOnline: boolean
   ): Promise<void> {
     try {
-      const conversations = await this.getAllConversation.execute(userId);
+      const conversations = await this._getAllConversation.execute(userId);
 
       const participantIds = new Set<string>();
       for (const conversation of conversations) {
@@ -115,7 +115,7 @@ export class ChatController implements IChatController {
             return;
           }
           console.log(`Fetching conversations for user: ${userId}`);
-          const conversations = await this.getAllConversation.execute(userId);
+          const conversations = await this._getAllConversation.execute(userId);
           socket.emit("conversationsList", {
             conversations: conversations || [],
           });
@@ -153,7 +153,7 @@ export class ChatController implements IChatController {
             console.log(
               `Starting conversation between ${userId} and ${sellerId}`
             );
-            const conversation = await this.getConversation.execute(
+            const conversation = await this._getConversation.execute(
               userId,
               sellerId
             );
@@ -197,7 +197,7 @@ export class ChatController implements IChatController {
             console.log(
               `User ${userId} joining conversation ${conversationId}`
             );
-            const conversation = await this.joinConversation.execute(
+            const conversation = await this._joinConversation.execute(
               userId,
               conversationId
             );
@@ -211,7 +211,7 @@ export class ChatController implements IChatController {
               return;
             }
             socket.join(conversationId);
-            const messages = await this.getAllMessagesUseCase.execute(
+            const messages = await this._getAllMessagesUseCase.execute(
               conversationId
             );
             socket.emit("joinedConversation", {
@@ -267,7 +267,7 @@ export class ChatController implements IChatController {
             console.log(
               `User ${userId} sending message to ${conversationId}: ${content}`
             );
-            const conversation = await this.joinConversation.execute(
+            const conversation = await this._joinConversation.execute(
               userId,
               conversationId
             );
@@ -288,7 +288,7 @@ export class ChatController implements IChatController {
               console.log(`Invalid message type: ${type}`);
               return;
             }
-            const message = await this.createMessageUseCase.execute(
+            const message = await this._createMessageUseCase.execute(
               conversationId,
               senderId,
               content,
@@ -331,7 +331,7 @@ export class ChatController implements IChatController {
             console.log(`${isRecipientOnline} isRecipientOnline`);
 
             if (!isRecipientOnline) {
-              await this.sendNotificationUseCase.execute(
+              await this._sendNotificationUseCase.execute(
                 reciptentId,
                 message.content,
                 senderName

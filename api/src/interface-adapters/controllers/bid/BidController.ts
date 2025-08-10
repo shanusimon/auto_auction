@@ -11,7 +11,7 @@ export class BidController implements IBidController {
   private io?: SocketIOServer;
 
   constructor(
-    @inject("IPlaceBidUseCase") private placeBidUsecase: IPlaceBidUseCase
+    @inject("IPlaceBidUseCase") private _placeBidUsecase: IPlaceBidUseCase
   ) {}
 
   // Initialize with the Socket.IO server instance
@@ -52,7 +52,7 @@ export class BidController implements IBidController {
           }
 
           try {
-            const updatedCar = await this.placeBidUsecase.execute(
+            const updatedCar = await this._placeBidUsecase.execute(
               payload.amount,
               payload.carId,
               payload.userId

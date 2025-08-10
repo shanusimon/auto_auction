@@ -12,8 +12,8 @@ import { IGetAllCommentsAndBidsUseCase } from "../../../entities/useCaseInterfac
 @injectable()
 export class CarCommentController implements ICarCommentController{
     constructor(
-        @inject("ICreateCommentUseCase") private CreateCarCommentUseCase:ICreateCommentUseCase,
-        @inject('IGetAllCommentsAndBidsUseCase') private GetAllCommentsAndBidUseCase:IGetAllCommentsAndBidsUseCase
+        @inject("ICreateCommentUseCase") private _CreateCarCommentUseCase:ICreateCommentUseCase,
+        @inject('IGetAllCommentsAndBidsUseCase') private _GetAllCommentsAndBidUseCase:IGetAllCommentsAndBidsUseCase
     ){}
     async create(req: Request, res: Response): Promise<void> {
         try {
@@ -28,7 +28,7 @@ export class CarCommentController implements ICarCommentController{
                 )
             }
 
-            await this.CreateCarCommentUseCase.execute({...commentData,userId});
+            await this._CreateCarCommentUseCase.execute({...commentData,userId});
 
             res.status(HTTP_STATUS.CREATED).json({message:SUCCESS_MESSAGES.CREATED})
 
@@ -46,7 +46,7 @@ export class CarCommentController implements ICarCommentController{
               res.status(400).json({ message: "Car ID is required" });
               return;
             }
-            const data = await this.GetAllCommentsAndBidUseCase.execute(carid);
+            const data = await this._GetAllCommentsAndBidUseCase.execute(carid);
             console.log(data);
 
             res.status(HTTP_STATUS.OK).json({data})

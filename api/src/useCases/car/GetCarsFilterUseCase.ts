@@ -6,7 +6,7 @@ import { ICarFilter } from "../../shared/dtos/car.dto";
 @injectable()
 export class GetCarsFilterUseCase implements IGetCarsFilterUseCase {
     constructor(
-        @inject("ICarRepository") private carRepository: ICarRepository
+        @inject("ICarRepository") private _carRepository: ICarRepository
     ) {}
     
     async execute(filter: ICarFilter, page: number, limit: number): Promise<ICarEntity[]> {
@@ -22,6 +22,6 @@ export class GetCarsFilterUseCase implements IGetCarsFilterUseCase {
         const validSortOptions = ['ending-soon', 'newly-listed', 'no-reserve'];
         const sortOption = validSortOptions.includes(sort) ? sort : 'ending-soon';
         
-        return this.carRepository.getFilteredCars(query, sortOption, page, limit);
+        return this._carRepository.getFilteredCars(query, sortOption, page, limit);
     }
 }

@@ -9,12 +9,12 @@ import { config } from "../../shared/config";
 @injectable()
 export class CreateCheckOutSessionUseCase implements ICreateCheckOutSessionUseCase {
   constructor(
-    @inject("AuctionWonRepositoryInterface") private auctionWonRepository: AuctionWonRepositoryInterface,
-    @inject("IPaymentService") private stripeService: IPaymentService
+    @inject("AuctionWonRepositoryInterface") private _auctionWonRepository: AuctionWonRepositoryInterface,
+    @inject("IPaymentService") private _stripeService: IPaymentService
   ) {}
 
   async execute(auctionId: string, userId: string): Promise<string> {
-    const auctionWon = await this.auctionWonRepository.findById(auctionId);
+    const auctionWon = await this._auctionWonRepository.findById(auctionId);
     if (!auctionWon || auctionWon.winnerId?.toString() !== userId) {
       throw new CustomError(
         ERROR_MESSAGES.UNAUTHORIZED_ACCESS,
@@ -35,16 +35,16 @@ export class CreateCheckOutSessionUseCase implements ICreateCheckOutSessionUseCa
           HTTP_STATUS.BAD_REQUEST
         );
       }
-      const { paymentIntent: paymentIntentId } = await this.stripeService.createPaymentIntent(
+      const { paymentIntent: paymentIntentId } = await this._stripeService.createPaymentIntent(
         totalAmount * 100,
         'usd',
         { type: 'car_payment', auctionId }
       );
       
-     await this.auctionWonRepository.updatePaymentIntentId(auctionId ,paymentIntentId)
+     await this._auctionWonRepository.updatePaymentIntentId(auctionId ,paymentIntentId)
   
       
-    const session = await this.stripeService.createCheckOutSession(
+    const session = await this._stripeService.createCheckOutSession(
     paymentIntentId,
       `${config.cors.ALLOWED_ORGIN}/user/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       `${config.cors.ALLOWED_ORGIN}/user/payment/cancel`,
@@ -52,7 +52,7 @@ export class CreateCheckOutSessionUseCase implements ICreateCheckOutSessionUseCa
       userId
     );
     
-    await this.auctionWonRepository.updateStripeSessionId(auctionId ,session.sessionId)
+    await this._auctionWonRepository.updateStripeSessionId(auctionId ,session.sessionId)
     
     return session.sessionId
   }

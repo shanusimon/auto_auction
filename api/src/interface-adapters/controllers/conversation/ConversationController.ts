@@ -11,8 +11,8 @@ import { IGetAllConversationUseCase } from "../../../entities/useCaseInterfaces/
 @injectable()
 export class ConversationController implements IConversationController{
     constructor(
-        @inject("IGetConversationUseCase") private getConversationUseCase:IGetConversationUseCase,
-        @inject("IGetAllConversationUseCase") private getAllConversation:IGetAllConversationUseCase
+        @inject("IGetConversationUseCase") private _getConversationUseCase:IGetConversationUseCase,
+        @inject("IGetAllConversationUseCase") private _getAllConversation:IGetAllConversationUseCase
     ){}
     async getConversation(req: Request, res: Response): Promise<void> {
         try {
@@ -25,7 +25,7 @@ export class ConversationController implements IConversationController{
                     HTTP_STATUS.BAD_REQUEST
                 )
             }
-            let conversation = await this.getConversationUseCase.execute(userId,sellerId);
+            let conversation = await this._getConversationUseCase.execute(userId,sellerId);
 
             res.status(HTTP_STATUS.OK).json({conversationId:conversation.id})
         } catch (error) {
@@ -36,7 +36,7 @@ export class ConversationController implements IConversationController{
         try {
             const userId = (req as CustomRequest).user.id;
 
-            const conversations = await this.getAllConversation.execute(userId);
+            const conversations = await this._getAllConversation.execute(userId);
 
             res.status(HTTP_STATUS.OK).json({conversations})
         

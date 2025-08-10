@@ -12,10 +12,10 @@ export class RegisterUserUseCase implements IRegisterUserUseCase{
     private strategies:Record<string,IRegisterStrategy>;
     constructor(
         @inject("ClientRegisterStrategy")
-        private clientRegister:IRegisterStrategy
+        private _clientRegister:IRegisterStrategy
     ){
         this.strategies = {
-            user:this.clientRegister,
+            user:this._clientRegister,
         }
     }
     async execute(user: UserDTO): Promise<void> {

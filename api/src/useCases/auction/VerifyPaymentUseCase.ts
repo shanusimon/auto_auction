@@ -15,16 +15,16 @@ import { IClientRepository } from "../../entities/repositoryInterfaces/client/IC
 export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
   constructor(
     @inject("AuctionWonRepositoryInterface")
-    private auctionWonRepository: AuctionWonRepositoryInterface,
+    private _auctionWonRepository: AuctionWonRepositoryInterface,
     @inject("IPaymentService")
-    private stripeService: IPaymentService,
+    private _stripeService: IPaymentService,
     @inject("IAdminWalletRepository")
-    private adminWalletRepository: IAdminWalletRepository,
+    private _adminWalletRepository: IAdminWalletRepository,
     @inject("IClientRepository") private clientRepository: IClientRepository,
   ) {}
 
   async execute(userId: string, sessionId: string): Promise<IAuctionWonEntity> {
-    const session = await this.stripeService.getCheckOutSession(sessionId);
+    const session = await this._stripeService.getCheckOutSession(sessionId);
     if (!session) {
       throw new CustomError(ERROR_MESSAGES.WRONG_ID, HTTP_STATUS.BAD_REQUEST);
     }
@@ -52,7 +52,7 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
       );
     }
 
-    const auctionWon = await this.auctionWonRepository.findById(auctionId);
+    const auctionWon = await this._auctionWonRepository.findById(auctionId);
     if (!auctionWon) {
       throw new CustomError("Auction record not found", HTTP_STATUS.NOT_FOUND);
     }
@@ -70,7 +70,7 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
 
     if (session.status === "complete" && session.payment_status === "paid") {
       const updatedAuctionWon =
-        await this.auctionWonRepository.updatePaymentStatus(
+        await this._auctionWonRepository.updatePaymentStatus(
           auctionId,
           "succeeded"
         );
@@ -83,20 +83,20 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
 
       // Store receiptUrl if not already set (e.g., by WebHookUseCase)
       if (session.payment_intent && !updatedAuctionWon.receiptUrl) {
-        const paymentIntent = await this.stripeService.getPaymentIntent(
+        const paymentIntent = await this._stripeService.getPaymentIntent(
           session.payment_intent as string
         );
         if (paymentIntent.latest_charge) {
-          const charge = await this.stripeService.getCharge(
+          const charge = await this._stripeService.getCharge(
             paymentIntent.latest_charge as string
           );
           if (charge.receipt_url) {
-            await this.auctionWonRepository.update(auctionId, {
+            await this._auctionWonRepository.update(auctionId, {
               receiptUrl: charge.receipt_url,
             });
             // Refresh updatedAuctionWon to include receiptUrl
             const refreshedAuctionWon =
-              await this.auctionWonRepository.findById(auctionId);
+              await this._auctionWonRepository.findById(auctionId);
             if (refreshedAuctionWon) {
               updatedAuctionWon.receiptUrl = refreshedAuctionWon.receiptUrl;
             }
@@ -104,7 +104,7 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
         }
       }
 
-      let adminWallet = await this.adminWalletRepository.findSingle();
+      let adminWallet = await this._adminWalletRepository.findSingle();
       const commissionAmount = updatedAuctionWon.platformCharge;
 
       if (!adminWallet) {
@@ -122,7 +122,7 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
             },
           ],
         };
-        await this.adminWalletRepository.create(newAdminWallet);
+        await this._adminWalletRepository.create(newAdminWallet);
       } else {
         adminWallet.balanceAmount += commissionAmount;
         adminWallet.transaction.push({
@@ -134,7 +134,7 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
           commissionAmount,
           timeStamp: new Date(),
         });
-        await this.adminWalletRepository.update(adminWallet._id!.toString(), {
+        await this._adminWalletRepository.update(adminWallet._id!.toString(), {
           balanceAmount: adminWallet.balanceAmount,
           transaction: adminWallet.transaction,
         });

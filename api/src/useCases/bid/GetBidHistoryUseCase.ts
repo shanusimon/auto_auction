@@ -9,11 +9,11 @@ import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
 @injectable()
 export class getBidHistoryUseCase implements IGetBidHistoryUseCase{
     constructor(
-        @inject("IBidRepository") private bidRepository:IBidRepository,
-        @inject("ICarRepository") private carRepository:ICarRepository,
+        @inject("IBidRepository") private _bidRepository:IBidRepository,
+        @inject("ICarRepository") private _carRepository:ICarRepository,
     ){}
     async execute(carId: string): Promise<IBidEntity[]> {
-        const car = await this.carRepository.findOne({_id:carId});
+        const car = await this._carRepository.findOne({_id:carId});
         if(!car || !car._id){
             throw new CustomError(
                 ERROR_MESSAGES.CAR_NOT_FOUND,
@@ -21,7 +21,7 @@ export class getBidHistoryUseCase implements IGetBidHistoryUseCase{
             )
         }
 
-        const bids = await this.bidRepository.findAllByCarId(car._id.toString());
+        const bids = await this._bidRepository.findAllByCarId(car._id.toString());
 
         return bids;
     }

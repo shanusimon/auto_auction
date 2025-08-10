@@ -6,10 +6,10 @@ import { ICarEntity } from "../../entities/models/car.entity";
 @injectable()
 export class getSoldCarsUseCase implements IGetSoldCarsUseCase{
     constructor(
-        @inject("ICarRepository") private carRepository:ICarRepository
+        @inject("ICarRepository") private _carRepository:ICarRepository
     ){}
     async execute(): Promise<ICarEntity[] | []> {
-        const soldCars = await this.carRepository.findSoldCars();
+        const soldCars = await this._carRepository.findSoldCars();
         return soldCars
     }
 }

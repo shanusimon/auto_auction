@@ -7,13 +7,13 @@ import { ICarCommentRepository } from "../../entities/repositoryInterfaces/comme
 @injectable()
 export class GetAllCommentsAndBidUseCase implements IGetAllCommentsAndBidsUseCase{
     constructor(
-        @inject("IBidRepository") private bidRepository:IBidRepository,
-        @inject("ICarCommentRepository") private carCommentRepository:ICarCommentRepository
+        @inject("IBidRepository") private _bidRepository:IBidRepository,
+        @inject("ICarCommentRepository") private _carCommentRepository:ICarCommentRepository
     ){}
     async execute(carId:string): Promise<CommentWithBidsDto> {
         const [comments, bids] = await Promise.all([
-            this.carCommentRepository.findAllByCarId(carId),
-            this.bidRepository.findAllByCarId(carId),
+            this._carCommentRepository.findAllByCarId(carId),
+            this._bidRepository.findAllByCarId(carId),
         ]);
         
         return {

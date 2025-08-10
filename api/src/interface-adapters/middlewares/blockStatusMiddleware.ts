@@ -11,11 +11,11 @@ import { clearAuthCookies } from "../../shared/utils/cookieHelper";
 export class BlockStatusMiddleware {
   constructor(
     @inject("IClientRepository")
-    private readonly clientRepository: IClientRepository,
+    private readonly _clientRepository: IClientRepository,
     @inject("IBlackListTokenUseCase")
-    private readonly blacklistTokenUseCase: IBlackListTokenUseCase,
+    private readonly _blacklistTokenUseCase: IBlackListTokenUseCase,
     @inject("IRevokeRefreshTokenUseCase")
-    private readonly revokeRefreshTokenUseCase: IRevokeRefreshTokenUseCase,
+    private readonly _revokeRefreshTokenUseCase: IRevokeRefreshTokenUseCase,
   ) {}
   checkStatus = async (
     req: CustomRequest,
@@ -34,7 +34,7 @@ export class BlockStatusMiddleware {
       const { id, role } = req.user;
       let status: Boolean = false;
       if (role === "user") {
-        const user = await this.clientRepository.findById(id);
+        const user = await this._clientRepository.findById(id);
         if (!user) {
           res.status(HTTP_STATUS.NOT_FOUND).json({
             success: false,
@@ -45,9 +45,9 @@ export class BlockStatusMiddleware {
         status = user.isBlocked;
       }
       if (status) {
-        await this.blacklistTokenUseCase.execute(req.user.access_token);
+        await this._blacklistTokenUseCase.execute(req.user.access_token);
 
-        await this.revokeRefreshTokenUseCase.execute(req.user.refresh_token);
+        await this._revokeRefreshTokenUseCase.execute(req.user.refresh_token);
 
         const accessTokenName = `${role}_access_token`;
         const refreshTokenName = `${role}_refresh_token`;

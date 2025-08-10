@@ -6,13 +6,13 @@ import { ICarCommentRepository } from "../../entities/repositoryInterfaces/comme
 @injectable()
 export class CreateCommentUseCase implements ICreateCommentUseCase{
     constructor(
-        @inject("ICarCommentRepository") private carCommentRepository:ICarCommentRepository
+        @inject("ICarCommentRepository") private _carCommentRepository:ICarCommentRepository
         ){}
     async execute(commentDto: CreateCommentDto): Promise<void> {
 
         const {carId,userId,content,parentId} = commentDto;
 
-        await this.carCommentRepository.create({
+        await this._carCommentRepository.create({
             carId,
             userId,
             content,

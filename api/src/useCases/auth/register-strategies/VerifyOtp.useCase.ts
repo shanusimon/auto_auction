@@ -8,10 +8,10 @@ import { HTTP_STATUS } from "../../../shared/constants";
 @injectable()
 export class VerifyOtpUseCase implements IVerifyOtpUseCase{
     constructor(
-        @inject("IOtpService") private otpService:IOtpService
+        @inject("IOtpService") private _otpService:IOtpService
     ){}
     async execute({ email, otp }: { email: string; otp: string; }): Promise<void> {
-        const isOtpValid = await this.otpService.verifyOtp(email,otp);
+        const isOtpValid = await this._otpService.verifyOtp(email,otp);
         console.log("si Valid OTP",isOtpValid)
 
         if(!isOtpValid)

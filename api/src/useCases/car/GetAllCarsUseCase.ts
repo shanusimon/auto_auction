@@ -8,8 +8,8 @@ import { ICarEntity } from "../../entities/models/car.entity";
 @injectable()
 export class GetAllCarsUseCase implements IGetAllCarsUseCase {
   constructor(
-    @inject("ICarRepository") private carRepository: ICarRepository,
-    @inject("IEndAuctionUseCase") private endAuctionCarUseCase:IEndAuctionUseCase,
+    @inject("ICarRepository") private _carRepository: ICarRepository,
+    @inject("IEndAuctionUseCase") private _endAuctionCarUseCase:IEndAuctionUseCase,
   ) {}
   async execute(
     page: number,
@@ -34,8 +34,8 @@ export class GetAllCarsUseCase implements IGetAllCarsUseCase {
     }
 
     const [cars,total] = await Promise.all([
-        this.carRepository.findWithPagination(filter,skip,validPageSize),
-        this.carRepository.countDocuments(filter)
+        this._carRepository.findWithPagination(filter,skip,validPageSize),
+        this._carRepository.countDocuments(filter)
     ])
     
 
@@ -45,11 +45,11 @@ export class GetAllCarsUseCase implements IGetAllCarsUseCase {
   }
  private async processEndedAuctions(){
   try {
-    const endedAuction = await this.carRepository.findEndedAuction();
+    const endedAuction = await this._carRepository.findEndedAuction();
     for(const auction of endedAuction){
       try {
         if(auction._id){
-           await this.endAuctionCarUseCase.execute(auction._id.toString());
+           await this._endAuctionCarUseCase.execute(auction._id.toString());
            console.log(`Processed ended auction ${auction._id}`);
         }
       } catch (error:any) {

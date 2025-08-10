@@ -7,7 +7,7 @@ import { IWebHookUseCase } from "../../../entities/useCaseInterfaces/payment/IWe
 @injectable()
 export class HandleWebHookController implements IHandleWebHookController{
     constructor(
-        @inject("IWebHookUseCase") private webHookUseCase:IWebHookUseCase
+        @inject("IWebHookUseCase") private _webHookUseCase:IWebHookUseCase
     ){}
     async handle(req: Request, res: Response): Promise<void> {
         const sig = req.headers["stripe-signature"];
@@ -19,7 +19,7 @@ export class HandleWebHookController implements IHandleWebHookController{
             return
         }
 
-        await this.webHookUseCase.execute(sig,req.body);
+        await this._webHookUseCase.execute(sig,req.body);
         res.status(HTTP_STATUS.OK).json({received:true})
     }
 }

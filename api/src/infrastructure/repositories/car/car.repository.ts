@@ -3,8 +3,8 @@ import { ICarRepository } from "../../../entities/repositoryInterfaces/car/ICarR
 import { CarModel } from "../../../frameworks/database/models/car.model";
 import { carDTO, ICarFilter } from "../../../shared/dtos/car.dto";
 import { CreateCarDTO } from "../../../shared/dtos/car.dto";
-import { FilterQuery } from "mongoose";
 import { BaseRepository } from "../base-repository";
+import { FilterQuery, UpdateQuery, QueryOptions } from "mongoose";
 
 export class CarRepository
   extends BaseRepository<ICarEntity>
@@ -104,20 +104,20 @@ export class CarRepository
       .exec();
   }
 
-  async findOneAndUpdate(
-    query: any,
-    update: any,
-    options: any = { new: true }
-  ): Promise<ICarEntity | null> {
-    const updateDoc = Array.isArray(update) ? update : { $set: update };
-    const result = await CarModel.findOneAndUpdate(query, updateDoc, {
-      new: true,
-      ...options,
-    })
-      .lean()
-      .exec();
-    return result;
-  }
+async findOneAndUpdate(
+  query: FilterQuery<ICarEntity>,                
+  update: UpdateQuery<ICarEntity>,                
+  options: QueryOptions = { new: true }        
+): Promise<ICarEntity | null> {
+  const updateDoc = Array.isArray(update) ? update : { $set: update };
+  const result = await CarModel.findOneAndUpdate(query, updateDoc, {
+    new: true,
+    ...options,
+  })
+    .lean()
+    .exec();
+  return result;
+}
   async auctionAnalytics(): Promise<
     { name: string; value: number; count: number }[]
   > {

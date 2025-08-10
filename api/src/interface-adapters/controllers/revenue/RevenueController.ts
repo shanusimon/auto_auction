@@ -9,8 +9,8 @@ import { IGetAdminDashBoardUseCase } from "../../../entities/useCaseInterfaces/a
 @injectable()
 export class RevenueController implements IRevenueController{
     constructor(
-        @inject("IGetDashboardRevenueUseCase") private dashBoardRevenueUseCase:IGetDashboardRevenueUseCase,
-        @inject("IGetAdminDashBoardUseCase") private adminDashBoardUseCase:IGetAdminDashBoardUseCase
+        @inject("IGetDashboardRevenueUseCase") private _dashBoardRevenueUseCase:IGetDashboardRevenueUseCase,
+        @inject("IGetAdminDashBoardUseCase") private _adminDashBoardUseCase:IGetAdminDashBoardUseCase
     ){}
     async getChartData(req: Request, res: Response): Promise<void> {
         try {
@@ -19,7 +19,7 @@ export class RevenueController implements IRevenueController{
         res.status(HTTP_STATUS.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_CREDENTIALS });
         return;
       }
-            const revenue = await this.dashBoardRevenueUseCase.execute(period as string);
+            const revenue = await this._dashBoardRevenueUseCase.execute(period as string);
             res.status(HTTP_STATUS.OK).json(revenue);
         } catch (error) {
          handleErrorResponse(res,error);   
@@ -27,7 +27,7 @@ export class RevenueController implements IRevenueController{
     }
 async getAdminDashboard(req: Request, res: Response): Promise<void> {
     try {
-      const dashboardData = await this.adminDashBoardUseCase.execute();
+      const dashboardData = await this._adminDashBoardUseCase.execute();
       console.log(dashboardData);
       res.status(HTTP_STATUS.OK).json(dashboardData);
     } catch (error) {

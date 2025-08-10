@@ -8,11 +8,11 @@ import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
 @injectable()
 export class UpdatePasswordUseCase implements IUpdatePasswordUseCase{
     constructor(
-        @inject("IClientRepository") private clientRepo:IClientRepository,
-        @inject("IPasswordBcrypt") private passwordBcrypt:IBcrypt,
+        @inject("IClientRepository") private _clientRepo:IClientRepository,
+        @inject("IPasswordBcrypt") private _passwordBcrypt:IBcrypt,
     ){}
     async execute(id: string, currPass: string, newPass: string): Promise<void> {
-        const user = await this.clientRepo.findById(id);
+        const user = await this._clientRepo.findById(id);
         
 
         
@@ -22,7 +22,7 @@ export class UpdatePasswordUseCase implements IUpdatePasswordUseCase{
                 HTTP_STATUS.NOT_FOUND
             )
         }
-        const isPasswordMatch = await this.passwordBcrypt.compare(currPass,user.password);
+        const isPasswordMatch = await this._passwordBcrypt.compare(currPass,user.password);
 
         if(!isPasswordMatch){
             throw new CustomError(
@@ -31,7 +31,7 @@ export class UpdatePasswordUseCase implements IUpdatePasswordUseCase{
             )
         }
 
-        const isCurrentMatchWithOld = await this.passwordBcrypt.compare(newPass,user.password);
+        const isCurrentMatchWithOld = await this._passwordBcrypt.compare(newPass,user.password);
 
         if(isCurrentMatchWithOld){
             throw new CustomError(
@@ -40,7 +40,7 @@ export class UpdatePasswordUseCase implements IUpdatePasswordUseCase{
             )
         }
 
-        const hashedPassword = await this.passwordBcrypt.hash(newPass);
-        await this.clientRepo.findByIdAndUpdatePassword(id,hashedPassword);
+        const hashedPassword = await this._passwordBcrypt.hash(newPass);
+        await this._clientRepo.findByIdAndUpdatePassword(id,hashedPassword);
     }
 }

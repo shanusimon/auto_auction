@@ -13,13 +13,13 @@ import { NotificationType } from "../../shared/types/notification.Types";
 @injectable()
 export class PlaceBidUseCase implements IPlaceBidUseCase {
   constructor(
-    @inject("IWalletRepository") private walletRepository: IWalletRepository,
-    @inject("IBidRepository") private bidRepository: IBidRepository,
+    @inject("IWalletRepository") private _walletRepository: IWalletRepository,
+    @inject("IBidRepository") private _bidRepository: IBidRepository,
     @inject("IWalletTransactionRepository")
-    private walletTransactionRepository: IWalletTransactionRepository,
-    @inject("ICarRepository") private carRepository: ICarRepository,
-    @inject("ISellerRepository") private sellerRepository:ISellerRepository,
-    @inject("INotificationRepository") private notificationRepository:INotificationRepository,
+    private _walletTransactionRepository: IWalletTransactionRepository,
+    @inject("ICarRepository") private _carRepository: ICarRepository,
+    @inject("ISellerRepository") private _sellerRepository:ISellerRepository,
+    @inject("INotificationRepository") private _notificationRepository:INotificationRepository,
   ) {}
 
   async execute(
@@ -27,7 +27,7 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
     carId: string,
     userId: string
   ): Promise<ICarEntity> {
-    const car = await this.carRepository.findOne({_id:carId});
+    const car = await this._carRepository.findOne({_id:carId});
     if (!car) {
       throw new Error(ERROR_MESSAGES.CAR_NOT_FOUND);
     }
@@ -37,7 +37,7 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
       throw new Error("Auction has already ended");
     }
 
-    const seller = await this.sellerRepository.findByUserId(userId);
+    const seller = await this._sellerRepository.findByUserId(userId);
     console.log("is this same",seller?._id,car.sellerId);
     if(car.sellerId.toString() === seller?._id?.toString()){
       throw new Error("You cannot place a bid on a car that you have listed.");
@@ -51,7 +51,7 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
       throw new Error("User cannot bid twice without being outbid");
     }
 
-    const wallet = await this.walletRepository.findWalletByUserId(userId);
+    const wallet = await this._walletRepository.findWalletByUserId(userId);
     if (!wallet) {
       throw new Error("Wallet not found");
     }
@@ -66,19 +66,19 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
     wallet.availableBalance -= depositAmount;
     wallet.reservedBalance += depositAmount;
 
-    await this.walletRepository.update(wallet._id, {
+    await this._walletRepository.update(wallet._id, {
       availableBalance: wallet.availableBalance,
       reservedBalance: wallet.reservedBalance,
     });
 
-    await this.walletTransactionRepository.create({
+    await this._walletTransactionRepository.create({
       walletId: wallet._id,
       type: "bid",
       amount: depositAmount,
       status: "completed",
     });
 
-    const newBid = await this.bidRepository.create({
+    const newBid = await this._bidRepository.create({
       carId,
       userId,
       amount,
@@ -88,18 +88,18 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
 
     // Refund previous highest bidder if exists
     if (car.highestBidderId) {
-      const previousBid = await this.bidRepository.findHighestBidByCarAndUser(
+      const previousBid = await this._bidRepository.findHighestBidByCarAndUser(
         carId,
         car.highestBidderId.toString()
       );
 
       if (previousBid && previousBid._id) {
-        await this.bidRepository.updateStatus(
+        await this._bidRepository.updateStatus(
           previousBid._id.toString(),
           "outbid"
         );
 
-        const previousWallet = await this.walletRepository.findWalletByUserId(
+        const previousWallet = await this._walletRepository.findWalletByUserId(
           car.highestBidderId.toString()
         );
 
@@ -107,19 +107,19 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
           previousWallet.availableBalance += previousBid.depositHeld;
           previousWallet.reservedBalance -= previousBid.depositHeld;
 
-          await this.walletRepository.update(previousWallet._id, {
+          await this._walletRepository.update(previousWallet._id, {
             availableBalance: previousWallet.availableBalance,
             reservedBalance: previousWallet.reservedBalance,
           });
 
-          await this.walletTransactionRepository.create({
+          await this._walletTransactionRepository.create({
             walletId: previousWallet._id,
             type: "outbid",
             amount: previousBid.depositHeld,
             status: "completed",
           });
 
-          await this.notificationRepository.create(
+          await this._notificationRepository.create(
             userId,
             NotificationType.BID_OUTBID,
             `Your Bid On Car ${car.title} Has Been OutBid By ${amount}`,
@@ -147,7 +147,7 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
         updateData.auctionEndTime = newEndTime;
       }
     }
-    const updatedCar = await this.carRepository.update(carId, updateData);
+    const updatedCar = await this._carRepository.update(carId, updateData);
     if (!updatedCar) {
       throw new Error("failed to update car")
     }

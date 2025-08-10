@@ -19,14 +19,14 @@ export class WebHookUseCase implements IWebHookUseCase {
 
   constructor(
     @inject("AuctionWonRepositoryInterface")
-    private auctionWonRepository: AuctionWonRepositoryInterface,
+    private _auctionWonRepository: AuctionWonRepositoryInterface,
     @inject("IWalletTransactionRepository")
-    private walletTransactionRepository: IWalletTransactionRepository,
-    @inject("IWalletRepository") private walletRepository: IWalletRepository,
+    private _walletTransactionRepository: IWalletTransactionRepository,
+    @inject("IWalletRepository") private _walletRepository: IWalletRepository,
     @inject("IAdminWalletRepository")
-    private adminWalletRepository: IAdminWalletRepository,
-    @inject("IClientRepository") private clientRepository: IClientRepository,
-    @inject("IBidRepository") private bidRepository: IBidRepository,
+    private _adminWalletRepository: IAdminWalletRepository,
+    @inject("IClientRepository") private _clientRepository: IClientRepository,
+    @inject("IBidRepository") private _bidRepository: IBidRepository,
   ) {
     this.stripe = new Stripe(config.stripe.STRIPE_SECRET_KEY || "", {
        apiVersion: "2024-06-20",
@@ -34,7 +34,7 @@ export class WebHookUseCase implements IWebHookUseCase {
     this.endpointSecret = config.stripe.STRIPE_WEBHOOK_SECRET || "";
   }
 
-  async execute(sig: string, body: any): Promise<void> {
+  async execute(sig: string, body: Buffer | string): Promise<void> {
     let event: Stripe.Event;
 
     try {
@@ -119,7 +119,7 @@ export class WebHookUseCase implements IWebHookUseCase {
       );
     }
 
-    const user = await this.clientRepository.findById(userId);
+    const user = await this._clientRepository.findById(userId);
     if (!user) {
       throw new CustomError(
         `User not found with ID: ${userId}`,
@@ -127,7 +127,7 @@ export class WebHookUseCase implements IWebHookUseCase {
       );
     }
 
-    const auctionWon = await this.auctionWonRepository.findByIdWithoutCarPopulation(auctionId);
+    const auctionWon = await this._auctionWonRepository.findByIdWithoutCarPopulation(auctionId);
     if (!auctionWon) {
       throw new CustomError(
         `Auction record not found with ID: ${auctionId}`,
@@ -149,7 +149,7 @@ export class WebHookUseCase implements IWebHookUseCase {
       }
 
       const updatedAuctionWon =
-        await this.auctionWonRepository.updatePaymentStatus(
+        await this._auctionWonRepository.updatePaymentStatus(
           auctionId,
           "succeeded"
         );
@@ -169,14 +169,14 @@ export class WebHookUseCase implements IWebHookUseCase {
             paymentIntent.latest_charge as string
           );
           if (charge.receipt_url) {
-            await this.auctionWonRepository.update(auctionId, {
+            await this._auctionWonRepository.update(auctionId, {
               receiptUrl: charge.receipt_url,
             });
           }
         }
       }
 
-      let adminWallet = await this.adminWalletRepository.findSingle();
+      let adminWallet = await this._adminWalletRepository.findSingle();
       const commissionAmount = updatedAuctionWon.platformCharge;
       const carId =auctionWon.carId.toString();
       if (!adminWallet) {
@@ -194,7 +194,7 @@ export class WebHookUseCase implements IWebHookUseCase {
             },
           ],
         };
-        await this.adminWalletRepository.create(newAdminWallet);
+        await this._adminWalletRepository.create(newAdminWallet);
       } else {
         adminWallet.balanceAmount += commissionAmount;
         adminWallet.transaction.push({
@@ -206,26 +206,26 @@ export class WebHookUseCase implements IWebHookUseCase {
           commissionAmount,
           timeStamp: new Date(),
         });
-        await this.adminWalletRepository.update(adminWallet._id!.toString(), {
+        await this._adminWalletRepository.update(adminWallet._id!.toString(), {
           balanceAmount: adminWallet.balanceAmount,
           transaction: adminWallet.transaction,
         });
       }
 
-      const bid = await this.bidRepository.findById(
+      const bid = await this._bidRepository.findById(
         auctionWon.bidId.toString()
       );
-      const wallet = await this.walletRepository.findWalletByUserId(userId);
+      const wallet = await this._walletRepository.findWalletByUserId(userId);
       if (bid && wallet) {
         wallet.availableBalance += bid.depositHeld;
         wallet.reservedBalance -= bid.depositHeld;
 
-        await this.walletRepository.update(wallet._id, {
+        await this._walletRepository.update(wallet._id, {
           availableBalance: wallet.availableBalance,
           reservedBalance: wallet.reservedBalance,
         });
 
-         await this.walletTransactionRepository.create({
+         await this._walletTransactionRepository.create({
           walletId:wallet._id,
           type:'deposit_release',
           amount:bid.depositHeld,
@@ -252,7 +252,7 @@ export class WebHookUseCase implements IWebHookUseCase {
     }
 
     const transaction =
-      await this.walletTransactionRepository.findByStripePaymentId(
+      await this._walletTransactionRepository.findByStripePaymentId(
         paymentIntentId
       );
     if (!transaction) {
@@ -269,7 +269,7 @@ export class WebHookUseCase implements IWebHookUseCase {
       return;
     }
 
-    await this.walletTransactionRepository.findByStripeIdAndUpdateStatus(
+    await this._walletTransactionRepository.findByStripeIdAndUpdateStatus(
       paymentIntentId,
       status
     );
@@ -284,12 +284,12 @@ export class WebHookUseCase implements IWebHookUseCase {
       }
 
       if (receiptUrl) {
-        await this.walletTransactionRepository.update(transaction._id, {
+        await this._walletTransactionRepository.update(transaction._id, {
           receiptUrl,
         });
       }
 
-      await this.walletRepository.addBalance(
+      await this._walletRepository.addBalance(
         transaction.walletId,
         paymentIntent.amount_received / 100
       );

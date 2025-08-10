@@ -11,8 +11,8 @@ import { handleErrorResponse } from "../../../shared/utils/errorHandler";
 @injectable()
 export class WalletController implements IWalletController{
     constructor(
-        @inject("IAddMoneyToWalletUseCase") private addMoneytoWalletUseCase:IAddMoneyToWalletUseCase,
-        @inject("IGetWalletDeatailsUseCase") private getWalletDetailsUseCase:IGetWalletDeatailsUseCase
+        @inject("IAddMoneyToWalletUseCase") private _addMoneytoWalletUseCase:IAddMoneyToWalletUseCase,
+        @inject("IGetWalletDeatailsUseCase") private _getWalletDetailsUseCase:IGetWalletDeatailsUseCase
     ){}
     async addMoneyToWallet(req: Request, res: Response): Promise<void> {
         try {
@@ -29,7 +29,7 @@ export class WalletController implements IWalletController{
                 return
             }
 
-            const {clientSecret} = await this.addMoneytoWalletUseCase.execute(userId,amountInCents);
+            const {clientSecret} = await this._addMoneytoWalletUseCase.execute(userId,amountInCents);
             
             console.log("this is client secret",clientSecret)
             
@@ -44,7 +44,7 @@ export class WalletController implements IWalletController{
     async getWalletBalance(req: Request, res: Response): Promise<void> {
         try {
             const userId = (req as CustomRequest).user.id;
-            const walletData = await this.getWalletDetailsUseCase.execute(userId)
+            const walletData = await this._getWalletDetailsUseCase.execute(userId)
            
             res.status(HTTP_STATUS.OK).json({walletData})
         } catch (error) {

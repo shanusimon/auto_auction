@@ -6,10 +6,10 @@ import { IAuctionWonEntity } from "../../entities/models/auction.won.entity";
 @injectable()
 export class GetWonAuctionUseCase implements IGetWonAuctionUseCase{
     constructor(
-   @inject("AuctionWonRepositoryInterface") private auctionWonRepository: AuctionWonRepositoryInterface,
+   @inject("AuctionWonRepositoryInterface") private _auctionWonRepository: AuctionWonRepositoryInterface,
     ){}
     async execute(userId: string): Promise<IAuctionWonEntity[] | []> {
-        const auctionWon = await this.auctionWonRepository.findAuctionsByWinnerId(userId);
+        const auctionWon = await this._auctionWonRepository.findAuctionsByWinnerId(userId);
         return auctionWon
     }
 }

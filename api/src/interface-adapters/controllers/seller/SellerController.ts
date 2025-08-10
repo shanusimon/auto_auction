@@ -21,17 +21,17 @@ import { IGetSellerStatisticsUseCase } from "../../../entities/useCaseInterfaces
 export class SellerController implements ISellerController {
   constructor(
     @inject("ISellerRegisterUseCase")
-    private sellerUseCase: ISellerRegisterUseCase,
+    private _sellerUseCase: ISellerRegisterUseCase,
     @inject("IGetAllSellerRequestUseCase")
-    private getAllSellerRequestUseCase: IGetAllSellerRequestUseCase,
+    private _getAllSellerRequestUseCase: IGetAllSellerRequestUseCase,
     @inject("IUpdateSellerStatusUseCase")
-    private updateSellerStatusUseCase: IUpdateSellerStatusUseCase,
+    private _updateSellerStatusUseCase: IUpdateSellerStatusUseCase,
     @inject("IFindSellerDetailsUseCase")
-    private findSellerDetailsUseCase: IFindSellerDetailsUseCase,
+    private _findSellerDetailsUseCase: IFindSellerDetailsUseCase,
     @inject("IUpdateSellerActiveStatusUseCase")
-    private updateSellerActiveStatusUseCase: IUpdateSellerActiveStatusUseCase,
+    private _updateSellerActiveStatusUseCase: IUpdateSellerActiveStatusUseCase,
     @inject("IGetSellerStatisticsUseCase")
-    private getSellerStatusUseCase: IGetSellerStatisticsUseCase
+    private _getSellerStatusUseCase: IGetSellerStatisticsUseCase
   ) {}
   async register(req: Request, res: Response): Promise<void> {
     try {
@@ -63,7 +63,7 @@ export class SellerController implements ISellerController {
         }),
       };
 
-      await this.sellerUseCase.execute(dto);
+      await this._sellerUseCase.execute(dto);
 
       res
         .status(HTTP_STATUS.CREATED)
@@ -80,7 +80,7 @@ export class SellerController implements ISellerController {
       const pageSize = Math.max(1, parseInt(limit as string) || 10);
       const searchTermString = typeof search === "string" ? search : "";
 
-      const { sellers, total } = await this.getAllSellerRequestUseCase.execute(
+      const { sellers, total } = await this._getAllSellerRequestUseCase.execute(
         pageNum,
         pageSize,
         searchTermString,
@@ -128,7 +128,7 @@ export class SellerController implements ISellerController {
         );
       }
 
-      await this.updateSellerStatusUseCase.execute(
+      await this._updateSellerStatusUseCase.execute(
         userId,
         status as "approved" | "rejected",
         reason
@@ -152,7 +152,7 @@ export class SellerController implements ISellerController {
         );
       }
 
-      const userDetails = await this.findSellerDetailsUseCase.execute(sellerId);
+      const userDetails = await this._findSellerDetailsUseCase.execute(sellerId);
       console.log(userDetails);
 
       res.status(HTTP_STATUS.OK).json({ userDetails });
@@ -166,7 +166,7 @@ export class SellerController implements ISellerController {
       const pageNum = Math.max(1, parseInt(page as string) || 1);
       const pageSize = Math.max(1, parseInt(limit as string) || 10);
       const searchTermString = typeof search === "string" ? search : "";
-      const { sellers, total } = await this.getAllSellerRequestUseCase.execute(
+      const { sellers, total } = await this._getAllSellerRequestUseCase.execute(
         pageNum,
         pageSize,
         searchTermString,
@@ -191,7 +191,7 @@ export class SellerController implements ISellerController {
           HTTP_STATUS.BAD_REQUEST
         );
       }
-      await this.updateSellerActiveStatusUseCase.execute(sellerId);
+      await this._updateSellerActiveStatusUseCase.execute(sellerId);
     } catch (error) {
       handleErrorResponse(res, error);
     }
@@ -200,7 +200,7 @@ export class SellerController implements ISellerController {
     try {
       const userId = (req as CustomRequest).user.id;
 
-      const data = await this.getSellerStatusUseCase.execute(userId);
+      const data = await this._getSellerStatusUseCase.execute(userId);
       console.log("this is the data",data)
       res.status(200).json({
         success: true,

@@ -11,11 +11,11 @@ import { LoginUserDTO } from "../../../shared/dtos/user.dto";
 @injectable()
 export class ClientLoginStrategy implements ILoginStrategy{
     constructor(
-        @inject("IClientRepository") private clientRepository:IClientRepository,
-        @inject("IPasswordBcrypt") private passwordBcrypt:IBcrypt
+        @inject("IClientRepository") private _clientRepository:IClientRepository,
+        @inject("IPasswordBcrypt") private _passwordBcrypt:IBcrypt
     ) {}
     async login(user: LoginUserDTO): Promise<Partial<IUserEntity>> {
-        const client = await this.clientRepository.findByEmail(user.email);
+        const client = await this._clientRepository.findByEmail(user.email);
         if(!client){
             throw new CustomError(
                 ERROR_MESSAGES.EMAIL_NOT_FOUND,
@@ -29,7 +29,7 @@ export class ClientLoginStrategy implements ILoginStrategy{
             );
         }
         if(user.password){
-            const isPasswordMatch = await this.passwordBcrypt.compare(
+            const isPasswordMatch = await this._passwordBcrypt.compare(
                 user.password,
                 client.password, 
             );

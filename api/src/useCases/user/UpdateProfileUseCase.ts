@@ -9,10 +9,10 @@ import { ClientProfileResponse } from "../../shared/dtos/user.dto";
 @injectable()
 export class UpdateProfileUseCase implements IUpdateProfileUseCase{
     constructor(
-        @inject("IClientRepository") private clientRepo:IClientRepository,
+        @inject("IClientRepository") private _clientRepo:IClientRepository,
     ){}
     async execute(clientId: string, data: Partial<IClientEntity>): Promise<ClientProfileResponse> {
-        const isExist = await this.clientRepo.findById(clientId);
+        const isExist = await this._clientRepo.findById(clientId);
 
         if(!isExist){
             throw new CustomError(
@@ -21,7 +21,7 @@ export class UpdateProfileUseCase implements IUpdateProfileUseCase{
             )
         }
 
-       const updatedProfile = await this.clientRepo.updateProfileById(clientId,data);
+       const updatedProfile = await this._clientRepo.updateProfileById(clientId,data);
 
        if (!updatedProfile) {
         throw new CustomError(

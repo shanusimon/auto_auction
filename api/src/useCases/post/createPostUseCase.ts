@@ -6,14 +6,14 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class CreatePostUseCase implements ICreatePostUseCase {
   constructor(
-    @inject("IPostRepository") private postRepository: IPostRepository
+    @inject("IPostRepository") private _postRepository: IPostRepository
   ) {}
   async execute(data: CreatePostDTO, userId: string): Promise<void> {
     if (!data.description && !data.media) {
       throw new Error("Post must have either a description or media");
     }
 
-    await this.postRepository.create(
+    await this._postRepository.create(
       userId,
       data.description,
       data.media,

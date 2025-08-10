@@ -9,18 +9,18 @@ import { ICarRepository } from "../../entities/repositoryInterfaces/car/ICarRepo
 @injectable()
 export class CarRegisterUseCase implements ICarRegisterUseCase {
   constructor(
-    @inject("ISellerRepository") private sellerRepository: ISellerRepository,
-    @inject("ICarRepository") private carReposioty: ICarRepository,
+    @inject("ISellerRepository") private _sellerRepository: ISellerRepository,
+    @inject("ICarRepository") private _carReposioty: ICarRepository,
   ) {}
   async execute(userId: string, carDeatails: CreateCarDTO): Promise<void> {
-    const seller = await this.sellerRepository.findByUserId(userId);
+    const seller = await this._sellerRepository.findByUserId(userId);
     if (!seller) {
       throw new CustomError(
         ERROR_MESSAGES.SELLER_NOT_FOUND,
         HTTP_STATUS.NOT_FOUND
       );
     }
-    const car = await this.carReposioty.findByVehicleNumber(
+    const car = await this._carReposioty.findByVehicleNumber(
       carDeatails.vehicleNumber
     );
     console.log(car);
@@ -36,6 +36,6 @@ export class CarRegisterUseCase implements ICarRegisterUseCase {
       sellerId: seller._id,
       approvalStatus: "pending",
     };
-    await this.carReposioty.create(carData);
+    await this._carReposioty.create(carData);
   }
 }

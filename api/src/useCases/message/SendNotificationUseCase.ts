@@ -8,14 +8,14 @@ import { NotificationType } from "../../shared/types/notification.Types";
 @injectable()
 export class SendNotificationUseCase implements ISendNotificationUseCase {
   constructor(
-    @inject("IClientRepository") private clientRepoitory: IClientRepository,
-    @inject("INotificationRepository") private notificationRepository:INotificationRepository,
+    @inject("IClientRepository") private _clientRepoitory: IClientRepository,
+    @inject("INotificationRepository") private _notificationRepository:INotificationRepository,
   ) {}
   async execute(userId: string, message: string,senderName:string): Promise<void> {
   
-    const user = await this.clientRepoitory.findById(userId);
+    const user = await this._clientRepoitory.findById(userId);
 
-    await this.notificationRepository.create(userId,NotificationType.CHAT_MESSAGE,message.length > 20 ? message.slice(0,10) + "...":message,`New Message from ${senderName}`)
+    await this._notificationRepository.create(userId,NotificationType.CHAT_MESSAGE,message.length > 20 ? message.slice(0,10) + "...":message,`New Message from ${senderName}`)
     
     if (user?.fcmToken) {
       const notification = {

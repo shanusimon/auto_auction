@@ -5,9 +5,9 @@ import { IClientRepository } from "../../entities/repositoryInterfaces/client/IC
 @injectable()
 export class RevokeFCMTokenUseCase implements IRevokeFCMTokenUseCase{
     constructor(
-        @inject("IClientRepository") private clientrepository:IClientRepository,
+        @inject("IClientRepository") private _clientrepository:IClientRepository,
     ){}
     async execute(id: string): Promise<void> {
-        await this.clientrepository.revokeFcmToken(id);
+        await this._clientrepository.revokeFcmToken(id);
     }
 }

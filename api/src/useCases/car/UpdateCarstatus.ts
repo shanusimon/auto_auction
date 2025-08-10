@@ -9,8 +9,8 @@ import { INodemailerService } from "../../entities/services/INodeMailerService";
 @injectable()
 export class UpdateCarStatus implements IUpdateCarStatus {
   constructor(
-    @inject("ICarRepository") private carRepository: ICarRepository,
-    @inject("INodemailerService") private mailService: INodemailerService,
+    @inject("ICarRepository") private _carRepository: ICarRepository,
+    @inject("INodemailerService") private _mailService: INodemailerService,
 
   ) {}
   async execute(
@@ -19,7 +19,7 @@ export class UpdateCarStatus implements IUpdateCarStatus {
     sellerEmail: string,
     rejectionReason?: string
   ): Promise<void> {
-    const car = await this.carRepository.findOne({_id:carId});
+    const car = await this._carRepository.findOne({_id:carId});
     if (!car) {
       throw new CustomError(
         ERROR_MESSAGES.CAR_NOT_FOUND,
@@ -38,7 +38,7 @@ export class UpdateCarStatus implements IUpdateCarStatus {
       updateData.auctionEndTime = new Date(
         updateData.auctionStartTime.getTime() + durationInMs
       );
-      await this.mailService.sendCarApprovalEmail(sellerEmail, car);
+      await this._mailService.sendCarApprovalEmail(sellerEmail, car);
     } else {
       if (!rejectionReason) {
         throw new CustomError(
@@ -46,13 +46,13 @@ export class UpdateCarStatus implements IUpdateCarStatus {
           HTTP_STATUS.BAD_REQUEST
         );
       }
-      await this.carRepository.updateRejectionReason(carId, rejectionReason);
-      await this.mailService.sendCarRejectEmail(
+      await this._carRepository.updateRejectionReason(carId, rejectionReason);
+      await this._mailService.sendCarRejectEmail(
         sellerEmail,
         car,
         rejectionReason
       );
     }
-    await this.carRepository.findByIdAndUpdate(carId, updateData as ICarEntity);
+    await this._carRepository.findByIdAndUpdate(carId, updateData as ICarEntity);
   }
 }

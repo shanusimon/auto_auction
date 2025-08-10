@@ -13,9 +13,9 @@ import { IPostLikeUseCase } from "../../../entities/useCaseInterfaces/post/IAddL
 @injectable()
 export class PostController implements IPostController{
     constructor(
-        @inject("ICreatePostUseCase") private createPostUseCase:ICreatePostUseCase,
-        @inject("IGetPagenatedPostsUseCase") private getPagenatedPosts:IGetPagenatedPostsUseCase,
-        @inject("IPostLikeUseCase") private postLikeUseCase:IPostLikeUseCase
+        @inject("ICreatePostUseCase") private _createPostUseCase:ICreatePostUseCase,
+        @inject("IGetPagenatedPostsUseCase") private _getPagenatedPosts:IGetPagenatedPostsUseCase,
+        @inject("IPostLikeUseCase") private _postLikeUseCase:IPostLikeUseCase
     ){}
     async createPost(req: Request, res: Response): Promise<void> {
         try {
@@ -23,7 +23,7 @@ export class PostController implements IPostController{
 
             const data = req.body as CreatePostDTO;
 
-            await this.createPostUseCase.execute(data,userId);
+            await this._createPostUseCase.execute(data,userId);
 
             res.status(HTTP_STATUS.CREATED).json({message:SUCCESS_MESSAGES.CREATED});
         } catch (error) {
@@ -35,7 +35,7 @@ export class PostController implements IPostController{
             const skip = parseInt(req.query.skip as string) || 0;
             const limit = parseInt(req.query.limit as string) || 5;
 
-            const posts  = await this.getPagenatedPosts.execute(limit,skip);
+            const posts  = await this._getPagenatedPosts.execute(limit,skip);
             console.log(posts);
             res.status(HTTP_STATUS.OK).json({data:posts});
         } catch (error) {
@@ -54,7 +54,7 @@ export class PostController implements IPostController{
                 )
             }
 
-            await this.postLikeUseCase.execute(userId,postId);
+            await this._postLikeUseCase.execute(userId,postId);
             
             res.status(HTTP_STATUS.OK).json({message:SUCCESS_MESSAGES.ACTION_SUCCESS});
         } catch (error) {

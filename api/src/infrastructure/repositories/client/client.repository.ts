@@ -5,6 +5,7 @@ import { IClientRepository } from "../../../entities/repositoryInterfaces/client
 import { ClientProfileResponse } from "../../../shared/dtos/user.dto";
 import { CustomError } from "../../../entities/utils/custom.error";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../../../shared/constants";
+import { FilterQuery } from "mongoose";
 
 @injectable()
 export class ClientRepository implements IClientRepository {
@@ -12,7 +13,7 @@ export class ClientRepository implements IClientRepository {
     return await ClientModel.countDocuments();
   }
   async find(
-    filter: any,
+    filter: FilterQuery<IClientEntity>,
     skip: number,
     limit: number
   ): Promise<{ users: IClientEntity[] | []; total: number }> {
@@ -24,7 +25,7 @@ export class ClientRepository implements IClientRepository {
   async save(data: Partial<IClientEntity>): Promise<IClientEntity> {
     return await ClientModel.create(data);
   }
-  async findById(id: any): Promise<IClientEntity | null> {
+  async findById(id: string | undefined): Promise<IClientEntity | null> {
     const client = await ClientModel.findById(id).lean();
     if (!client) return null;
 

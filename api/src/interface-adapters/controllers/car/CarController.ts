@@ -23,17 +23,17 @@ import { IGetSoldCarsUseCase } from "../../../entities/useCaseInterfaces/car/IGe
 export class CarController implements ICarController {
   constructor(
     @inject("ICarRegisterUseCase")
-    private carRegisterUsecase: ICarRegisterUseCase,
+    private _carRegisterUsecase: ICarRegisterUseCase,
     @inject("IGetAllCarsUseCase") 
-    private getAllCarsUseCase: IGetAllCarsUseCase,
+    private _getAllCarsUseCase: IGetAllCarsUseCase,
     @inject("IUpdateCarStatus")
-    private updateCarStatusUseCase: IUpdateCarStatus,
+    private _updateCarStatusUseCase: IUpdateCarStatus,
     @inject("IGetCarsFilterUseCase")
-    private getCarsFilterUseCase: IGetCarsFilterUseCase,
+    private _getCarsFilterUseCase: IGetCarsFilterUseCase,
     @inject("IGetCarDetailsUseCase")
-    private getCarDetailsUseCase:IGetCarDetailsUseCase,
+    private _getCarDetailsUseCase:IGetCarDetailsUseCase,
     @inject("IGetSoldCarsUseCase")
-    private getSoldCarUseCase:IGetSoldCarsUseCase
+    private _getSoldCarUseCase:IGetSoldCarsUseCase
   ) {}
   async register(req: Request, res: Response): Promise<void> {
     try {
@@ -41,7 +41,7 @@ export class CarController implements ICarController {
 
       const carDetails = req.body as CreateCarDTO;
 
-      await this.carRegisterUsecase.execute(userId, carDetails);
+      await this._carRegisterUsecase.execute(userId, carDetails);
 
       res
         .status(HTTP_STATUS.CREATED)
@@ -57,7 +57,7 @@ export class CarController implements ICarController {
       const pageSize = Math.max(1, parseInt(limit as string) || 10);
       const searchTermString = typeof search === "string" ? search : "";
 
-      const { cars, total } = await this.getAllCarsUseCase.execute(
+      const { cars, total } = await this._getAllCarsUseCase.execute(
         pageNum,
         pageSize,
         searchTermString
@@ -97,7 +97,7 @@ export class CarController implements ICarController {
           HTTP_STATUS.BAD_REQUEST
         );
       }
-      await this.updateCarStatusUseCase.execute(
+      await this._updateCarStatusUseCase.execute(
         carId,
         status as "approved" | "rejected",
         sellerEmail,
@@ -126,7 +126,7 @@ export class CarController implements ICarController {
 
 
 
-      const cars:ICarEntity[] = await this.getCarsFilterUseCase.execute(
+      const cars:ICarEntity[] = await this._getCarsFilterUseCase.execute(
         filters,
         page,
         limit
@@ -163,7 +163,7 @@ export class CarController implements ICarController {
           throw new CustomError(ERROR_MESSAGES.INVALID_CREDENTIALS,HTTP_STATUS.BAD_REQUEST)
         }
 
-        const {car,seller} = await this.getCarDetailsUseCase.execute(id);
+        const {car,seller} = await this._getCarDetailsUseCase.execute(id);
         if(!car){
           throw new CustomError(
             ERROR_MESSAGES.CAR_NOT_FOUND,HTTP_STATUS.NOT_FOUND
@@ -178,7 +178,7 @@ export class CarController implements ICarController {
   async getSoldCars(req: Request, res: Response): Promise<void> {
       try {
         console.log("hello")
-        const soldCars = await this.getSoldCarUseCase.execute();
+        const soldCars = await this._getSoldCarUseCase.execute();
         console.log("this is sold car",soldCars);
         
         res.status(HTTP_STATUS.OK).json({data:soldCars})

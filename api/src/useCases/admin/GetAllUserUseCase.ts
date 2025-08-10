@@ -6,7 +6,7 @@ import { IClientRepository } from "../../entities/repositoryInterfaces/client/IC
 @injectable()
 export class getAllCustomers implements IGetAllCustomersUseCase{
     constructor(
-        @inject("IClientRepository") private clientRepository:IClientRepository,
+        @inject("IClientRepository") private _clientRepository:IClientRepository,
     ){}
 
     async execute(pageNumber: number, pageSize: number, searchTerm: string): Promise<PagenateCustomers> {
@@ -23,7 +23,7 @@ export class getAllCustomers implements IGetAllCustomersUseCase{
         const skip = (validPageNumber - 1) * validPageSize;
         const limit = validPageSize
 
-        const {users,total}= await this.clientRepository.find(filter,skip,limit);
+        const {users,total}= await this._clientRepository.find(filter,skip,limit);
 
         const response :PagenateCustomers = {
             users,

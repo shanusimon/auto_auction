@@ -21,14 +21,14 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
   private io: SocketIOServer | undefined;
 
   constructor(
-    @inject("ISellerRepository") private sellerRepository: ISellerRepository,
-    @inject("INotificationRepository") private notificationRepository: INotificationRepository,
-    @inject("ICarRepository") private carRepository: ICarRepository,
-    @inject("AuctionWonRepositoryInterface") private auctionWonRepository: AuctionWonRepositoryInterface,
+    @inject("ISellerRepository") private _sellerRepository: ISellerRepository,
+    @inject("INotificationRepository") private _notificationRepository: INotificationRepository,
+    @inject("ICarRepository") private _carRepository: ICarRepository,
+    @inject("AuctionWonRepositoryInterface") private _auctionWonRepository: AuctionWonRepositoryInterface,
     @inject("IPaymentService") private stripeService: IPaymentService,
-    @inject("IClientRepository") private clientRepository: IClientRepository,
-    @inject("IRedisClient") private redisClient: IRedisClient,
-    @inject("IBidRepository") private bidRepository:IBidRepository,
+    @inject("IClientRepository") private _clientRepository: IClientRepository,
+    @inject("IRedisClient") private _redisClient: IRedisClient,
+    @inject("IBidRepository") private _bidRepository:IBidRepository,
   ) {}
 
   public initialize(io: SocketIOServer) {
@@ -37,7 +37,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
 
   async execute(carId: string): Promise<IAuctionWonEntity | null> {
     const lockKey = `auction:lock:${carId}`;
-    const acquired = await this.redisClient.acquireLock(lockKey, 10000);
+    const acquired = await this._redisClient.acquireLock(lockKey, 10000);
 
     if (!acquired) {
       console.log(`Failed to acquire lock for carId: ${carId}`);
@@ -47,7 +47,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
     try {
       const now = new Date();
 
-       const car = await this.carRepository.findOneAndUpdate(
+       const car = await this._carRepository.findOneAndUpdate(
         {
           _id: carId,
           approvalStatus: "approved",
@@ -75,11 +75,11 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
       );
 
       if (!car) {
-        const existingCar = await this.carRepository.findOne({_id:carId});
+        const existingCar = await this._carRepository.findOne({_id:carId});
         if (!existingCar) {
           throw new CustomError(ERROR_MESSAGES.CAR_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
         }
-        const existingWon = await this.auctionWonRepository.findByCarId(carId);
+        const existingWon = await this._auctionWonRepository.findByCarId(carId);
         if (existingWon) {
           console.log(`Returning existing auctionWon for carId: ${carId}`);
           return existingWon;
@@ -88,7 +88,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
         throw new CustomError("Auction already ended or not yet ended", HTTP_STATUS.CONFLICT);
       }
 
-      const existingWon = await this.auctionWonRepository.findByCarId(carId);
+      const existingWon = await this._auctionWonRepository.findByCarId(carId);
       if (existingWon) {
         console.log(`Duplicate auctionWon prevented for carId: ${carId}`);
         return existingWon;
@@ -98,10 +98,10 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
         throw new CustomError("Car does not have a seller", HTTP_STATUS.BAD_REQUEST);
       }
 
-      const user = await this.sellerRepository.findOne(car.sellerId.toString());
-      const carSeller = await this.clientRepository.findById(user?.userId);
-      const carWonClient = await this.clientRepository.findById(car.highestBidderId);
-      const topBid = await this.bidRepository.findTopBidByCarId(carId);
+      const user = await this._sellerRepository.findOne(car.sellerId.toString());
+      const carSeller = await this._clientRepository.findById(String(user?.userId));
+      const carWonClient = await this._clientRepository.findById(String(car.highestBidderId));
+      const topBid = await this._bidRepository.findTopBidByCarId(carId);
 
       if (!topBid || !topBid._id || !topBid.amount || !topBid.userId) {
   throw new CustomError("No valid winning bid found", HTTP_STATUS.BAD_REQUEST);
@@ -115,7 +115,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
       const reservePrice = car.reservedPrice ?? null;
 
       if (reservePrice && car.highestBid < reservePrice) {
-        auctionWonData = await this.auctionWonRepository.create({
+        auctionWonData = await this._auctionWonRepository.create({
           carId,
           auctionStatus: "not-sold",
           bidId:topBid._id.toString(),
@@ -129,7 +129,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
           createdAt: new Date(),
         });
 
-        await this.notificationRepository.create(
+        await this._notificationRepository.create(
           user._id.toString(),
           NotificationType.AUCTION_RESERVE_NOT_MET,
           `Auction for ${car.title} ended but did not meet the reserve price.`,
@@ -137,7 +137,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
         );
 
         if (car.highestBidderId) {
-          await this.notificationRepository.create(
+          await this._notificationRepository.create(
             car.highestBidderId.toString(),
             NotificationType.AUCTION_RESERVE_NOT_MET,
             `Your highest bid for "${car.title}" did not meet the seller’s reserve price. The car was not sold.`,
@@ -194,7 +194,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
         const platformCharge = Math.floor(car.highestBid * 0.05);
       
 
-        auctionWonData = await this.auctionWonRepository.create({
+        auctionWonData = await this._auctionWonRepository.create({
           carId,
           auctionStatus: "sold",
           amount: car.highestBid,
@@ -208,7 +208,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
           createdAt: new Date(),
         });
 
-        await this.notificationRepository.create(
+        await this._notificationRepository.create(
           carSeller?.id ? carSeller.id.toString() : user._id.toString(),
           NotificationType.AUCTION_WIN,
           `Your car "${car.title}" auction has been won for ₹${car.highestBid}. You can check further details in the Seller Dashboard.`,
@@ -230,7 +230,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
           }
         }
 
-        await this.notificationRepository.create(
+        await this._notificationRepository.create(
           car.highestBidderId.toString(),
           NotificationType.AUCTION_WIN,
           `Congratulations! You won the auction for "${car.title}" with a bid of ₹${car.highestBid}. Please proceed to the Buyer Dashboard to complete the transaction.`,
@@ -267,7 +267,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
 
       return auctionWonData;
     } finally {
-      await this.redisClient.releaseLock(lockKey);
+      await this._redisClient.releaseLock(lockKey);
     }
   }
 }

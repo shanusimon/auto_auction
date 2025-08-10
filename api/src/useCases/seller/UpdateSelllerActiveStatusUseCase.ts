@@ -5,9 +5,9 @@ import { ISellerRepository } from "../../entities/repositoryInterfaces/seller/IS
 @injectable()
 export class UpdateSellerActiveStatus implements IUpdateSellerActiveStatusUseCase{
     constructor(
-        @inject("ISellerRepository") private sellerRepository:ISellerRepository
+        @inject("ISellerRepository") private _sellerRepository:ISellerRepository
     ){}
     async execute(sellerId: string): Promise<void> {
-        await this.sellerRepository.findByIdAndUpdateStatus(sellerId);
+        await this._sellerRepository.findByIdAndUpdateStatus(sellerId);
     }
 }

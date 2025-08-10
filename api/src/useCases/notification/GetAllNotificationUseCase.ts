@@ -6,10 +6,10 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class GetAllNotificationUseCase implements IGetAllNotificationUseCase{
     constructor(
-        @inject("INotificationRepository") private notificationRepositry:INotificationRepository
+        @inject("INotificationRepository") private _notificationRepositry:INotificationRepository
     ){}
     async execute(userId: string): Promise<INotification[]> {
-        const data = await this.notificationRepositry.getAll(userId);
+        const data = await this._notificationRepositry.getAll(userId);
         return data
     }
 }

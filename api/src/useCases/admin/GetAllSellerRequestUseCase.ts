@@ -7,8 +7,8 @@ import { IClientRepository } from "../../entities/repositoryInterfaces/client/IC
 @injectable()
 export class GetAllSellerUseCase implements IGetAllSellerRequestUseCase {
   constructor(
-    @inject("ISellerRepository") private sellerRepository: ISellerRepository,
-    @inject("IClientRepository") private clientRepository: IClientRepository
+    @inject("ISellerRepository") private _sellerRepository: ISellerRepository,
+    @inject("IClientRepository") private _clientRepository: IClientRepository
   ) {}
   async execute(
     page: number,
@@ -25,7 +25,7 @@ export class GetAllSellerUseCase implements IGetAllSellerRequestUseCase {
     };
 
     if (searchTerm) {
-      const matchingUserIds = await this.clientRepository.findBySearchTerm(
+      const matchingUserIds = await this._clientRepository.findBySearchTerm(
         searchTerm
       );
       if (matchingUserIds.length > 0) {
@@ -35,8 +35,8 @@ export class GetAllSellerUseCase implements IGetAllSellerRequestUseCase {
       }
     }
     const [sellers, total] = await Promise.all([
-      this.sellerRepository.findPaginatedAndPopulated(filter, skip, validPageSize),
-      this.sellerRepository.count(filter),
+      this._sellerRepository.findPaginatedAndPopulated(filter, skip, validPageSize),
+      this._sellerRepository.count(filter),
     ]);
 
     const response: PagenateSellers = {

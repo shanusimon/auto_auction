@@ -36,16 +36,16 @@ interface NewsApiResponse {
 export class UserController implements IUserController {
   constructor(
     @inject("IGetAllCustomersUseCase")
-    private getCustomers: IGetAllCustomersUseCase,
+    private _getCustomers: IGetAllCustomersUseCase,
     @inject("IUpdateCustomerStatusUseCase")
-    private updateCustomers: IUpdateCustomerStatusUseCase,
+    private _updateCustomers: IUpdateCustomerStatusUseCase,
     @inject("IUpdateProfileUseCase")
-    private updateClientProfile: IUpdateProfileUseCase,
+    private _updateClientProfile: IUpdateProfileUseCase,
     @inject("IUpdatePasswordUseCase")
-    private updateClientPassword: IUpdatePasswordUseCase,
-    @inject("IsSellerUseCase") private isSellerUseCase: IIsSellerUseCase,
+    private _updateClientPassword: IUpdatePasswordUseCase,
+    @inject("IsSellerUseCase") private _isSellerUseCase: IIsSellerUseCase,
     @inject("SaveFCMTokenUseCase")
-    private saveFcmTokenUsecase: ISaveFCMTokenUseCase
+    private _saveFcmTokenUsecase: ISaveFCMTokenUseCase
   ) {}
 
  // Get news
@@ -91,7 +91,7 @@ export class UserController implements IUserController {
       const pageSize = Number(limit);
       const searchTermString = typeof search === "string" ? search : "";
 
-      const { users, total } = await this.getCustomers.execute(
+      const { users, total } = await this._getCustomers.execute(
         pageNumeber,
         pageSize,
         searchTermString
@@ -114,7 +114,7 @@ export class UserController implements IUserController {
     try {
       const { userId } = req.params;
 
-      await this.updateCustomers.execute(userId);
+      await this._updateCustomers.execute(userId);
       res.status(HTTP_STATUS.OK).json({
         success: true,
         message: SUCCESS_MESSAGES.UPDATE_SUCCESS,
@@ -148,7 +148,7 @@ export class UserController implements IUserController {
         }
       });
 
-      const updatedUser = await this.updateClientProfile.execute(
+      const updatedUser = await this._updateClientProfile.execute(
         userId,
         updatedDate
       );
@@ -174,7 +174,7 @@ export class UserController implements IUserController {
         newPass: string;
       };
       console.log("crr", currPass, "new", newPass);
-      await this.updateClientPassword.execute(userId, currPass, newPass);
+      await this._updateClientPassword.execute(userId, currPass, newPass);
 
       res
         .status(HTTP_STATUS.OK)
@@ -190,8 +190,7 @@ export class UserController implements IUserController {
     try {
       const userId = (req as CustomRequest).user.id;
 
-      const seller = await this.isSellerUseCase.execute(userId);
-      console.log(seller);
+      const seller = await this._isSellerUseCase.execute(userId);
 
       res.status(HTTP_STATUS.OK).json({
         success: true,
@@ -219,7 +218,7 @@ export class UserController implements IUserController {
         );
       }
 
-      await this.saveFcmTokenUsecase.execute(userId, token);
+      await this._saveFcmTokenUsecase.execute(userId, token);
 
       res
         .status(HTTP_STATUS.OK)

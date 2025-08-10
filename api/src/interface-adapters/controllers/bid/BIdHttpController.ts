@@ -12,13 +12,13 @@ import { IGetBidHistoryUseCase } from "../../../entities/useCaseInterfaces/bid/I
 @injectable()
 export class BidHttpController implements IBidHttpController {
   constructor(
-    @inject("IGetAllBidsUseCase") private getAllbidUseCase: GetAllBidsUseCase,
-    @inject("IGetBidHistoryUseCase") private getBidHistoryUseCase:IGetBidHistoryUseCase
+    @inject("IGetAllBidsUseCase") private _getAllbidUseCase: GetAllBidsUseCase,
+    @inject("IGetBidHistoryUseCase") private _getBidHistoryUseCase:IGetBidHistoryUseCase
 ) {}
   async GetAllBids(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as CustomRequest).user.id;
-      const data = await this.getAllbidUseCase.execute(userId);
+      const data = await this._getAllbidUseCase.execute(userId);
       res.status(HTTP_STATUS.OK).json({ data });
     } catch (error) {
       handleErrorResponse(res, error);
@@ -31,7 +31,7 @@ export class BidHttpController implements IBidHttpController {
         if(!userId){
             throw new CustomError(ERROR_MESSAGES.INVALID_CREDENTIALS,HTTP_STATUS.BAD_REQUEST)
         }
-        const bids = await this.getBidHistoryUseCase.execute(carId);
+        const bids = await this._getBidHistoryUseCase.execute(carId);
         console.log(bids);
         
         res.status(HTTP_STATUS.OK).json({bids});

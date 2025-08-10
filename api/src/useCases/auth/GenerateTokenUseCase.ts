@@ -7,16 +7,16 @@ import { IRefreshTokenRepository } from "../../entities/repositoryInterfaces/aut
 @injectable()
 export class GenerateTokenUseCase implements IGenerateTokenUseCase{
     constructor(
-        @inject("ITokenService") private tokenService:ITokenService,
-        @inject("IRefreshTokenRepository") private refreshTokenRepository:IRefreshTokenRepository
+        @inject("ITokenService") private _tokenService:ITokenService,
+        @inject("IRefreshTokenRepository") private _refreshTokenRepository:IRefreshTokenRepository
     ) {}
     async execute(id: string, email: string, role: string): Promise<{ accessToken: string; refreshToken: string; }> {
         const payload = {id,email,role};
 
-        const accessToken = this.tokenService.generateAccessToken(payload);
-        const refreshToken = this.tokenService.generateRefreshToken(payload);
+        const accessToken = this._tokenService.generateAccessToken(payload);
+        const refreshToken = this._tokenService.generateRefreshToken(payload);
 
-        await this.refreshTokenRepository.save({
+        await this._refreshTokenRepository.save({
             token:refreshToken,
             userType:role as TRole,
             user:id,

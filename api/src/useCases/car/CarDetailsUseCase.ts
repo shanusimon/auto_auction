@@ -10,20 +10,20 @@ import { ISellerEntity } from "../../entities/models/seller.entity";
 @injectable()
 export class GetCarDetailsUseCase implements IGetCarDetailsUseCase {
   constructor(
-    @inject("ICarRepository") private carRepository: ICarRepository,
-    @inject("ISellerRepository") private sellerRepository: ISellerRepository,
+    @inject("ICarRepository") private _carRepository: ICarRepository,
+    @inject("ISellerRepository") private _sellerRepository: ISellerRepository,
   ) {}
   async execute(
     carId: string
   ): Promise<{ car: ICarEntity; seller: ISellerEntity | null }> {
-    const car = await this.carRepository.findOne({_id:carId});
+    const car = await this._carRepository.findOne({_id:carId});
     if (!car) {
       throw new CustomError(
         ERROR_MESSAGES.CAR_NOT_FOUND,
         HTTP_STATUS.BAD_REQUEST
       );
     }
-    const seller = await this.sellerRepository.findSellerDetails(
+    const seller = await this._sellerRepository.findSellerDetails(
       car.sellerId.toString()
     );
     return { car, seller };

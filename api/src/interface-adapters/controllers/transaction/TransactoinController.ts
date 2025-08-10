@@ -10,7 +10,7 @@ import { IGetWalletTransactionsUseCase } from "../../../entities/useCaseInterfac
 @injectable()
 export class TransactionController implements ITransactionController {
     constructor(
-        @inject("IGetWalletTransactionsUseCase") private walletTransactionUseCase:IGetWalletTransactionsUseCase
+        @inject("IGetWalletTransactionsUseCase") private _walletTransactionUseCase:IGetWalletTransactionsUseCase
     ) {}
 
     async getAllTransaction(req: Request, res: Response): Promise<void> {
@@ -18,7 +18,6 @@ export class TransactionController implements ITransactionController {
             const customReq = req as unknown as CustomRequest;
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 6;
-            console.log("hello",customReq)
             if (page < 1 || limit < 1) {
                 res.status(HTTP_STATUS.BAD_REQUEST).json({
                     success: false,
@@ -28,7 +27,7 @@ export class TransactionController implements ITransactionController {
             }
             const userId = customReq.user.id;
 
-            const result =  await this.walletTransactionUseCase.execute(userId,page,limit);
+            const result =  await this._walletTransactionUseCase.execute(userId,page,limit);
             console.log("hello trasnctions",result);
             res.status(HTTP_STATUS.OK).json({
                 success:true,

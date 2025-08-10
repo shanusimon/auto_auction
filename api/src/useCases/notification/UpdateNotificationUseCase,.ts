@@ -5,13 +5,13 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class UpdateNotificationUseCase implements IUpdateNotificationUseCase{
     constructor(
-        @inject("INotificationRepository") private notificationRepository:INotificationRepository
+        @inject("INotificationRepository") private _notificationRepository:INotificationRepository
     ){}
     async execute(userId:string,id?: string, all?: string): Promise<void> {
         if(id){
-            await this.notificationRepository.updateToRead(id);
+            await this._notificationRepository.updateToRead(id);
         }else if(all){
-            await this.notificationRepository.updateAllToRead(userId)
+            await this._notificationRepository.updateAllToRead(userId)
         }
     }
 }

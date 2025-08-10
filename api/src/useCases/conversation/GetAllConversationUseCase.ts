@@ -6,10 +6,10 @@ import { inject,injectable } from "tsyringe";
 @injectable()
 export class GetAllConversationUseCase implements IGetAllConversationUseCase{
     constructor(
-        @inject("IConversationRepository") private conversationRepository:IConversationRepository
+        @inject("IConversationRepository") private _conversationRepository:IConversationRepository
     ){}
     async execute(userId: string): Promise<IConversation[]> {
-        const conversations = await this.conversationRepository.findAllConversations(userId);
+        const conversations = await this._conversationRepository.findAllConversations(userId);
         return conversations
     }
 }

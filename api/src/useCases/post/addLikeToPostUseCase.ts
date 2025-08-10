@@ -7,7 +7,7 @@ import { ERROR_MESSAGES, HTTP_STATUS } from "../../shared/constants";
 @injectable()
 export class AddLikeToPostUseCase implements IPostLikeUseCase{
     constructor(
-        @inject("IPostRepository") private postRepository:IPostRepository
+        @inject("IPostRepository") private _postRepository:IPostRepository
     ){}
     async execute(userId: string, postId: string): Promise<void> {
         if(!userId || !postId){
@@ -17,6 +17,6 @@ export class AddLikeToPostUseCase implements IPostLikeUseCase{
             )
         }
 
-        await this.postRepository.addOrRemoveLike(postId,userId);
+        await this._postRepository.addOrRemoveLike(postId,userId);
     }
 }

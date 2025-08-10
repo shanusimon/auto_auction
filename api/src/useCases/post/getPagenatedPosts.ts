@@ -6,13 +6,13 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class getPagenatedPosts implements IGetPagenatedPostsUseCase{
     constructor(
-        @inject("IPostRepository") private postRepository:IPostRepository
+        @inject("IPostRepository") private _postRepository:IPostRepository
     ){}
     async execute(limit: number, skip: number): Promise<IPostEntity[]> {
          if (limit <= 0 || skip < 0) {
             throw new Error("Invalid pagination parameters");
         }
-        const posts = await this.postRepository.findPaginated(skip,limit);
+        const posts = await this._postRepository.findPaginated(skip,limit);
         return posts
     }
 }
