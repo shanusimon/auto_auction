@@ -1,13 +1,15 @@
+import { FilterQuery } from "mongoose";
+
 export interface IBaseRepository<T> {
-  find(filter: any): Promise<T[]>;
+  find(filter: FilterQuery<T>): Promise<T[]>;
   findAll(
-    filter: any,
+    filter: FilterQuery<T>,
     skip: number,
     limit: number
   ): Promise<{ items: T[]; total: number }>;
-  findOne(filter: any): Promise<T | null>;
+  findOne(filter: FilterQuery<T>): Promise<T | null>;
   save(data: Partial<T>): Promise<T>;
-  delete(filter: any): Promise<T | null>;
-  deleteAll(filter: any): Promise<void>;
-  countDocuments(filter: any): Promise<number>;
+  delete(filter: FilterQuery<T>): Promise<T | null>;
+  deleteAll(filter: FilterQuery<T>): Promise<void>;
+  countDocuments(filter: FilterQuery<T>): Promise<number>;
 }
